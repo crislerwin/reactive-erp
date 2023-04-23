@@ -1,9 +1,12 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { api } from "../utils/api";
+import { useEffect } from "react";
 
 const Home: NextPage = () => {
   const { user } = useUser();
+
   return (
     <>
       <Head>
