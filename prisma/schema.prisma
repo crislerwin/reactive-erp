@@ -9,14 +9,54 @@ datasource db {
 }
 
 model User {
-    enterpriseId String   @id @unique @default("")
-    userId       String   @unique @default("")
-    email        String   @unique @default("")
-    role         String   @default("")
-    firstName    String   @default("")
-    lastName     String   @default("")
+    userId       String       @unique @default("")
+    email        String       @unique @default("")
+    enterpriseId String       @id @unique @default("")
+    addressId    String?
+    permissions  Permission[]
+    firstName    String       @default("")
+    lastName     String       @default("")
+    enterprise   Enterprise?  @relation(fields: [enterpriseId], references: [enterpriseId])
+    address      Address?     @relation(fields: [addressId], references: [addressId])
+    createdAt    DateTime     @default(now())
+    updatedAt    DateTime     @updatedAt
+
+    @@index([addressId, email])
+}
+
+model Enterprise {
+    enterpriseId   String   @id @unique @default("")
+    cnpj           String   @unique @default("")
+    enterpriseName String   @default("")
+    sponsorId      String   @default("")
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    addressId      String?
+    User           User[]
+
+    @@index([cnpj])
+}
+
+model Address {
+    addressId String   @id @unique @default("")
+    street    String   @default("")
+    number    String   @default("")
+    city      String   @default("")
+    state     String   @default("")
+    country   String   @default("")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    User      User[]
+}
+
+model Permission {
+    permissionId Int      @id @default(autoincrement())
+    name         String   @default("")
+    value        String   @default("")
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
+    User         User?    @relation(fields: [userId], references: [userId])
+    userId       String?
 
-    @@index([email])
+    @@index([userId])
 }

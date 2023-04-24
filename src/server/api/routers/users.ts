@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "~/@/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { z } from "zod";
 
 class NotFoundError extends Error {
@@ -58,7 +58,6 @@ export const usersRouter = createTRPCRouter({
           email: input.email,
           firstName: input.firstName,
           lastName: input.lastName,
-          role: input.role,
         },
       });
     }),
@@ -82,7 +81,29 @@ export const usersRouter = createTRPCRouter({
           email: input.email,
           firstName: input.firstName,
           lastName: input.lastName,
-          role: input.role,
+        },
+      });
+    }),
+  addUser: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        name: z.string(),
+        value: z.string(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.user.update({
+        where: {
+          userId: input.userId,
+        },
+        data: {
+          permissions: {
+            create: {
+              name: input.name,
+              value: input.value,
+            },
+          },
         },
       });
     }),
