@@ -1,6 +1,12 @@
 import { createTRPCRouter, publicProcedure } from "~/@/server/api/trpc";
 import { z } from "zod";
 
+class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotFoundError";
+  }
+}
 export const usersRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.user.findMany();
@@ -16,10 +22,23 @@ export const usersRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const user = await ctx.prisma.user.findUnique({
         where: {
-          userId: input.userId,
           email: input.email,
         },
       });
+
+      if (!user) throw new NotFoundError("User not found");
+
+      if (!user.userId) {
+        const updatedUser = ctx.prisma.user.update({
+          where: {
+            email: input.email,
+          },
+          data: {
+            userId: input.userId,
+          },
+        });
+        return updatedUser;
+      }
       return user;
     }),
   createUser: publicProcedure

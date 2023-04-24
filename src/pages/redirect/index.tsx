@@ -1,13 +1,13 @@
-import { SignIn, useUser } from "@clerk/nextjs";
-import type { NextPage } from "next";
+import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import React from "react";
 
-const SignInPage: NextPage = () => {
+const Redirect = () => {
   const { isSignedIn, user } = useUser();
   const router = useRouter();
 
   React.useEffect(() => {
+    if (!isSignedIn) router.push("/sign-in").catch((err) => console.error(err));
     if (isSignedIn && user) {
       router
         .push({
@@ -23,15 +23,7 @@ const SignInPage: NextPage = () => {
     }
   }, [isSignedIn, router, user]);
 
-  return (
-    <main className="min-h-screen flex-row justify-center bg-slate-700">
-      {!isSignedIn && (
-        <div className="m-10 flex justify-end">
-          <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-        </div>
-      )}
-    </main>
-  );
+  return <></>;
 };
 
-export default SignInPage;
+export default Redirect;
