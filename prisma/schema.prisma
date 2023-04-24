@@ -9,14 +9,14 @@ datasource db {
 }
 
 model User {
-    enterpriseId String   @id @unique
+    enterpriseId String   @id @unique @default("")
     userId       String   @unique @default("")
-    email        String   @unique
+    email        String   @unique @default("")
     role         String   @default("")
     firstName    String   @default("")
     lastName     String   @default("")
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
 
-    @@index([enterpriseId])
+    @@index([email])
 }

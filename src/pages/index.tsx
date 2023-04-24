@@ -1,11 +1,35 @@
-import { type NextPage } from "next";
+import React from "react";
+import type { NextPage } from "next";
 import Head from "next/head";
-import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import { api } from "../utils/api";
-import { useEffect } from "react";
+import { useRouter } from "next/router";
+
+const UserComponent: React.FC<{ emailAddress: string | undefined }> = ({
+  emailAddress = "",
+}) => {
+  const { useQuery } = api.users.getUser;
+  const { data, error, isLoading } = useQuery(
+    { email: emailAddress },
+    {
+      enabled: !!emailAddress,
+    }
+  );
+
+  return <></>;
+};
 
 const Home: NextPage = () => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (isLoaded && !user) {
+      router.push("/sign-in").catch((err) => {
+        console.error(err);
+      });
+    }
+  }, [isLoaded, router, user]);
 
   return (
     <>
@@ -19,19 +43,15 @@ const Home: NextPage = () => {
           <div className="text-white">
             <h1 className="text-4xl font-bold">Welcome {user.fullName}!</h1>
             <p className="text-xl">You are signed in.</p>
+            <UserComponent
+              emailAddress={user.primaryEmailAddress?.emailAddress}
+            />
             <SignOutButton>
               <button className="btn">Sign out</button>
             </SignOutButton>
           </div>
         ) : (
-          <div className="text-white">
-            <h1 className="text-4xl font-bold">Welcome!</h1>
-            <p className="text-xl">You are not signed in.</p>
-            <SignInButton mode="modal">
-              <button className="btn">Sign in</button>
-            </SignInButton>
-            <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-          </div>
+          <></>
         )}
       </main>
     </>

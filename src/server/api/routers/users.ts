@@ -7,14 +7,20 @@ export const usersRouter = createTRPCRouter({
   }),
 
   getUser: publicProcedure
-    .input(z.object({ email: z.string(), enterpriseId: z.string() }))
-    .query(({ ctx, input }) => {
-      return ctx.prisma.user.findUnique({
+    .input(
+      z.object({
+        email: z.string(),
+        userId: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
         where: {
+          userId: input.userId,
           email: input.email,
-          enterpriseId: input.enterpriseId,
         },
       });
+      return user;
     }),
   createUser: publicProcedure
     .input(
@@ -29,6 +35,7 @@ export const usersRouter = createTRPCRouter({
     .mutation(({ ctx, input }) => {
       return ctx.prisma.user.create({
         data: {
+          enterpriseId: input.enterpriseId,
           email: input.email,
           firstName: input.firstName,
           lastName: input.lastName,
@@ -41,9 +48,9 @@ export const usersRouter = createTRPCRouter({
       z.object({
         userId: z.string(),
         email: z.string().optional(),
-        firstName: z.string(),
-        lastName: z.string(),
-        role: z.enum(["attendant", "doctor", "admin", "master"]),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+        role: z.enum(["attendant", "doctor", "admin", "master"]).optional(),
       })
     )
     .mutation(({ ctx, input }) => {
