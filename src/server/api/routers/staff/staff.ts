@@ -7,29 +7,29 @@ class NotFoundError extends Error {
     this.name = "NotFoundError";
   }
 }
-export const usersRouter = createTRPCRouter({
+export const staffRouter = createTRPCRouter({
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.user.findMany();
+    return ctx.prisma.staff.findMany();
   }),
 
   getUser: publicProcedure
     .input(
       z.object({
-        email: z.string(),
+        email: z.string().optional(),
         userId: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.findUnique({
+      const staffMember = await ctx.prisma.staff.findUnique({
         where: {
           email: input.email,
         },
       });
 
-      if (!user) throw new NotFoundError("User not found");
+      if (!staffMember) throw new NotFoundError("User not found");
 
-      if (!user.userId) {
-        const updatedUser = ctx.prisma.user.update({
+      if (!staffMember.userId) {
+        const updatedUser = ctx.prisma.staff.update({
           where: {
             email: input.email,
           },
@@ -39,25 +39,25 @@ export const usersRouter = createTRPCRouter({
         });
         return updatedUser;
       }
-      return user;
+      return staffMember;
     }),
   createUser: publicProcedure
     .input(
       z.object({
+        userId: z.string(),
         enterpriseId: z.string(),
         email: z.string(),
-        firstName: z.string(),
-        lastName: z.string(),
+        name: z.string(),
         role: z.enum(["attendant", "doctor", "master"]),
       })
     )
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.user.create({
+      return ctx.prisma.staff.create({
         data: {
+          userId: input.userId,
           enterpriseId: input.enterpriseId,
           email: input.email,
-          firstName: input.firstName,
-          lastName: input.lastName,
+          name: input.name,
         },
       });
     }),
@@ -66,25 +66,23 @@ export const usersRouter = createTRPCRouter({
       z.object({
         userId: z.string(),
         email: z.string().optional(),
-        firstName: z.string().optional(),
-        lastName: z.string().optional(),
+        name: z.string().optional(),
         role: z.enum(["attendant", "doctor", "admin", "master"]).optional(),
       })
     )
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.user.update({
+      return ctx.prisma.staff.update({
         where: {
           email: input.email,
         },
         data: {
           userId: input.userId,
           email: input.email,
-          firstName: input.firstName,
-          lastName: input.lastName,
+          name: input.name,
         },
       });
     }),
-  addUser: publicProcedure
+  addPermission: publicProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -93,7 +91,7 @@ export const usersRouter = createTRPCRouter({
       })
     )
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.user.update({
+      return ctx.prisma.staff.update({
         where: {
           userId: input.userId,
         },
@@ -107,4 +105,11 @@ export const usersRouter = createTRPCRouter({
         },
       });
     }),
+  deleteUser: publicProcedure.input(z.string()).mutation(({ ctx, input }) => {
+    return ctx.prisma.staff.delete({
+      where: {
+        userId: input,
+      },
+    });
+  }),
 });

@@ -8,20 +8,19 @@ datasource db {
     relationMode = "prisma"
 }
 
-model User {
+model Staff {
     userId       String       @unique @default("")
-    email        String       @unique @default("")
     enterpriseId String       @id @unique @default("")
-    addressId    String?
+    email        String       @unique @default("")
     permissions  Permission[]
-    firstName    String       @default("")
-    lastName     String       @default("")
+    name         String       @default("")
+    role         String       @default("")
     enterprise   Enterprise?  @relation(fields: [enterpriseId], references: [enterpriseId])
-    address      Address?     @relation(fields: [addressId], references: [addressId])
     createdAt    DateTime     @default(now())
     updatedAt    DateTime     @updatedAt
 
-    @@index([addressId, email])
+    @@index([email])
+    @@map("User")
 }
 
 model Enterprise {
@@ -32,21 +31,9 @@ model Enterprise {
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
     addressId      String?
-    User           User[]
+    User           Staff[]
 
     @@index([cnpj])
-}
-
-model Address {
-    addressId String   @id @unique @default("")
-    street    String   @default("")
-    number    String   @default("")
-    city      String   @default("")
-    state     String   @default("")
-    country   String   @default("")
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    User      User[]
 }
 
 model Permission {
@@ -55,7 +42,7 @@ model Permission {
     value        String   @default("")
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
-    User         User?    @relation(fields: [userId], references: [userId])
+    User         Staff?   @relation(fields: [userId], references: [userId])
     userId       String?
 
     @@index([userId])

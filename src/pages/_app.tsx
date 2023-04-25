@@ -1,21 +1,14 @@
 import { type AppType } from "next/app";
-import { type Session } from "next-auth";
-import { SessionProvider } from "next-auth/react";
 import { ptBR } from "@clerk/localizations";
-import { api } from "~/@/utils/api";
+import { api } from "@/utils/api";
 import { ClerkProvider } from "@clerk/nextjs";
-import "~/@/styles/globals.css";
+import "@/styles/globals.css";
 
-const MyApp: AppType<{ session: Session | null }> = ({
-  Component,
-  pageProps: { session, ...pageProps },
-}) => {
+const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
-    <SessionProvider session={session}>
-      <ClerkProvider localization={ptBR} {...pageProps}>
-        <Component {...pageProps} />
-      </ClerkProvider>
-    </SessionProvider>
+    <ClerkProvider localization={ptBR} {...pageProps}>
+      <Component {...pageProps} />
+    </ClerkProvider>
   );
 };
 

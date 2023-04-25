@@ -9,7 +9,7 @@ const Redirect = () => {
   const { signOut } = useClerk();
   const {
     getUser: { useQuery },
-  } = api.users;
+  } = api.staff;
   const { error, isLoading } = useQuery(
     { email: String(emailAddress), userId: String(userId) },
     {
