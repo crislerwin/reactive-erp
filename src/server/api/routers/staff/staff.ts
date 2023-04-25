@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { z } from "zod";
 
 class NotFoundError extends Error {
@@ -8,11 +8,11 @@ class NotFoundError extends Error {
   }
 }
 export const staffRouter = createTRPCRouter({
-  getAll: publicProcedure.query(({ ctx }) => {
+  getAll: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.staff.findMany();
   }),
 
-  getUser: publicProcedure
+  getUser: protectedProcedure
     .input(
       z.object({
         email: z.string().optional(),
@@ -41,7 +41,7 @@ export const staffRouter = createTRPCRouter({
       }
       return staffMember;
     }),
-  createUser: publicProcedure
+  createUser: protectedProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -61,7 +61,7 @@ export const staffRouter = createTRPCRouter({
         },
       });
     }),
-  updateUser: publicProcedure
+  updateUser: protectedProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -82,7 +82,7 @@ export const staffRouter = createTRPCRouter({
         },
       });
     }),
-  addPermission: publicProcedure
+  addPermission: protectedProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -105,11 +105,13 @@ export const staffRouter = createTRPCRouter({
         },
       });
     }),
-  deleteUser: publicProcedure.input(z.string()).mutation(({ ctx, input }) => {
-    return ctx.prisma.staff.delete({
-      where: {
-        userId: input,
-      },
-    });
-  }),
+  deleteUser: protectedProcedure
+    .input(z.string())
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.staff.delete({
+        where: {
+          userId: input,
+        },
+      });
+    }),
 });

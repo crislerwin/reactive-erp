@@ -1,12 +1,32 @@
 import { prisma } from "@/server/db";
-import { initTRPC } from "@trpc/server";
+
+import { TRPCError, initTRPC } from "@trpc/server";
+import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { getServerAuthSession } from "./auth";
+import type { User } from "@clerk/nextjs/dist/api";
 
-export const createTRPCContext = () => {
+type CreateContextOptions = {
+  session: {
+    user: User | null;
+  };
+};
+
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
+    session: opts.session,
     prisma,
   };
+};
+
+export const createTRPCContext = async (ctx: CreateNextContextOptions) => {
+  const { user } = await getServerAuthSession(ctx);
+  return createInnerTRPCContext({
+    session: {
+      user,
+    },
+  });
 };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -23,8 +43,19 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
 export const createTRPCRouter = t.router;
 
 export const publicProcedure = t.procedure;
 
-export const protectedProcedure = t.procedure;
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);

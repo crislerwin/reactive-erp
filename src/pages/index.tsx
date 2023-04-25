@@ -2,10 +2,12 @@ import React from "react";
 import type { NextPage } from "next";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
+import { api } from "@/utils/api";
 
 const Home: NextPage = () => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  const { data } = api.staff.getAll.useQuery();
 
   React.useEffect(() => {
     if (isLoaded && !user) {
