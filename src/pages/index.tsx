@@ -1,28 +1,20 @@
 import React from "react";
 import type { NextPage } from "next";
-import { SignOutButton, useUser } from "@clerk/nextjs";
-import { useRouter } from "next/router";
+import { SignOutButton } from "@clerk/nextjs";
+
 import { api } from "@/utils/api";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { getAuth } from "@clerk/nextjs/server";
 
 const Home: NextPage = () => {
-  const { user, isLoaded } = useUser();
-  const router = useRouter();
-  const { data } = api.staff.getAll.useQuery();
-
-  React.useEffect(() => {
-    if (isLoaded && !user) {
-      router.push("/sign-in").catch((err) => {
-        console.error(err);
-      });
-    }
-  }, [isLoaded, router, user]);
+  const { data: user } = api.staff.getUser.useQuery();
 
   return (
     <>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         {user ? (
           <div className="text-white">
-            <h1 className="text-4xl font-bold">Welcome {user.fullName}!</h1>
+            <h1 className="text-4xl font-bold">Welcome {user.userName}!</h1>
             <p className="text-xl">You are signed in.</p>
 
             <SignOutButton>
@@ -38,3 +30,18 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getServerSideProps = (ctx: CreateNextContextOptions) => {
+  const { userId } = getAuth(ctx.req);
+  if (!userId) {
+    return {
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+};

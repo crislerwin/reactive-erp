@@ -9,18 +9,17 @@ datasource db {
 }
 
 model Staff {
-    userId       String       @unique @default("")
-    enterpriseId String       @id @unique @default("")
-    email        String       @unique @default("")
+    userId       String?      @unique
+    enterpriseId String?      @unique
+    email        String       @id @unique @default("")
     permissions  Permission[]
-    name         String       @default("")
-    role         String       @default("")
+    userName     String?
+    type         String?      @default("")
     enterprise   Enterprise?  @relation(fields: [enterpriseId], references: [enterpriseId])
     createdAt    DateTime     @default(now())
     updatedAt    DateTime     @updatedAt
 
     @@index([email])
-    @@map("User")
 }
 
 model Enterprise {

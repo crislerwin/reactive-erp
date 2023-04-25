@@ -4,8 +4,7 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { getServerAuthSession } from "./auth";
-import type { User } from "@clerk/nextjs/dist/api";
+import { type User, getServerAuthSession } from "./auth";
 
 type CreateContextOptions = {
   session: {

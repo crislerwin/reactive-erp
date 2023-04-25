@@ -1,27 +1,11 @@
 import { SignIn, useUser } from "@clerk/nextjs";
+import { getAuth } from "@clerk/nextjs/server";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import React from "react";
 
 const SignInPage: NextPage = () => {
-  const { isSignedIn, user } = useUser();
-  const router = useRouter();
-
-  React.useEffect(() => {
-    if (isSignedIn && user) {
-      router
-        .push({
-          pathname: "/redirect/[userId]",
-          query: {
-            userId: user.id,
-            emailAddress: user.primaryEmailAddress?.emailAddress,
-          },
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [isSignedIn, router, user]);
+  const { isSignedIn } = useUser();
 
   return (
     <main className="min-h-screen flex-row justify-center bg-slate-700">
@@ -35,3 +19,18 @@ const SignInPage: NextPage = () => {
 };
 
 export default SignInPage;
+
+export const getServerSideProps = (ctx: CreateNextContextOptions) => {
+  const { userId } = getAuth(ctx.req);
+  if (userId) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+};

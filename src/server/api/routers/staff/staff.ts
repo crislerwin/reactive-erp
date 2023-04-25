@@ -12,43 +12,37 @@ export const staffRouter = createTRPCRouter({
     return ctx.prisma.staff.findMany();
   }),
 
-  getUser: protectedProcedure
-    .input(
-      z.object({
-        email: z.string().optional(),
-        userId: z.string().optional(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const staffMember = await ctx.prisma.staff.findUnique({
-        where: {
-          email: input.email,
+  getUser: protectedProcedure.query(async ({ ctx }) => {
+    const user = ctx.session.user;
+    if (!user.id) throw new NotFoundError("User not found");
+    const staffMember = await ctx.prisma.staff.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    if (!staffMember) {
+      const createdUser = ctx.prisma.staff.create({
+        data: {
+          userId: user.id,
+          email: user.emailAddress,
+          userName: user.userName,
+          type: "visitor",
         },
       });
+      return createdUser;
+    }
 
-      if (!staffMember) throw new NotFoundError("User not found");
-
-      if (!staffMember.userId) {
-        const updatedUser = ctx.prisma.staff.update({
-          where: {
-            email: input.email,
-          },
-          data: {
-            userId: input.userId,
-          },
-        });
-        return updatedUser;
-      }
-      return staffMember;
-    }),
+    return staffMember;
+  }),
   createUser: protectedProcedure
     .input(
       z.object({
         userId: z.string(),
         enterpriseId: z.string(),
         email: z.string(),
-        name: z.string(),
-        role: z.enum(["attendant", "doctor", "master"]),
+        userName: z.string(),
+        role: z.string(),
       })
     )
     .mutation(({ ctx, input }) => {
@@ -57,7 +51,7 @@ export const staffRouter = createTRPCRouter({
           userId: input.userId,
           enterpriseId: input.enterpriseId,
           email: input.email,
-          name: input.name,
+          userName: input.userName,
         },
       });
     }),
@@ -66,7 +60,7 @@ export const staffRouter = createTRPCRouter({
       z.object({
         userId: z.string(),
         email: z.string().optional(),
-        name: z.string().optional(),
+        userName: z.string().optional(),
         role: z.enum(["attendant", "doctor", "admin", "master"]).optional(),
       })
     )
@@ -78,7 +72,7 @@ export const staffRouter = createTRPCRouter({
         data: {
           userId: input.userId,
           email: input.email,
-          name: input.name,
+          userName: input.userName,
         },
       });
     }),
