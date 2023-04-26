@@ -5,17 +5,19 @@ import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { type User, getServerAuthSession } from "./auth";
+import { type PrismaClient } from "@prisma/client";
 
 type CreateContextOptions = {
+  prisma?: PrismaClient;
   session: {
     user: User | null;
   };
 };
 
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
-    prisma,
+    prisma: opts.prisma || prisma,
   };
 };
 

@@ -7,7 +7,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
 
 const Home: NextPage = () => {
-  const { data: user } = api.staff.getUser.useQuery();
+  const { data: user } = api.users.getLoggedUser.useQuery();
 
   return (
     <>

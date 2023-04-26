@@ -8,41 +8,26 @@ datasource db {
     relationMode = "prisma"
 }
 
-model Staff {
+model User {
     userId       String?      @unique
-    enterpriseId String?      @unique
+    enterpriseId String       @unique
     email        String       @id @unique @default("")
-    permissions  Permission[]
     userName     String?
     type         String?      @default("")
-    enterprise   Enterprise?  @relation(fields: [enterpriseId], references: [enterpriseId])
     createdAt    DateTime     @default(now())
     updatedAt    DateTime     @updatedAt
+    permissions  Permission[]
 
     @@index([email])
 }
 
-model Enterprise {
-    enterpriseId   String   @id @unique @default("")
-    cnpj           String   @unique @default("")
-    enterpriseName String   @default("")
-    sponsorId      String   @default("")
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
-    addressId      String?
-    User           Staff[]
-
-    @@index([cnpj])
-}
-
 model Permission {
-    permissionId Int      @id @default(autoincrement())
-    name         String   @default("")
-    value        String   @default("")
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-    User         Staff?   @relation(fields: [userId], references: [userId])
-    userId       String?
+    id     Int     @id @default(autoincrement())
+    name   String  @default("")
+    value  String  @default("")
+    User   User?   @relation(fields: [userId], references: [userId])
+    userId String?
 
+    @@index([id])
     @@index([userId])
 }
