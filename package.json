@@ -6,6 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "test": "vitest",
+    "test:dev": "pnpm db:push && pnpm i && pnpm test",
+    "db:push": "prisma db push",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",

@@ -10,7 +10,7 @@ datasource db {
 
 model Person {
     personId    Int          @id @unique @default(autoincrement())
-    companyId   String?      @unique
+    companyId   Int?         @unique
     email       String       @unique @default("")
     userName    String?
     createdAt   DateTime     @default(now())

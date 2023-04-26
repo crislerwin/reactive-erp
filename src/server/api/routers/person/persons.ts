@@ -36,7 +36,7 @@ export const personsRouter = createTRPCRouter({
   createUser: protectedProcedure
     .input(
       z.object({
-        companyId: z.string(),
+        companyId: z.number(),
         email: z.string(),
         userName: z.string(),
       })
@@ -67,7 +67,7 @@ export const personsRouter = createTRPCRouter({
     .input(
       z.object({
         personId: z.number(),
-        companyId: z.string().optional(),
+        companyId: z.number().optional(),
         email: z.string().optional(),
         userName: z.string().optional(),
       })
@@ -129,7 +129,7 @@ export const personsRouter = createTRPCRouter({
   getAllByEnterpriseId: protectedProcedure
     .input(
       z.object({
-        companyId: z.string(),
+        companyId: z.number(),
       })
     )
     .query(({ ctx, input }) => {

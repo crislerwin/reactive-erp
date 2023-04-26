@@ -12,7 +12,7 @@ const makeCaller = () => {
         createdAt: 1,
         updatedAt: 1,
         userName: "test",
-        emailAddress: "any_email@mail.com",
+        emailAddress: "crislerwintler@gmail.com",
         isSuperAdmin: true,
       },
     },
@@ -24,43 +24,41 @@ describe("Staff", () => {
   beforeEach(async () => {
     await prisma.person.deleteMany();
   });
-  test("Should start empty", async () => {
-    const caller = makeCaller();
-    const result = await caller.persons.getAll();
-    expect(result).toHaveLength(0);
-  });
   test("Should create a new user", async () => {
     const caller = makeCaller();
-    await caller.persons.createUser({
-      email: "any_email@mail.com",
-      companyId: "test",
+    const { personId } = await caller.persons.createUser({
+      email: "crislerwintler@gmail.com",
+      companyId: 1,
       userName: "test",
     });
-    const result = await caller.persons.getAll();
-    expect(result).toHaveLength(1);
+    const result = await caller.persons.getPersonById({
+      personId: personId,
+    });
+    expect(result).toHaveProperty("userName", "test");
   });
+
   test("Should get a logged person on success", async () => {
     const caller = makeCaller();
     await caller.persons.createUser({
-      email: "any_email@mail.com",
-      companyId: "1",
-      userName: "any_user",
+      email: "crislerwintler@gmail.com",
+      companyId: 1,
+      userName: "Crisler Wintler",
     });
     const result = await caller.persons.getLoggedUser();
-    expect(result).toHaveProperty("userName", "any_user");
+    expect(result).toHaveProperty("userName", "Crisler Wintler");
   });
 
   test("Should update a user", async () => {
     const caller = makeCaller();
     const { personId } = await caller.persons.createUser({
-      email: "any_email@mail.com",
-      companyId: "test",
+      email: "crislerwintler@gmail.com",
+      companyId: 1,
       userName: "test",
     });
     await caller.persons.updateUser({
       personId: personId,
-      companyId: "test2",
-      email: "any_email@mail.com",
+      companyId: 1,
+      email: "crislerwintler@gmail.com",
       userName: "test2",
     });
     const result = await caller.persons.getLoggedUser();
@@ -69,8 +67,8 @@ describe("Staff", () => {
   test("Should delete a user", async () => {
     const caller = makeCaller();
     const { personId } = await caller.persons.createUser({
-      email: "any_email@mail.com",
-      companyId: "test",
+      email: "crislerwintler@gmail.com",
+      companyId: 1,
       userName: "test",
     });
     await caller.persons.deleteUser({
@@ -82,21 +80,21 @@ describe("Staff", () => {
   test("Should get all by enterpriseId", async () => {
     const caller = makeCaller();
     await caller.persons.createUser({
-      email: "any_email@mail.com",
-      companyId: "1",
-      userName: "any_user",
+      email: "crislerwintler@gmail.com",
+      companyId: 1,
+      userName: "Crisler Wintler",
     });
     const result = await caller.persons.getAllByEnterpriseId({
-      companyId: "1",
+      companyId: 1,
     });
     expect(result).toHaveLength(1);
   });
-  test.only("Should add a user permission", async () => {
+  test("Should add a user permission", async () => {
     const caller = makeCaller();
     const { personId } = await caller.persons.createUser({
-      email: "any_email@mail.com",
-      companyId: "1",
-      userName: "any_user",
+      email: "crislerwintler@gmail.com",
+      companyId: 1,
+      userName: "Crisler Wintler",
     });
 
     await caller.persons.addUserPermission({
