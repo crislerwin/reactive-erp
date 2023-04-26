@@ -1,4 +1,3 @@
-import Trpc from "@/pages/api/trpc/[trpc]";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -9,20 +8,6 @@ class NotFoundError extends Error {
     this.name = "NotFoundError";
   }
 }
-
-enum UserPermissions {
-  SeeAllUsers = "SeeAllUsers",
-}
-
-const userPermissionsMap = {
-  [UserPermissions.SeeAllUsers]: {
-    name: UserPermissions.SeeAllUsers,
-    schema: z.object({
-      name: z.string(),
-      value: z.string(),
-    }),
-  },
-};
 
 export const usersRouter = createTRPCRouter({
   getAll: protectedProcedure.query(({ ctx }) => {
