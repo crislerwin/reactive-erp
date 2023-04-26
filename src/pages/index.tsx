@@ -1,13 +1,13 @@
 import React from "react";
 import type { NextPage } from "next";
-import { SignOutButton } from "@clerk/nextjs";
+import { SignOutButton, useClerk } from "@clerk/nextjs";
 
 import { api } from "@/utils/api";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
 
 const Home: NextPage = () => {
-  const { data: user } = api.users.getLoggedUser.useQuery();
+  const { data: user, error } = api.persons.getLoggedUser.useQuery();
 
   return (
     <>
@@ -33,7 +33,9 @@ export default Home;
 
 export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   const { userId } = getAuth(ctx.req);
-  if (!userId) {
+  const unauthorized = !userId && ctx.res.statusCode === 404;
+
+  if (unauthorized) {
     return {
       redirect: {
         destination: "/sign-in",
@@ -41,6 +43,7 @@ export const getServerSideProps = (ctx: CreateNextContextOptions) => {
       },
     };
   }
+
   return {
     props: {},
   };

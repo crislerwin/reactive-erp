@@ -5,9 +5,12 @@ export type User = {
   id: string | null;
   userName: string | null;
   emailAddress?: string;
+  isSuperAdmin?: boolean | null;
   createdAt: number;
   updatedAt: number;
 };
+
+const authorizedMails: string[] = ["crislerwintler@gmail.com"];
 
 export const getServerAuthSession = async (
   ctx: CreateNextContextOptions
@@ -19,10 +22,13 @@ export const getServerAuthSession = async (
     cUser.firstName && cUser.lastName
       ? `${cUser.firstName} ${cUser.lastName}`
       : cUser.username;
-
+  const isSuperAdmin = cUser.emailAddresses[0]?.emailAddress
+    ? authorizedMails.includes(cUser.emailAddresses[0]?.emailAddress)
+    : null;
   const user: User = {
     id: cUser.id,
     userName: userName,
+    isSuperAdmin: isSuperAdmin,
     emailAddress: cUser.emailAddresses[0]?.emailAddress,
     createdAt: cUser.createdAt,
     updatedAt: cUser.updatedAt,

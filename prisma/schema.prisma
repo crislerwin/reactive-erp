@@ -8,26 +8,32 @@ datasource db {
     relationMode = "prisma"
 }
 
-model User {
-    userId       String?      @unique
-    enterpriseId String       @unique
-    email        String       @id @unique @default("")
-    userName     String?
-    type         String?      @default("")
-    createdAt    DateTime     @default(now())
-    updatedAt    DateTime     @updatedAt
-    permissions  Permission[]
+model Person {
+    personId    Int          @id @unique @default(autoincrement())
+    companyId   String?      @unique
+    email       String       @unique @default("")
+    userName    String?
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+    permissions Permission[]
 
     @@index([email])
 }
 
 model Permission {
-    id     Int     @id @default(autoincrement())
-    name   String  @default("")
-    value  String  @default("")
-    User   User?   @relation(fields: [userId], references: [userId])
-    userId String?
+    id       Int     @id @default(autoincrement())
+    name     String  @default("")
+    value    String  @default("")
+    person   Person? @relation(fields: [personId], references: [personId])
+    personId Int?
 
     @@index([id])
-    @@index([userId])
+    @@index([personId])
+}
+
+model Company {
+    id        Int      @id @unique @default(autoincrement())
+    name      String   @default("")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
