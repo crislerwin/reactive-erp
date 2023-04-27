@@ -1,5 +1,5 @@
 import React from "react";
-import { useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -17,6 +17,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
   const router = useRouter();
+  const { signOut } = useClerk();
   const { route } = router;
   const [primaryPath, secondaryPath] = route
     .split("/")
@@ -168,17 +169,50 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
               className="h-4 w-4"
             >
               <path
+                d="M3 19C3.69137 16.6928 5.46998 16 9.5 16C13.53 16 15.3086 16.6928 16 19"
+                stroke="currentColor"
+                stroke-width="2"
                 stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"
               />
               <path
+                d="M13 9.5C13 11.433 11.433 13 9.5 13C7.567 13 6 11.433 6 9.5C6 7.567 7.567 6 9.5 6C11.433 6 13 7.567 13 9.5Z"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M15 6H21"
+                stroke="currentColor"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"
+              />
+              <path
+                d="M18 3L18 9"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               />
             </svg>
-            <div>Relatorios</div>
+            <div>Adicionar Pessoas</div>
+          </div>
+          <div
+            onClick={() => {
+              signOut().catch((err) => console.log(err));
+            }}
+            className="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-[#1E293B] p-2 pl-8 text-white duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:hover:text-blue-500"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              className="h-4 w-4"
+            >
+              <path d="M0 9.875v12.219c0 1.125 0.469 2.125 1.219 2.906 0.75 0.75 1.719 1.156 2.844 1.156h6.125v-2.531h-6.125c-0.844 0-1.5-0.688-1.5-1.531v-12.219c0-0.844 0.656-1.5 1.5-1.5h6.125v-2.563h-6.125c-1.125 0-2.094 0.438-2.844 1.188-0.75 0.781-1.219 1.75-1.219 2.875zM6.719 13.563v4.875c0 0.563 0.5 1.031 1.063 1.031h5.656v3.844c0 0.344 0.188 0.625 0.5 0.781 0.125 0.031 0.25 0.031 0.313 0.031 0.219 0 0.406-0.063 0.563-0.219l7.344-7.344c0.344-0.281 0.313-0.844 0-1.156l-7.344-7.313c-0.438-0.469-1.375-0.188-1.375 0.563v3.875h-5.656c-0.563 0-1.063 0.469-1.063 1.031z"></path>
+            </svg>
+            <div>Sair</div>
           </div>
         </div>
         <div

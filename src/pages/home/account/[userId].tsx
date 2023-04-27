@@ -1,6 +1,8 @@
 import { SignedIn, UserProfile } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import { SideBar } from "@/components/SideBar";
+import { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { getAuth } from "@clerk/nextjs/server";
 
 const Profile: NextPage = () => {
   return (
@@ -40,3 +42,19 @@ const Profile: NextPage = () => {
 };
 
 export default Profile;
+
+export const getServerSideProps = (ctx: CreateNextContextOptions) => {
+  const { userId } = getAuth(ctx.req);
+  if (!userId) {
+    return {
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
