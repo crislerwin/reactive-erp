@@ -24,7 +24,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
 
   if (!user) return <></>;
   return (
-    <main className="translate-x-0 dark:bg-gray-900">
+    <main className="dark:bg-gray-900">
       <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-white">
         <div
           className={`logo ${

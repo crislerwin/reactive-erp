@@ -8,13 +8,13 @@ import { ThemeProvider } from "@/components/ThemeToggle";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
-    <ClerkProvider localization={ptBR} {...pageProps}>
-      <ThemeProvider>
-        <SideBarProvider>
+    <ThemeProvider>
+      <SideBarProvider>
+        <ClerkProvider localization={ptBR} {...pageProps}>
           <Component {...pageProps} />
-        </SideBarProvider>
-      </ThemeProvider>
-    </ClerkProvider>
+        </ClerkProvider>
+      </SideBarProvider>
+    </ThemeProvider>
   );
 };
 
