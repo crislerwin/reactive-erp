@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useSideBar } from "./useSideBar";
+import { ThemeToggle } from "../ThemeToggle";
 
-const makePrettyNames: Record<string, string> = {
+const makePrettyPathNames: Record<string, string> = {
   home: "Home",
   account: "Conta",
 };
@@ -13,7 +15,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   children,
 }) => {
   const { user } = useUser();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { open, setOpen } = useSideBar();
   const router = useRouter();
   const { route } = router;
   const [primaryPath, secondaryPath] = route
@@ -21,13 +23,12 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
     .filter((item) => item !== "");
 
   if (!user) return <></>;
-
   return (
-    <main>
-      <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A]">
+    <main className="translate-x-0 dark:bg-gray-900">
+      <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-white">
         <div
           className={`logo ${
-            isMenuOpen ? "" : "ml-12"
+            open ? "" : "ml-12"
           } flex  h-full flex-none transform items-center justify-center duration-500 ease-in-out dark:text-white`}
         >
           Health Ops
@@ -66,52 +67,16 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
       </div>
       <aside
         className={`fixed z-50 flex h-screen w-60  ${
-          isMenuOpen ? "translate-x-none" : "-translate-x-48"
+          open ? "translate-x-none" : "-translate-x-48"
         } transform bg-[#1E293B] transition duration-1000 ease-in-out`}
       >
         <div
           className={`max-toolbar  absolute -right-6 top-2 flex h-12 w-full ${
-            isMenuOpen ? "translate-x-0" : "translate-x-24 scale-x-0"
+            open ? "translate-x-0" : "translate-x-24 scale-x-0"
           } transform items-center justify-between rounded-full border-4 border-white bg-[#1E293B]  transition duration-300 ease-in dark:border-[#0F172A]`}
         >
           <div className="flex items-center space-x-2 pl-4 ">
-            <div>
-              <div
-                onClick={() => console.log("clicked")}
-                className="moon text-white hover:text-blue-500 dark:hover:text-[#38BDF8]"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={3}
-                  stroke="currentColor"
-                  className="h-4 w-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
-                  />
-                </svg>
-              </div>
-              <div className="sun hidden text-white hover:text-blue-500 dark:hover:text-[#38BDF8]">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  className="h-4 w-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-                  />
-                </svg>
-              </div>
-            </div>
+            <ThemeToggle />
             <div className="text-white hover:text-blue-500 dark:hover:text-[#38BDF8]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +101,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
           </div>
         </div>
         <div
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onClick={() => setOpen(!open)}
           className="absolute -right-6 top-2 flex transform rounded-full border-4 border-white bg-[#1E293B] p-3 text-white transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:hover:bg-blue-500"
         >
           <svg
@@ -156,7 +121,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         </div>
         <div
           className={`max mt-20 ${
-            isMenuOpen ? "flex" : "hidden"
+            open ? "flex" : "hidden"
           } h-[calc(100vh)] w-full flex-col space-y-2 text-white`}
         >
           <div className="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-[#1E293B] p-2 pl-8 text-white duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:hover:text-blue-500">
@@ -218,7 +183,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         </div>
         <div
           className={`mini mt-20 ${
-            isMenuOpen ? "hidden" : "flex"
+            open ? "hidden" : "flex"
           } h-[calc(100vh)] w-full flex-col space-y-2`}
         >
           <div className="flex w-full transform justify-end rounded-full bg-[#1E293B] p-3 pr-5 text-white duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:hover:text-blue-500">
@@ -279,7 +244,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
       l
       <div
         className={`content ${
-          isMenuOpen ? "ml-12 md:ml-60" : "ml-12"
+          open ? "ml-12 md:ml-60" : "ml-12"
         } transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
         <nav
@@ -300,7 +265,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                 >
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                 </svg>
-                {primaryPath && makePrettyNames[primaryPath]}
+                {primaryPath && makePrettyPathNames[primaryPath]}
               </Link>
             </li>
             <li>
@@ -321,14 +286,15 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                   href="/home"
                   className="ml-1 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:ml-2"
                 >
-                  {secondaryPath && makePrettyNames[secondaryPath]}
+                  {secondaryPath && makePrettyPathNames[secondaryPath]}
                 </Link>
               </div>
             </li>
           </ol>
         </nav>
-
-        {children}
+        <div className="mt-5 flex h-full w-full flex-col items-center justify-center rounded-lg bg-white shadow-lg dark:bg-gray-800">
+          {children}
+        </div>
       </div>
     </main>
   );
