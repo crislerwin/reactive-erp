@@ -1,21 +1,29 @@
-import Link from "next/link";
 import React, { useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
-type Props = {
-  children?: React.ReactNode;
-  userName: string | null;
-  avatarUrl: string;
+const makePrettyNames: Record<string, string> = {
+  home: "Home",
+  account: "Conta",
 };
 
-export const SideBar: React.FC<Props> = ({
+export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   children,
-  avatarUrl,
-  userName = "",
 }) => {
+  const { user } = useUser();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const { route } = router;
+  const [primaryPath, secondaryPath] = route
+    .split("/")
+    .filter((item) => item !== "");
+
+  if (!user) return <></>;
+
   return (
-    <>
+    <main>
       <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A]">
         <div
           className={`logo ${
@@ -32,13 +40,23 @@ export const SideBar: React.FC<Props> = ({
             </div>
 
             <div className="md:text-md hidden text-sm text-black dark:text-white md:block">
-              {userName}
+              {user.fullName}
             </div>
-            <div className="flex flex-none justify-center">
+            <div
+              onClick={() => {
+                router
+                  .push({
+                    pathname: "/home/account/[userId]",
+                    query: { userId: user.id },
+                  })
+                  .catch((err) => console.error(err));
+              }}
+              className="flex flex-none cursor-pointer justify-center"
+            >
               <Image
                 className="rounded-full"
-                alt={`${userName ?? "user"}'s profile picture`}
-                src={avatarUrl}
+                alt={`${user.fullName ?? "user"}'s profile picture`}
+                src={user.profileImageUrl}
                 width={30}
                 height={30}
               />
@@ -271,7 +289,7 @@ export const SideBar: React.FC<Props> = ({
           <ol className="inline-flex items-center space-x-1 md:space-x-3">
             <li className="inline-flex items-center">
               <Link
-                href="#"
+                href="/home"
                 className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
               >
                 <svg
@@ -282,7 +300,7 @@ export const SideBar: React.FC<Props> = ({
                 >
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                 </svg>
-                Home
+                {primaryPath && makePrettyNames[primaryPath]}
               </Link>
             </li>
             <li>
@@ -300,17 +318,18 @@ export const SideBar: React.FC<Props> = ({
                   ></path>
                 </svg>
                 <Link
-                  href="#"
+                  href="/home"
                   className="ml-1 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:ml-2"
                 >
-                  Templates
+                  {secondaryPath && makePrettyNames[secondaryPath]}
                 </Link>
               </div>
             </li>
           </ol>
         </nav>
+
         {children}
       </div>
-    </>
+    </main>
   );
 };
