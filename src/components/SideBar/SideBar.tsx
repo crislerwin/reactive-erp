@@ -5,10 +5,49 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useSideBar } from "./useSideBar";
 import { ThemeToggle } from "../ThemeToggle";
+import { type MenuItemType, MenuItems } from "../MenuItems";
+import { AddPeopleIcon, DashBoardIcon, HomeIcon } from "../Icons";
+import { LogoutIcon } from "../Icons/LogoutIcon";
 
 const makePrettyPathNames: Record<string, string> = {
   home: "Home",
   account: "Conta",
+};
+
+const useMenuItems = () => {
+  const { signOut } = useClerk();
+  const router = useRouter();
+  const handleLogout = () => {
+    signOut().catch((err) => console.log(err));
+  };
+
+  const handleRedirect = (path: string) => {
+    router.push(`/${path}`).catch((err) => console.log(err));
+  };
+
+  const menuItems: MenuItemType[] = [
+    {
+      icon: <HomeIcon />,
+      label: "Home",
+      onClick: () => handleRedirect("home"),
+    },
+    {
+      icon: <DashBoardIcon />,
+      label: "Meus Pacientes",
+      onClick: () => handleRedirect("home"),
+    },
+    {
+      icon: <AddPeopleIcon />,
+      label: "Adicionar Pessoas",
+      onClick: () => handleRedirect("home"),
+    },
+    {
+      icon: <LogoutIcon />,
+      label: "Sair",
+      onClick: handleLogout,
+    },
+  ];
+  return menuItems;
 };
 
 export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
@@ -17,12 +56,12 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
   const router = useRouter();
-  const { signOut } = useClerk();
   const { route } = router;
   const [primaryPath, secondaryPath] = route
     .split("/")
     .filter((item) => item !== "");
 
+  const menuItems = useMenuItems();
   if (!user) return <></>;
   return (
     <>
@@ -95,7 +134,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
               </svg>
             </div>
           </div>
-          <div className="group flex items-center space-x-3 rounded-full from-indigo-500  via-purple-500 to-purple-500 py-1 pl-10  pr-2 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-500 dark:text-white">
+          <div className="group flex items-center space-x-3 rounded-full bg-gradient-to-r  from-indigo-500 via-purple-500 to-purple-500 py-1  pl-10 pr-2 dark:from-cyan-500 dark:to-blue-500 dark:text-white">
             <div className="mr-12 transform duration-300 ease-in-out">
               HEALTH
             </div>
@@ -120,195 +159,8 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
             />
           </svg>
         </div>
-        <div
-          className={`max mt-20 ${
-            open ? "flex" : "hidden"
-          } h-[calc(100vh)] w-full flex-col space-y-2  dark:text-white`}
-        >
-          <div className="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="h-4 w-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-              />
-            </svg>
-            <div>Home</div>
-          </div>
-          <div className="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="h-4 w-4"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
-              />
-            </svg>
-            <div>Meus Pacientes</div>
-          </div>
-          <div className="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="h-4 w-4"
-            >
-              <path
-                d="M3 19C3.69137 16.6928 5.46998 16 9.5 16C13.53 16 15.3086 16.6928 16 19"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <path
-                d="M13 9.5C13 11.433 11.433 13 9.5 13C7.567 13 6 11.433 6 9.5C6 7.567 7.567 6 9.5 6C11.433 6 13 7.567 13 9.5Z"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-              <path
-                d="M15 6H21"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M18 3L18 9"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-            <div>Adicionar Pessoas</div>
-          </div>
-          <div
-            className="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500"
-            onClick={() => {
-              signOut().catch((err) => console.log(err));
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="h-4 w-4"
-            >
-              <path d="M0 9.875v12.219c0 1.125 0.469 2.125 1.219 2.906 0.75 0.75 1.719 1.156 2.844 1.156h6.125v-2.531h-6.125c-0.844 0-1.5-0.688-1.5-1.531v-12.219c0-0.844 0.656-1.5 1.5-1.5h6.125v-2.563h-6.125c-1.125 0-2.094 0.438-2.844 1.188-0.75 0.781-1.219 1.75-1.219 2.875zM6.719 13.563v4.875c0 0.563 0.5 1.031 1.063 1.031h5.656v3.844c0 0.344 0.188 0.625 0.5 0.781 0.125 0.031 0.25 0.031 0.313 0.031 0.219 0 0.406-0.063 0.563-0.219l7.344-7.344c0.344-0.281 0.313-0.844 0-1.156l-7.344-7.313c-0.438-0.469-1.375-0.188-1.375 0.563v3.875h-5.656c-0.563 0-1.063 0.469-1.063 1.031z"></path>
-            </svg>
-            <div>Sair</div>
-          </div>
-        </div>
-        <div
-          className={`mini mt-20 ${
-            open ? "hidden" : "flex"
-          } h-[calc(100vh)] w-full flex-col space-y-2`}
-        >
-          <div className="flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="h-4 w-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-              />
-            </svg>
-          </div>
-          <div className="bg:text-white flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:hover:text-blue-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="h-4 w-4"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
-              />
-            </svg>
-          </div>
-          <div
-            id="add-more-closed"
-            className="flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="h-4 w-4"
-            >
-              <path
-                d="M3 19C3.69137 16.6928 5.46998 16 9.5 16C13.53 16 15.3086 16.6928 16 19"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <path
-                d="M13 9.5C13 11.433 11.433 13 9.5 13C7.567 13 6 11.433 6 9.5C6 7.567 7.567 6 9.5 6C11.433 6 13 7.567 13 9.5Z"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-              <path
-                d="M15 6H21"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M18 3L18 9"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </div>
-          <div
-            id="exit-button-closed"
-            className="flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              className="h-4 w-4"
-            >
-              <path d="M0 9.875v12.219c0 1.125 0.469 2.125 1.219 2.906 0.75 0.75 1.719 1.156 2.844 1.156h6.125v-2.531h-6.125c-0.844 0-1.5-0.688-1.5-1.531v-12.219c0-0.844 0.656-1.5 1.5-1.5h6.125v-2.563h-6.125c-1.125 0-2.094 0.438-2.844 1.188-0.75 0.781-1.219 1.75-1.219 2.875zM6.719 13.563v4.875c0 0.563 0.5 1.031 1.063 1.031h5.656v3.844c0 0.344 0.188 0.625 0.5 0.781 0.125 0.031 0.25 0.031 0.313 0.031 0.219 0 0.406-0.063 0.563-0.219l7.344-7.344c0.344-0.281 0.313-0.844 0-1.156l-7.344-7.313c-0.438-0.469-1.375-0.188-1.375 0.563v3.875h-5.656c-0.563 0-1.063 0.469-1.063 1.031z"></path>
-            </svg>
-          </div>
-        </div>
+        <MenuItems items={menuItems} open={open} />
       </aside>
-
       <div
         className={`content ${
           open ? "ml-12 md:ml-60" : "ml-12"
