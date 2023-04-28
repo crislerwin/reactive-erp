@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { useSideBar } from "./useSideBar";
 import { ThemeToggle } from "../ThemeToggle";
 import { type MenuItemType, MenuItems } from "../MenuItems";
-import { AddPeopleIcon, DashBoardIcon, HomeIcon } from "../Icons";
+import { AddPeopleIcon, DashBoardIcon, HomeIcon, NotifyIcon } from "../Icons";
 import { LogoutIcon } from "../Icons/LogoutIcon";
 
 const makePrettyPathNames: Record<string, string> = {
@@ -117,22 +117,6 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         >
           <div className="flex items-center space-x-2 pl-4 ">
             <ThemeToggle />
-            <div className="cursor-pointer hover:text-purple-500 dark:text-white dark:hover:text-[#38BDF8]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={3}
-                stroke="currentColor"
-                className="h-4 w-4"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
-                />
-              </svg>
-            </div>
           </div>
           <div className="group flex items-center space-x-3 rounded-full bg-gradient-to-r  from-indigo-500 via-purple-500 to-purple-500 py-1  pl-10 pr-2 dark:from-cyan-500 dark:to-blue-500 dark:text-white">
             <div className="mr-12 transform duration-300 ease-in-out">
