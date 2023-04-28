@@ -5,3 +5,6 @@ export * from "./AddPersonIcon";
 export * from "./NotifyIcon";
 export * from "./MoonIcon";
 export * from "./SunIcon";
+export * from "./LotusIcon";
+export * from "./HomeRoundedIcon";
+export * from "./ChevronRightIcon";

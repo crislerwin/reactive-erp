@@ -1,53 +1,16 @@
 import React from "react";
-import { useClerk, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useSideBar } from "./useSideBar";
+import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
-import { type MenuItemType, MenuItems } from "../MenuItems";
-import { AddPeopleIcon, DashBoardIcon, HomeIcon, NotifyIcon } from "../Icons";
-import { LogoutIcon } from "../Icons/LogoutIcon";
+import { MenuItems } from "../MenuItems";
+import { ChevronRightIcon, HomeRoundedIcon, LotusIcon } from "../Icons";
 
 const makePrettyPathNames: Record<string, string> = {
   home: "Home",
   account: "Conta",
-};
-
-const useMenuItems = () => {
-  const { signOut } = useClerk();
-  const router = useRouter();
-  const handleLogout = () => {
-    signOut().catch((err) => console.log(err));
-  };
-
-  const handleRedirect = (path: string) => {
-    router.push(`/${path}`).catch((err) => console.log(err));
-  };
-
-  const menuItems: MenuItemType[] = [
-    {
-      icon: <HomeIcon />,
-      label: "Home",
-      onClick: () => handleRedirect("home"),
-    },
-    {
-      icon: <DashBoardIcon />,
-      label: "Meus Pacientes",
-      onClick: () => handleRedirect("home"),
-    },
-    {
-      icon: <AddPeopleIcon />,
-      label: "Adicionar Pessoas",
-      onClick: () => handleRedirect("home"),
-    },
-    {
-      icon: <LogoutIcon />,
-      label: "Sair",
-      onClick: handleLogout,
-    },
-  ];
-  return menuItems;
 };
 
 export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
@@ -57,11 +20,11 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   const { open, setOpen } = useSideBar();
   const router = useRouter();
   const { route } = router;
+  const menuItems = useMenuItems();
   const [primaryPath, secondaryPath] = route
     .split("/")
     .filter((item) => item !== "");
 
-  const menuItems = useMenuItems();
   if (!user) return <></>;
   return (
     <>
@@ -128,20 +91,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
           onClick={() => setOpen(!open)}
           className="absolute -right-6 top-2 flex transform rounded-full border-4 border-white bg-slate-200 p-3 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-[#1E293B] dark:text-white dark:hover:bg-blue-500"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={3}
-            stroke="currentColor"
-            className="h-4 w-4"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
-            />
-          </svg>
+          <LotusIcon />
         </div>
         <MenuItems items={menuItems} open={open} />
       </aside>
@@ -160,31 +110,13 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                 href="/home"
                 className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
               >
-                <svg
-                  className="mr-2 h-4 w-4"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                </svg>
+                <HomeRoundedIcon className="mr-2 h-4 w-4" />
                 {primaryPath && makePrettyPathNames[primaryPath]}
               </Link>
             </li>
             <li>
               <div className="flex items-center">
-                <svg
-                  className="h-6 w-6 text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
+                <ChevronRightIcon className="h-4 w-4 text-gray-400" />
                 <Link
                   href="/home"
                   className="ml-1 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:ml-2"

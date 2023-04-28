@@ -9,7 +9,7 @@ export type MenuItemType = {
   label?: string;
   visible?: boolean;
   icon: React.ReactNode;
-  onClick: () => void;
+  onRedirect: () => void;
 };
 
 export const MenuOpenedItems: React.FC<MenuItemProps> = ({ open, items }) => {
@@ -22,7 +22,7 @@ export const MenuOpenedItems: React.FC<MenuItemProps> = ({ open, items }) => {
       {items.map((item) => {
         return (
           <div
-            onClick={item.onClick}
+            onClick={item.onRedirect}
             key={item.label}
             className="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500"
           >
@@ -46,7 +46,7 @@ export const MenuClosedItems: React.FC<MenuItemProps> = ({ open, items }) => {
         return (
           <div
             key={item.label}
-            onClick={item.onClick}
+            onClick={item.onRedirect}
             className="flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500"
           >
             {item.icon}
