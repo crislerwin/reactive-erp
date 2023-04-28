@@ -359,7 +359,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
             </li>
           </ol>
         </nav>
-        <div className="mt-5 flex h-full w-full flex-col items-center justify-center rounded-lg bg-white shadow-lg dark:bg-gray-800">
+        <div className="mt-5 flex h-full w-full flex-col items-center justify-center rounded-lg bg-white shadow-lg dark:bg-[#1E293B]">
           {children}
         </div>
       </div>
