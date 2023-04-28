@@ -1,5 +1,5 @@
 import React from "react";
-import { useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMenuItems, useSideBar } from "./hooks";
@@ -7,11 +7,13 @@ import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { ChevronRightIcon, HomeRoundedIcon, LotusIcon } from "../Icons";
 import { Avatar, Menu } from "@mantine/core";
-import { IconSettings } from "@tabler/icons-react";
+import { IconSettings, IconLogout } from "@tabler/icons-react";
 
 const makePrettyPathNames: Record<string, string> = {
   home: "Home",
   account: "Conta",
+  companies: "Empresas",
+  persons: "Usuários",
 };
 
 export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
@@ -19,6 +21,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
 }) => {
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
+  const { signOut } = useClerk();
 
   const router = useRouter();
   const { route } = router;
@@ -26,6 +29,10 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   const [primaryPath, secondaryPath] = route
     .split("/")
     .filter((item) => item !== "");
+
+  const handleLogout = () => {
+    signOut().catch((err) => console.log(err));
+  };
 
   if (!user) return <></>;
   return (
@@ -76,6 +83,13 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                 >
                   Configurações da conta
                 </Menu.Item>
+                <Menu.Item
+                  onClick={handleLogout}
+                  className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-[#0F172A] dark:text-white dark:hover:bg-[#1E293B]"
+                  icon={<IconLogout className="text-white" size={14} />}
+                >
+                  Sair
+                </Menu.Item>
               </Menu.Dropdown>
             </Menu>
           </div>
@@ -120,7 +134,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
           <ol className="inline-flex items-center space-x-1 md:space-x-3">
             <li className="inline-flex items-center">
               <Link
-                href="/home"
+                href={primaryPath ? `/${primaryPath}` : "/home"}
                 className="inline-flex items-center text-sm font-medium   hover:text-purple-500 dark:text-white dark:hover:text-blue-500"
               >
                 <HomeRoundedIcon className="mr-2 h-4 w-4" />
@@ -131,7 +145,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
               <div className="flex items-center">
                 <ChevronRightIcon className="h-4 w-4 text-gray-400" />
                 <Link
-                  href="/home"
+                  href="/"
                   className="ml-1 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:ml-2"
                 >
                   {secondaryPath && makePrettyPathNames[secondaryPath]}
