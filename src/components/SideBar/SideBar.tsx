@@ -78,7 +78,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         >
           <div className="flex items-center space-x-2 pl-4 ">
             <ThemeToggle />
-            <div className="hover:text-blue-500 dark:text-white dark:hover:text-[#38BDF8]">
+            <div className="cursor-pointer hover:text-purple-500 dark:text-white dark:hover:text-[#38BDF8]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -95,7 +95,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
               </svg>
             </div>
           </div>
-          <div className="group flex items-center space-x-3 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-purple-500 py-1  pl-10 pr-2 dark:from-cyan-500 dark:to-blue-500 dark:text-white  ">
+          <div className="group flex items-center space-x-3 rounded-full from-indigo-500  via-purple-500 to-purple-500 py-1 pl-10  pr-2 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-500 dark:text-white">
             <div className="mr-12 transform duration-300 ease-in-out">
               HEALTH
             </div>
@@ -103,7 +103,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         </div>
         <div
           onClick={() => setOpen(!open)}
-          className="absolute -right-6 top-2 flex transform rounded-full border-4 border-white p-3 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-[#1E293B] dark:text-white dark:hover:bg-blue-500"
+          className="absolute -right-6 top-2 flex transform rounded-full border-4 border-white bg-slate-200 p-3 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-[#1E293B] dark:text-white dark:hover:bg-blue-500"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +123,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         <div
           className={`max mt-20 ${
             open ? "flex" : "hidden"
-          } h-[calc(100vh)] w-full flex-col space-y-2 dark:text-white`}
+          } h-[calc(100vh)] w-full flex-col space-y-2  dark:text-white`}
         >
           <div className="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500">
             <svg
@@ -359,7 +359,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
             </li>
           </ol>
         </nav>
-        <div className="mt-5 flex h-full w-full flex-col items-center justify-center rounded-lg bg-white shadow-lg dark:bg-[#1E293B]">
+        <div className="mt-4 flex bg-white shadow-lg dark:bg-[#1E293B]">
           {children}
         </div>
       </div>

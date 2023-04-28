@@ -9,7 +9,7 @@ export const ThemeToggle = () => {
         onClick={() => setTheme("dark")}
         className={`moon ${
           theme === "dark" ? "hidden" : ""
-        } cursor-pointer hover:text-blue-500 dark:text-white dark:hover:text-[#38BDF8]`}
+        } cursor-pointer hover:text-purple-500 dark:text-white dark:hover:text-[#38BDF8]`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
