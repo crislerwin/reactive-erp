@@ -5,16 +5,19 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "@/styles/globals.css";
 import { SideBarProvider } from "@/components/SideBar";
 import { ThemeProvider } from "@/components/ThemeToggle";
+import { MantineProvider } from "@mantine/core";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
-    <ThemeProvider>
-      <SideBarProvider>
-        <ClerkProvider localization={ptBR} {...pageProps}>
-          <Component {...pageProps} />
-        </ClerkProvider>
-      </SideBarProvider>
-    </ThemeProvider>
+    <MantineProvider withGlobalStyles withNormalizeCSS>
+      <ThemeProvider>
+        <SideBarProvider>
+          <ClerkProvider localization={ptBR} {...pageProps}>
+            <Component {...pageProps} />
+          </ClerkProvider>
+        </SideBarProvider>
+      </ThemeProvider>
+    </MantineProvider>
   );
 };
 
