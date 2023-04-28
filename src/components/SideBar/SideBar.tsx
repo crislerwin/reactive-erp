@@ -1,12 +1,13 @@
 import React from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { ChevronRightIcon, HomeRoundedIcon, LotusIcon } from "../Icons";
+import { Avatar, Menu } from "@mantine/core";
+import { IconSettings } from "@tabler/icons-react";
 
 const makePrettyPathNames: Record<string, string> = {
   home: "Home",
@@ -18,6 +19,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
 }) => {
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
+
   const router = useRouter();
   const { route } = router;
   const menuItems = useMenuItems();
@@ -34,7 +36,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
             open ? "" : "ml-12"
           } flex  h-full flex-none transform items-center justify-center duration-500 ease-in-out dark:text-white`}
         >
-          Health Ops
+          {user.fullName}
         </div>
         <div className="flex h-full grow items-center justify-center"></div>
         <div className="flex h-full flex-none items-center justify-center text-center">
@@ -42,29 +44,40 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
             <div className="flex flex-none justify-center">
               <div className="flex h-8 w-8 "></div>
             </div>
-
-            <div className="md:text-md hidden text-sm text-black dark:text-white md:block">
-              {user.fullName}
-            </div>
-            <div
-              onClick={() => {
-                router
-                  .push({
-                    pathname: "/home/account/[userId]",
-                    query: { userId: user.id },
-                  })
-                  .catch((err) => console.error(err));
-              }}
-              className="flex flex-none cursor-pointer justify-center"
-            >
-              <Image
-                className="rounded-full"
-                alt={`${user.fullName ?? "user"}'s profile picture`}
-                src={user.profileImageUrl}
-                width={30}
-                height={30}
-              />
-            </div>
+            <Menu width={240} position="bottom-end" shadow="md">
+              <Menu.Target>
+                <div className="flex flex-none cursor-pointer justify-center">
+                  <Avatar
+                    className="rounded-full"
+                    alt={`${user.fullName ?? "user"}'s profile picture`}
+                    src={user.profileImageUrl}
+                  />
+                </div>
+              </Menu.Target>
+              <Menu.Dropdown className="bg-slate-100  dark:bg-[#0F172A]">
+                <Menu.Label className="text-md  dark:text-slate-300">
+                  {user.primaryEmailAddress?.emailAddress}
+                </Menu.Label>
+                <Menu.Item
+                  onClick={() => {
+                    router
+                      .push({
+                        pathname: "/home/account/[userId]",
+                        query: { userId: user.id },
+                      })
+                      .catch((err) => console.error(err));
+                  }}
+                  className={`bg-slate-100  hover:bg-slate-200  ${
+                    route.includes("account")
+                      ? "bg-slate-200 dark:bg-[#1E293B]"
+                      : "bg-slate-100 dark:bg-[#0F172A]"
+                  } dark:text-white dark:hover:bg-[#1E293B]`}
+                  icon={<IconSettings className="text-amber-700" size={14} />}
+                >
+                  Configurações da conta
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </div>
         </div>
       </div>
@@ -101,14 +114,14 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         } transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
         <nav
-          className="flex rounded-lg bg-slate-100 px-5  py-3 text-gray-700 dark:bg-[#1E293B]"
+          className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-[#1E293B]"
           aria-label="Breadcrumb"
         >
           <ol className="inline-flex items-center space-x-1 md:space-x-3">
             <li className="inline-flex items-center">
               <Link
                 href="/home"
-                className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                className="inline-flex items-center text-sm font-medium   hover:text-purple-500 dark:text-white dark:hover:text-blue-500"
               >
                 <HomeRoundedIcon className="mr-2 h-4 w-4" />
                 {primaryPath && makePrettyPathNames[primaryPath]}
