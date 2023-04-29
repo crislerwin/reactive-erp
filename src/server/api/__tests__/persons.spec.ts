@@ -8,12 +8,12 @@ describe("Staff", () => {
   });
   test("Should create a new user", async () => {
     const caller = makeCaller();
-    const { personId } = await caller.persons.createUser({
+    const { personId } = await caller.person.save({
       email: "crislerwintler@gmail.com",
       companyId: 1,
       userName: "test",
     });
-    const result = await caller.persons.getPersonById({
+    const result = await caller.person.getById({
       personId: personId,
     });
     expect(result).toHaveProperty("userName", "test");
@@ -21,70 +21,70 @@ describe("Staff", () => {
 
   test("Should get a logged person on success", async () => {
     const caller = makeCaller();
-    await caller.persons.createUser({
+    await caller.person.save({
       email: "crislerwintler@gmail.com",
       companyId: 1,
       userName: "Crisler Wintler",
     });
-    const result = await caller.persons.getLoggedUser();
+    const result = await caller.person.getByEmail();
     expect(result).toHaveProperty("userName", "Crisler Wintler");
   });
 
   test("Should update a user", async () => {
     const caller = makeCaller();
-    const { personId } = await caller.persons.createUser({
+    const { personId } = await caller.person.save({
       email: "crislerwintler@gmail.com",
       companyId: 1,
       userName: "test",
     });
-    await caller.persons.updateUser({
+    await caller.person.update({
       personId: personId,
       companyId: 1,
       email: "crislerwintler@gmail.com",
       userName: "test2",
     });
-    const result = await caller.persons.getLoggedUser();
+    const result = await caller.person.getByEmail();
     expect(result).toHaveProperty("userName", "test2");
   });
   test("Should delete a user", async () => {
     const caller = makeCaller();
-    const { personId } = await caller.persons.createUser({
+    const { personId } = await caller.person.save({
       email: "crislerwintler@gmail.com",
       companyId: 1,
       userName: "test",
     });
-    await caller.persons.deleteUser({
+    await caller.person.delete({
       personId: personId,
     });
-    const result = await caller.persons.getAll();
+    const result = await caller.person.findAll();
     expect(result).toHaveLength(0);
   });
   test("Should get all by enterpriseId", async () => {
     const caller = makeCaller();
-    await caller.persons.createUser({
+    await caller.person.save({
       email: "crislerwintler@gmail.com",
       companyId: 1,
       userName: "Crisler Wintler",
     });
-    const result = await caller.persons.getAllByEnterpriseId({
+    const result = await caller.person.getByCompanyId({
       companyId: 1,
     });
     expect(result).toHaveLength(1);
   });
   test("Should add a user permission", async () => {
     const caller = makeCaller();
-    const { personId } = await caller.persons.createUser({
+    const { personId } = await caller.person.save({
       email: "crislerwintler@gmail.com",
       companyId: 1,
       userName: "Crisler Wintler",
     });
 
-    await caller.persons.addUserPermission({
+    await caller.person.addPermission({
       personId: personId,
       name: "any_name",
       value: "any_value",
     });
-    const result = await caller.persons.getPersonById({
+    const result = await caller.person.getById({
       personId: personId,
     });
 

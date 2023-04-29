@@ -12,7 +12,7 @@ const createCompanyInput = z.object({
 export type CreateCompanyInput = z.infer<typeof createCompanyInput>;
 
 export const companiesRouter = createTRPCRouter({
-  createCompany: protectedProcedure
+  save: protectedProcedure
     .input(createCompanyInput)
     .mutation(async ({ ctx, input }) => {
       const newCompany = await ctx.prisma.company.create({
@@ -25,7 +25,7 @@ export const companiesRouter = createTRPCRouter({
       });
       return newCompany;
     }),
-  getCompanyById: protectedProcedure
+  findById: protectedProcedure
     .input(z.object({ companyId: z.number() }))
     .query(async ({ ctx, input }) => {
       const company = await ctx.prisma.company.findUnique({
@@ -39,7 +39,7 @@ export const companiesRouter = createTRPCRouter({
       }
       return company;
     }),
-  listCompanies: protectedProcedure.query(async ({ ctx }) => {
+  findAll: protectedProcedure.query(async ({ ctx }) => {
     const companies = await ctx.prisma.company.findMany();
     return companies;
   }),

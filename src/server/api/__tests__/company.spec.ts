@@ -17,10 +17,8 @@ describe("Company", () => {
   test("Should create a new company", async () => {
     const caller = makeCaller();
     const companyRequest = makeCompanyRequest();
-    const { id: companyId } = await caller.companies.createCompany(
-      companyRequest
-    );
-    const result = await caller.companies.getCompanyById({
+    const { id: companyId } = await caller.company.save(companyRequest);
+    const result = await caller.company.findById({
       companyId: companyId,
     });
     expect(result).toHaveProperty("socialReason", "any_company_name");
@@ -28,8 +26,8 @@ describe("Company", () => {
   test("Should list all companies", async () => {
     const caller = makeCaller();
     const companyRequest = makeCompanyRequest();
-    await caller.companies.createCompany(companyRequest);
-    const result = await caller.companies.listCompanies();
+    await caller.company.save(companyRequest);
+    const result = await caller.company.findAll();
     expect(result).toHaveLength(1);
   });
 });

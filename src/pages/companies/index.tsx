@@ -1,14 +1,13 @@
 import { SideBar } from "@/components/SideBar";
 import { type NextPage } from "next";
 import { useQuery } from "@tanstack/react-query";
-import { TextInput, Button, Group, Box, Loader } from "@mantine/core";
+import { TextInput, Button, Group, Loader } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconSearch } from "@tabler/icons-react";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import { useMemo, useState } from "react";
 import { type CreateCompanyInput } from "@/server/api/routers/companies/companies";
 import { api } from "@/utils/api";
-import { type MRT_ColumnDef } from "mantine-react-table";
 import { Table } from "@/components/Table";
 
 const initialValues = {
@@ -19,8 +18,8 @@ const initialValues = {
 };
 const Companies: NextPage = () => {
   const [cnpj, setCnpj] = useState<string | undefined>();
-  const { mutate, isLoading } = api.companies.createCompany.useMutation();
-  const { data } = api.companies.listCompanies.useQuery(undefined, {
+  const { mutate } = api.company.save.useMutation();
+  const { data } = api.company.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
   const { onSubmit, getInputProps, setFieldValue, reset, values } =
@@ -85,7 +84,7 @@ const Companies: NextPage = () => {
   const tableData = useMemo(() => {
     if (!data) return [];
     return data;
-  }, [data, isLoading]);
+  }, [data]);
 
   return (
     <SideBar>
