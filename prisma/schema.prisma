@@ -16,6 +16,7 @@ model Person {
     createdAt   DateTime     @default(now())
     updatedAt   DateTime     @updatedAt
     permissions Permission[]
+    company     Company?
 
     @@index([email])
 }
@@ -32,8 +33,15 @@ model Permission {
 }
 
 model Company {
-    id        Int      @id @unique @default(autoincrement())
-    name      String   @default("")
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id           Int      @id @unique @default(autoincrement())
+    cnpj         String   @default("")
+    socialReason String   @default("")
+    fantasyName  String   @default("")
+    email        String   @default("")
+    owner        Person?  @relation(fields: [ownerId], references: [personId])
+    ownerId      Int?     @unique
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    @@index([ownerId])
 }

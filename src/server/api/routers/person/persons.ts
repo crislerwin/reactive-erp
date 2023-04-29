@@ -2,8 +2,8 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-export const personsRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(({ ctx }) => {
+export const personRouter = createTRPCRouter({
+  findAll: protectedProcedure.query(({ ctx }) => {
     if (!ctx.session.user.isSuperAdmin)
       throw new TRPCError({
         code: "UNAUTHORIZED",
@@ -14,7 +14,7 @@ export const personsRouter = createTRPCRouter({
     return ctx.prisma.person.findMany();
   }),
 
-  getLoggedUser: protectedProcedure.query(async ({ ctx }) => {
+  getByEmail: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
     if (!user.id) throw new TRPCError({ code: "UNAUTHORIZED" });
     const loggedUser = await ctx.prisma.person.findUnique({
@@ -33,7 +33,7 @@ export const personsRouter = createTRPCRouter({
       });
     return loggedUser;
   }),
-  createUser: protectedProcedure
+  save: protectedProcedure
     .input(
       z.object({
         companyId: z.number(),
@@ -63,7 +63,7 @@ export const personsRouter = createTRPCRouter({
       });
       return newUser;
     }),
-  updateUser: protectedProcedure
+  update: protectedProcedure
     .input(
       z.object({
         personId: z.number(),
@@ -85,7 +85,7 @@ export const personsRouter = createTRPCRouter({
       });
     }),
 
-  deleteUser: protectedProcedure
+  delete: protectedProcedure
     .input(
       z.object({
         personId: z.number(),
@@ -99,7 +99,7 @@ export const personsRouter = createTRPCRouter({
       });
     }),
 
-  addUserPermission: protectedProcedure
+  addPermission: protectedProcedure
     .input(
       z.object({
         personId: z.number(),
@@ -126,7 +126,7 @@ export const personsRouter = createTRPCRouter({
       });
     }),
 
-  getAllByEnterpriseId: protectedProcedure
+  getByCompanyId: protectedProcedure
     .input(
       z.object({
         companyId: z.number(),
@@ -146,7 +146,7 @@ export const personsRouter = createTRPCRouter({
         },
       });
     }),
-  getPersonById: protectedProcedure
+  getById: protectedProcedure
     .input(
       z.object({
         personId: z.number(),
