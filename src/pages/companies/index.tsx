@@ -5,31 +5,26 @@ import { TextInput, Button, Group, Box, Loader } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconSearch } from "@tabler/icons-react";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
-import { useState } from "react";
-
-type FormValues = {
-  cnpj: string;
-  socialReason: string;
-  fantasyName: string;
-  situation: number;
-  country: string;
-  sponsorName: string | null | undefined;
-  email: string;
-};
+import { useMemo, useState } from "react";
+import { type CreateCompanyInput } from "@/server/api/routers/companies/companies";
+import { api } from "@/utils/api";
+import { type MRT_ColumnDef } from "mantine-react-table";
+import { Table } from "@/components/Table";
 
 const initialValues = {
   cnpj: "",
   socialReason: "",
   fantasyName: "",
-  situation: 0,
-  country: "",
-  sponsorName: "",
   email: "",
 };
 const Companies: NextPage = () => {
   const [cnpj, setCnpj] = useState<string | undefined>();
+  const { mutate, isLoading } = api.companies.createCompany.useMutation();
+  const { data } = api.companies.listCompanies.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
   const { onSubmit, getInputProps, setFieldValue, reset, values } =
-    useForm<FormValues>({
+    useForm<CreateCompanyInput>({
       initialValues,
     });
 
@@ -44,20 +39,13 @@ const Companies: NextPage = () => {
         setCnpj(undefined);
       },
       onSuccess: (data) => {
-        const fieldValues: (keyof Omit<FormValues, "cnpj" | "email">)[] = [
-          "country",
-          "fantasyName",
-          "socialReason",
-          "situation",
-          "sponsorName",
-        ];
-        const formatedData: Omit<FormValues, "cnpj" | "email"> = {
-          country: data.uf,
+        const fieldValues: (keyof Omit<
+          CreateCompanyInput,
+          "cnpj" | "email"
+        >)[] = ["fantasyName", "socialReason"];
+        const formatedData: Omit<CreateCompanyInput, "cnpj" | "email"> = {
           fantasyName: data.nome_fantasia,
-          situation: data.situacao_cadastral,
           socialReason: data.razao_social,
-          sponsorName:
-            data.qsa && data.qsa.length > 0 ? data.qsa[0]?.nome_socio : "",
         };
         fieldValues.forEach((field) => {
           setFieldValue(field, formatedData[field]);
@@ -68,12 +56,43 @@ const Companies: NextPage = () => {
 
   const handleSearch = () => setCnpj(values.cnpj);
 
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "cnpj",
+        header: "CNPJ",
+        size: 150,
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        size: 150,
+      },
+      {
+        accessorKey: "fantasyName",
+        header: "Nome Fantasia",
+        size: 150,
+      },
+      {
+        accessorKey: "socialReason",
+        header: "Razão Social",
+        size: 150,
+      },
+    ],
+    []
+  );
+
+  const tableData = useMemo(() => {
+    if (!data) return [];
+    return data;
+  }, [data, isLoading]);
+
   return (
     <SideBar>
-      <Box maw={400} mx="auto">
-        <form onSubmit={onSubmit((vals) => console.log(vals))}>
+      <div>
+        <form onSubmit={onSubmit((vals) => mutate(vals))}>
           <TextInput
-            label="CNPJ"
+            label={<span className="dark:text-white">Cnpj</span>}
             rightSection={
               <div onClick={handleSearch} className="cursor-pointer">
                 {isFetching ? (
@@ -83,11 +102,12 @@ const Companies: NextPage = () => {
                 )}
               </div>
             }
-            placeholder="Digite o CNPJ da empresa"
+            placeholder="Digite o CNPJ >da empresa"
             {...getInputProps("cnpj")}
           />
           <TextInput
-            label="Razão Social"
+            className="dark:bg-gray-800"
+            label={<span className="dark:text-white">Nome fantasia</span>}
             placeholder=""
             {...getInputProps("fantasyName")}
           />
@@ -96,32 +116,24 @@ const Companies: NextPage = () => {
             placeholder=""
             {...getInputProps("socialReason")}
           />
+
           <TextInput
-            label="Situação Cadastral"
-            placeholder=""
-            {...getInputProps("situation")}
-          />
-          <TextInput
-            label="País"
-            placeholder=""
-            {...getInputProps("country")}
-          />
-          <TextInput
-            label="Nome do Responsável"
-            placeholder=""
-            {...getInputProps("sponsorName")}
-          />
-          <TextInput
-            label="E-mail"
+            label={<span className="dark:text-white">Email</span>}
             placeholder=""
             {...getInputProps("email")}
           />
 
           <Group position="right" mt="md">
-            <Button type="submit">Salvar</Button>
+            <Button
+              className="dark:bg-slate-500 dark:hover:bg-red-300  "
+              type="submit"
+            >
+              Salvar
+            </Button>
           </Group>
         </form>
-      </Box>
+      </div>
+      <Table columns={columns} data={tableData} />
     </SideBar>
   );
 };

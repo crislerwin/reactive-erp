@@ -1,24 +1,6 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
-import { appRouter } from "../../root";
-import { createInnerTRPCContext } from "../../trpc";
 import { prisma } from "@/server/db";
-
-const makeCaller = () => {
-  const ctx = createInnerTRPCContext({
-    prisma: prisma,
-    session: {
-      user: {
-        id: "22",
-        createdAt: 1,
-        updatedAt: 1,
-        userName: "test",
-        emailAddress: "crislerwintler@gmail.com",
-        isSuperAdmin: true,
-      },
-    },
-  });
-  return appRouter.createCaller(ctx);
-};
+import { makeCaller } from "./utils";
 
 describe("Staff", () => {
   beforeEach(async () => {
