@@ -1,12 +1,7 @@
-import {
-  type ColorScheme,
-  MantineProvider,
-  type MantineTheme,
-  MantineThemeOverride,
-  MantineThemeColors,
-} from "@mantine/core";
+import { type ColorScheme, MantineProvider } from "@mantine/core";
 import { parseCookies, setCookie } from "nookies";
 import React from "react";
+import { makeTheme } from "./utils";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -15,75 +10,6 @@ type ThemeProviderProps = {
 type ThemeContextProps = {
   theme?: ColorScheme;
   setTheme: (theme: ColorScheme) => void;
-};
-
-const makeTheme: Record<ColorScheme, MantineThemeOverride> = {
-  light: {
-    colorScheme: "light",
-    colors: {
-      gray: ["#f1f5f9"],
-    },
-
-    shadows: {
-      md: "1px 1px 3px rgba(0, 0, 0, .25)",
-      xl: "5px 5px 3px rgba(0, 0, 0, .25)",
-    },
-
-    headings: {
-      fontFamily: "Roboto, sans-serif",
-
-      sizes: {
-        h1: { fontSize: "2rem" },
-      },
-    },
-    primaryColor: "gray",
-  },
-  dark: {
-    components: {
-      Select: {
-        styles: {
-          input: {
-            backgroundColor: "#111827",
-          },
-          dropdown: {
-            backgroundColor: "#111827",
-          },
-        },
-      },
-
-      Menu: {
-        styles: {
-          dropdown: {
-            backgroundColor: "#111827",
-          },
-        },
-      },
-
-      TextInput: {
-        styles: {
-          input: {
-            backgroundColor: "#374151",
-            borderRadius: 4,
-          },
-        },
-      },
-    },
-    colorScheme: "dark",
-    colors: {
-      gray: ["#1f2937"],
-    },
-    shadows: {
-      md: "1px 1px 3px rgba(0, 0, 0, .25)",
-      xl: "5px 5px 3px rgba(0, 0, 0, .25)",
-    },
-    headings: {
-      fontFamily: "Roboto, sans-serif",
-      sizes: {
-        h1: { fontSize: "2rem" },
-      },
-    },
-    primaryColor: "gray",
-  },
 };
 
 export const ThemeContext = React.createContext<ThemeContextProps>({

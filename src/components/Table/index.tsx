@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MantineReactTable } from "mantine-react-table";
+import { MRT_Localization, MantineReactTable } from "mantine-react-table";
 import type { MRT_SortingState, MRT_Virtualizer } from "mantine-react-table";
 import type { MantineReactTableProps } from "mantine-react-table";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
@@ -17,15 +17,12 @@ export const Table: React.FC<MantineReactTableProps> = (props) => {
     <MantineReactTable
       onSortingChange={setSorting}
       mantinePaperProps={{
-        sx: (theme) => ({
-          backgroundColor: theme.colors.gray[0],
-        }),
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
       }}
       mantineBottomToolbarProps={{
-        sx: (theme) => ({
-          backgroundColor: theme.colors.gray[0],
-          color: theme.colors.gray[9],
-        }),
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
       }}
       mantineSearchTextInputProps={{
         placeholder: "Pesquisar...",
@@ -34,27 +31,26 @@ export const Table: React.FC<MantineReactTableProps> = (props) => {
         }),
         variant: "filled",
       }}
+      mantineTableBodyRowProps={{
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 dark:hover:bg-slate-200",
+      }}
       mantineTopToolbarProps={{
-        sx: (theme) => ({
-          backgroundColor: theme.colors.gray[0],
-        }),
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
       }}
       mantineTableHeadCellProps={{
-        sx: (theme) => ({
-          backgroundColor: theme.colors.gray[0],
-          color: "red",
-        }),
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
       }}
       mantineTableBodyCellProps={{
-        sx: (theme) => ({
-          backgroundColor: theme.colors.gray[0],
-        }),
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
       }}
       enableFullScreenToggle={false}
       rowVirtualizerInstanceRef={rowVirtualizerInstanceRef}
       rowVirtualizerProps={{ overscan: 5 }}
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      localization={MRT_Localization_PT_BR}
+      localization={MRT_Localization_PT_BR as Partial<MRT_Localization>}
       columnVirtualizerProps={{ overscan: 2 }}
       {...props}
     />
