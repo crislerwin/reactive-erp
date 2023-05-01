@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "@/styles/globals.css";
 import { SideBarProvider } from "@/components/SideBar";
 import { ThemeProvider } from "@/Providers";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
@@ -14,6 +15,7 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
           <Component {...pageProps} />
         </ClerkProvider>
       </SideBarProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </ThemeProvider>
   );
 };

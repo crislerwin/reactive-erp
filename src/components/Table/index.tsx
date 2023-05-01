@@ -42,6 +42,7 @@ export const Table: React.FC<MantineReactTableProps> = (props) => {
       mantineTableHeadCellProps={{
         sx: (theme) => ({
           backgroundColor: theme.colors.gray[0],
+          color: "red",
         }),
       }}
       mantineTableBodyCellProps={{

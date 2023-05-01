@@ -37,11 +37,11 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   if (!user) return <></>;
   return (
     <>
-      <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-white">
+      <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-slate-300">
         <div
           className={`logo ${
             open ? "" : "ml-12"
-          } flex  h-full flex-none transform items-center justify-center duration-500 ease-in-out dark:text-white`}
+          } flex  h-full flex-none transform items-center justify-center duration-500 ease-in-out dark:text-slate-300`}
         >
           {user.fullName}
         </div>
@@ -78,14 +78,14 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                     route.includes("account")
                       ? "bg-slate-200 dark:bg-gray-800"
                       : "bg-slate-100 dark:bg-[#0F172A]"
-                  } dark:text-white dark:hover:bg-[#1E293B]`}
+                  } dark:text-slate-300 dark:hover:bg-[#1E293B]`}
                   icon={<IconSettings className="text-amber-700" size={14} />}
                 >
                   Configurações da conta
                 </Menu.Item>
                 <Menu.Item
                   onClick={handleLogout}
-                  className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-[#0F172A] dark:text-white dark:hover:bg-gray-800"
+                  className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-[#0F172A] dark:text-slate-300 dark:hover:bg-gray-800"
                   icon={<IconLogout className="text-white" size={14} />}
                 >
                   Sair
@@ -98,7 +98,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
       <aside
         className={`fixed z-50 flex h-screen w-60  ${
           open ? "translate-x-none" : "-translate-x-48"
-        } transform bg-slate-100 transition duration-1000 ease-in-out dark:bg-gray-800 dark:text-white`}
+        } transform bg-slate-100 transition duration-1000 ease-in-out dark:bg-gray-800 dark:text-slate-300`}
       >
         <div
           className={`max-toolbar  absolute -right-6 top-2 flex h-12 w-full ${
@@ -108,7 +108,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
           <div className="flex items-center space-x-2 pl-4 ">
             <ThemeToggle />
           </div>
-          <div className="group flex items-center space-x-3 rounded-full bg-gradient-to-r  from-indigo-500 via-purple-500 to-purple-500 py-1  pl-10 pr-2 dark:from-cyan-500 dark:to-blue-500 dark:text-white">
+          <div className="group flex items-center space-x-3 rounded-full bg-gradient-to-r  from-indigo-500 via-purple-500 to-purple-500 py-1  pl-10 pr-2 dark:from-cyan-500 dark:to-blue-500 dark:text-slate-300">
             <div className="mr-12 transform duration-300 ease-in-out">
               HEALTH
             </div>
@@ -116,7 +116,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         </div>
         <div
           onClick={() => setOpen(!open)}
-          className="absolute -right-6 top-2 flex transform rounded-full border-4 border-white bg-slate-200 p-3 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-slate-800 dark:text-white dark:hover:bg-blue-500"
+          className="absolute -right-6 top-2 flex transform rounded-full  border-4 border-white bg-slate-200 p-3 text-slate-700 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-blue-500"
         >
           <LotusIcon />
         </div>
@@ -135,7 +135,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
             <li className="inline-flex items-center">
               <Link
                 href={primaryPath ? `/${primaryPath}` : "/home"}
-                className="inline-flex items-center text-sm font-medium   hover:text-purple-500 dark:text-white dark:hover:text-blue-500"
+                className="inline-flex items-center text-sm font-medium text-slate-700  hover:text-purple-500 dark:text-slate-300 dark:hover:text-blue-500"
               >
                 <HomeRoundedIcon className="mr-2 h-4 w-4" />
                 {primaryPath && makePrettyPathNames[primaryPath]}

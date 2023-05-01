@@ -22,6 +22,7 @@ specifiers:
   '@storybook/testing-library': ^0.0.14-next.2
   '@tabler/icons-react': ^2.17.0
   '@tanstack/react-query': ^4.28.0
+  '@tanstack/react-query-devtools': ^4.29.6
   '@trpc/client': ^10.18.0
   '@trpc/next': ^10.18.0
   '@trpc/react-query': ^10.18.0
@@ -69,6 +70,7 @@ dependencies:
   '@storybook/addon-styling': 1.0.5_gxjqvvmagebaujihgr6dzegbjm
   '@tabler/icons-react': 2.17.0_react@18.2.0
   '@tanstack/react-query': 4.29.5_biqbaboplfbrettd7655fr4n2y
+  '@tanstack/react-query-devtools': 4.29.6_6ufraba7zs65ngvban5jjen7be
   '@trpc/client': 10.23.0_@trpc+server@10.23.0
   '@trpc/next': 10.23.0_m7ylvvfgb6yptlihcxelbippru
   '@trpc/react-query': 10.23.0_mdwdaef527ouiyzz6v5paoweke
@@ -3622,6 +3624,21 @@ packages:
 
   /@tanstack/query-core/4.29.5:
     resolution: {integrity: sha512-xXIiyQ/4r9KfaJ3k6kejqcaqFXXBTzN2aOJ5H1J6aTJE9hl/nbgAdfF6oiIu0CD5xowejJEJ6bBg8TO7BN4NuQ==}
+    dev: false
+
+  /@tanstack/react-query-devtools/4.29.6_6ufraba7zs65ngvban5jjen7be:
+    resolution: {integrity: sha512-qpYI41a69MWmrllcGiSE1KlpmnwJY/w0yKMnmp6VXn7nVy0i5TMMAT4u8D48F1Ipv/BKIDI1lqxPAvB4MqryBg==}
+    peerDependencies:
+      '@tanstack/react-query': 4.29.5
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@tanstack/match-sorter-utils': 8.8.4
+      '@tanstack/react-query': 4.29.5_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      superjson: 1.12.2
+      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /@tanstack/react-query/4.29.5_biqbaboplfbrettd7655fr4n2y:
