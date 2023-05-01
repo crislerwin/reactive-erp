@@ -88,51 +88,9 @@ const Companies: NextPage = () => {
 
   return (
     <SideBar>
-      <div>
-        <form onSubmit={onSubmit((vals) => mutate(vals))}>
-          <TextInput
-            label={<span className="dark:text-white">Cnpj</span>}
-            rightSection={
-              <div onClick={handleSearch} className="cursor-pointer">
-                {isFetching ? (
-                  <Loader size="xs" />
-                ) : (
-                  <IconSearch color="currentColor" className="h-4 w-4" />
-                )}
-              </div>
-            }
-            placeholder="Digite o CNPJ >da empresa"
-            {...getInputProps("cnpj")}
-          />
-          <TextInput
-            className="dark:bg-gray-800"
-            label={<span className="dark:text-white">Nome fantasia</span>}
-            placeholder=""
-            {...getInputProps("fantasyName")}
-          />
-          <TextInput
-            label="Nome Fantasia"
-            placeholder=""
-            {...getInputProps("socialReason")}
-          />
-
-          <TextInput
-            label={<span className="dark:text-white">Email</span>}
-            placeholder=""
-            {...getInputProps("email")}
-          />
-
-          <Group position="right" mt="md">
-            <Button
-              className="dark:bg-slate-500 dark:hover:bg-red-300  "
-              type="submit"
-            >
-              Salvar
-            </Button>
-          </Group>
-        </form>
+      <div className="mt-4 h-full w-full rounded-sm">
+        <Table columns={columns} data={tableData} />
       </div>
-      <Table columns={columns} data={tableData} />
     </SideBar>
   );
 };

@@ -16,6 +16,40 @@ export const Table: React.FC<MantineReactTableProps> = (props) => {
   return (
     <MantineReactTable
       onSortingChange={setSorting}
+      mantinePaperProps={{
+        sx: (theme) => ({
+          backgroundColor: theme.colors.gray[0],
+        }),
+      }}
+      mantineBottomToolbarProps={{
+        sx: (theme) => ({
+          backgroundColor: theme.colors.gray[0],
+          color: theme.colors.gray[9],
+        }),
+      }}
+      mantineSearchTextInputProps={{
+        placeholder: "Pesquisar...",
+        sx: () => ({
+          minWidth: "18rem",
+        }),
+        variant: "filled",
+      }}
+      mantineTopToolbarProps={{
+        sx: (theme) => ({
+          backgroundColor: theme.colors.gray[0],
+        }),
+      }}
+      mantineTableHeadCellProps={{
+        sx: (theme) => ({
+          backgroundColor: theme.colors.gray[0],
+        }),
+      }}
+      mantineTableBodyCellProps={{
+        sx: (theme) => ({
+          backgroundColor: theme.colors.gray[0],
+        }),
+      }}
+      enableFullScreenToggle={false}
       rowVirtualizerInstanceRef={rowVirtualizerInstanceRef}
       rowVirtualizerProps={{ overscan: 5 }}
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

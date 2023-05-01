@@ -25,6 +25,7 @@
     "@mantine/hooks": "^6.0.9",
     "@mantine/next": "^6.0.9",
     "@rollup/plugin-alias": "^5.0.0",
+    "@storybook/addon-styling": "^1.0.5",
     "@tabler/icons-react": "^2.17.0",
     "@tanstack/react-query": "^4.28.0",
     "@trpc/client": "^10.18.0",

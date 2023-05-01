@@ -28,7 +28,7 @@ export const MenuOpenedItems: React.FC<MenuItemProps> = ({ open, items }) => {
             key={label}
             className={`flex w-full ${
               visible === false ? "hidden" : ""
-            } transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500`}
+            } transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500`}
           >
             {icon}
             <div>{label}</div>
@@ -51,7 +51,7 @@ export const MenuClosedItems: React.FC<MenuItemProps> = ({ open, items }) => {
           <Link
             href={item.path}
             key={item.label}
-            className="flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-[#1E293B] dark:text-white dark:hover:text-blue-500"
+            className="flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500"
           >
             {item.icon}
           </Link>

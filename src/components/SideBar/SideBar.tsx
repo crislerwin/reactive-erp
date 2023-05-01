@@ -76,7 +76,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                   }}
                   className={`bg-slate-100  hover:bg-slate-200  ${
                     route.includes("account")
-                      ? "bg-slate-200 dark:bg-[#1E293B]"
+                      ? "bg-slate-200 dark:bg-gray-800"
                       : "bg-slate-100 dark:bg-[#0F172A]"
                   } dark:text-white dark:hover:bg-[#1E293B]`}
                   icon={<IconSettings className="text-amber-700" size={14} />}
@@ -85,7 +85,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                 </Menu.Item>
                 <Menu.Item
                   onClick={handleLogout}
-                  className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-[#0F172A] dark:text-white dark:hover:bg-[#1E293B]"
+                  className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-[#0F172A] dark:text-white dark:hover:bg-gray-800"
                   icon={<IconLogout className="text-white" size={14} />}
                 >
                   Sair
@@ -98,12 +98,12 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
       <aside
         className={`fixed z-50 flex h-screen w-60  ${
           open ? "translate-x-none" : "-translate-x-48"
-        } transform bg-slate-100 transition duration-1000 ease-in-out dark:bg-[#1E293B] dark:text-white`}
+        } transform bg-slate-100 transition duration-1000 ease-in-out dark:bg-gray-800 dark:text-white`}
       >
         <div
           className={`max-toolbar  absolute -right-6 top-2 flex h-12 w-full ${
             open ? "translate-x-0" : "translate-x-24 scale-x-0"
-          } transform items-center justify-between rounded-full border-4 border-white transition  duration-300 ease-in dark:border-[#0F172A] dark:bg-[#1E293B]`}
+          } transform items-center justify-between rounded-full border-4 border-white transition  duration-300 ease-in dark:border-[#0F172A] dark:bg-slate-800`}
         >
           <div className="flex items-center space-x-2 pl-4 ">
             <ThemeToggle />
@@ -116,7 +116,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         </div>
         <div
           onClick={() => setOpen(!open)}
-          className="absolute -right-6 top-2 flex transform rounded-full border-4 border-white bg-slate-200 p-3 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-[#1E293B] dark:text-white dark:hover:bg-blue-500"
+          className="absolute -right-6 top-2 flex transform rounded-full border-4 border-white bg-slate-200 p-3 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-slate-800 dark:text-white dark:hover:bg-blue-500"
         >
           <LotusIcon />
         </div>
@@ -128,7 +128,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
         } transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
         <nav
-          className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-[#1E293B]"
+          className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
           aria-label="Breadcrumb"
         >
           <ol className="inline-flex items-center space-x-1 md:space-x-3">
@@ -154,9 +154,8 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
             </li>
           </ol>
         </nav>
-        <div className="mt-4 flex bg-white shadow-lg dark:bg-[#1E293B]">
-          {children}
-        </div>
+
+        {children}
       </div>
     </>
   );
