@@ -51,4 +51,26 @@ export const companiesRouter = createTRPCRouter({
       });
       return true;
     }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        companyId: z.number(),
+        cnpj: z.string().optional(),
+        socialReason: z.string().optional(),
+        fantasyName: z.string().optional(),
+        email: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const company = await ctx.prisma.company.update({
+        where: { id: input.companyId },
+        data: {
+          cnpj: input.cnpj,
+          socialReason: input.socialReason,
+          fantasyName: input.fantasyName,
+          email: input.email,
+        },
+      });
+      return company;
+    }),
 });

@@ -75,6 +75,11 @@ export const CompanyTable: React.FC = () => {
                 <IconPencil className="h-4 w-4" />
               </UnstyledButton>
               <Modal
+                transitionProps={{
+                  transition: "fade",
+                  duration: 600,
+                  timingFunction: "linear",
+                }}
                 centered
                 opened={editOpen}
                 onClose={closeEdit}

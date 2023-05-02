@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { TextInput, Button, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconAt, IconSearch } from "@tabler/icons-react";
@@ -6,10 +5,41 @@ import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import React, { useState } from "react";
 import { type CreateCompanyInput } from "@/server/api/routers/companies/companies";
 import { trpc } from "@/utils/api";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
 
 export const useCompanyForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();
+  const { mutate: handleUpdate } = trpc.company.update.useMutation();
+
   const { mutate: handleSave } = trpc.company.save.useMutation();
+  const router = useRouter();
+  const { companyId } = router.query;
+
+  trpc.company.findById.useQuery(
+    { companyId: Number(companyId) },
+    {
+      enabled: !!companyId,
+      onSuccess: (data) => {
+        const fieldValues: (keyof CreateCompanyInput)[] = [
+          "fantasyName",
+          "socialReason",
+          "cnpj",
+          "email",
+        ];
+        const formatedData: CreateCompanyInput = {
+          fantasyName: data.fantasyName,
+          socialReason: data.socialReason,
+          cnpj: data.cnpj,
+          email: data.email,
+        };
+        fieldValues.forEach((field) => {
+          setFieldValue(field, formatedData[field]);
+        });
+      },
+    }
+  );
+
   const context = trpc.useContext();
   const {
     onSubmit,
@@ -45,19 +75,31 @@ export const useCompanyForm = (close: () => void) => {
       });
     },
   });
-  const handleSubmit = onSubmit((values) =>
+  const handleSubmit = onSubmit((values) => {
+    if (companyId) {
+      handleUpdate(
+        { companyId: Number(companyId), ...values },
+        {
+          onSuccess: () => {
+            context.company.findAll
+              .invalidate()
+              .catch((err) => console.log(err));
+            close();
+          },
+        }
+      );
+      return;
+    }
+
     handleSave(values, {
       onSuccess: () => {
-        context.company.findAll
-          .invalidate()
-          .then(() => {
-            reset();
-            close();
-          })
-          .catch((err) => console.log(err));
+        context.company.findAll.invalidate().catch((err) => console.log(err));
+        reset();
+        close();
       },
-    })
-  );
+    });
+  });
+
   const handleSearch = () => setCnpj(formValues.cnpj);
   return {
     handleSubmit,
