@@ -7,8 +7,8 @@ import { trpc } from "@/utils/api";
 import { useDisclosure } from "@mantine/hooks";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
-import { CompanyTable } from "./Table";
-import { CompanyForm } from "./Forms";
+import { CompanyTable } from "../../components/pages/companies/Table";
+import { CompanyForm } from "../../components/pages/companies/Forms";
 
 const Companies: NextPage = () => {
   const [opened, { open, close }] = useDisclosure(false);
