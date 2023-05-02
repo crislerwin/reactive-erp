@@ -1,6 +1,6 @@
 import { type IconProps } from "./types";
 
-export const ChevronRightIcon: React.FC<IconProps> = ({ className }) => {
+export const ChevronRightIcon: React.FC<IconProps> = () => {
   return (
     <svg
       className="h-6 w-6 text-gray-400"

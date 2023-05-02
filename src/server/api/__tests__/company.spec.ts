@@ -1,5 +1,5 @@
 import { prisma } from "@/server/db";
-import { test, beforeEach, expect, describe, vi } from "vitest";
+import { test, beforeEach, expect, describe } from "vitest";
 import { makeCaller } from "./utils";
 
 describe("Company", () => {
@@ -30,12 +30,12 @@ describe("Company", () => {
     const result = await caller.company.findAll();
     expect(result).toHaveLength(1);
   });
-  // test("Should Delete a company", async () => {
-  //   const caller = makeCaller();
-  //   const companyRequest = makeCompanyRequest();
-  //   const { id: companyId } = await caller.company.save(companyRequest);
-  //   await caller.company.delete({ companyId });
-  //   const result = await caller.company.findAll();
-  //   expect(result).toHaveLength(0);
-  // });
+  test("Should Delete a company", async () => {
+    const caller = makeCaller();
+    const companyRequest = makeCompanyRequest();
+    const { id: companyId } = await caller.company.save(companyRequest);
+    await caller.company.delete({ companyId: companyId });
+    const result = await caller.company.findAll();
+    expect(result).toHaveLength(0);
+  });
 });
