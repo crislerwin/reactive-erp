@@ -21,8 +21,12 @@ jobs:
         with:
           version: 7
           run_install: false
-      - name: Build
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build application
         run: pnpm run build
 
-      - name: Test
+      - name: Test application
         run: pnpm run test:ci
