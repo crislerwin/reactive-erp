@@ -200,7 +200,7 @@ const Companies: NextPage = () => {
             Adicionar Empresa
           </Button>
         </div>
-        <div className="mt-4 h-full w-full rounded-sm">
+        <div className="mt-4 rounded-sm">
           <Table
             isLoading={isFetching || isSaving}
             columns={columns}

@@ -49,7 +49,8 @@ export const Table: React.FC<
         className:
           "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
       }}
-      state={{ isLoading: props.isLoading, sorting }}
+      enableDensityToggle={false}
+      state={{ isLoading: props.isLoading, sorting, density: "xs" }}
       enableFullScreenToggle={false}
       rowVirtualizerInstanceRef={rowVirtualizerInstanceRef}
       rowVirtualizerProps={{ overscan: 5 }}
