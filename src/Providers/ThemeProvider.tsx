@@ -1,14 +1,17 @@
+import { type ColorScheme, MantineProvider } from "@mantine/core";
 import { parseCookies, setCookie } from "nookies";
 import React from "react";
+import { makeTheme } from "./utils";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
 };
 
 type ThemeContextProps = {
-  theme?: "light" | "dark";
-  setTheme: (theme: "light" | "dark") => void;
+  theme?: ColorScheme;
+  setTheme: (theme: ColorScheme) => void;
 };
+
 export const ThemeContext = React.createContext<ThemeContextProps>({
   theme: "light",
   setTheme(_theme: "light" | "dark") {
@@ -19,16 +22,16 @@ export const ThemeContext = React.createContext<ThemeContextProps>({
 });
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setUserTheme] = React.useState<"light" | "dark">("light");
+  const [theme, setUserTheme] = React.useState<ColorScheme>("light");
   React.useEffect(() => {
     const { themePrefs } = parseCookies();
     if (themePrefs) {
       document.documentElement.classList.add(themePrefs);
-      setUserTheme(themePrefs as "light" | "dark");
+      setUserTheme(themePrefs as ColorScheme);
     }
   }, []);
 
-  const setTheme = (theme: "light" | "dark") => {
+  const setTheme = (theme: ColorScheme) => {
     document.documentElement.classList.remove("light", "dark");
     document.documentElement.classList.add(theme);
     setUserTheme(theme);
@@ -40,7 +43,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
+      <MantineProvider
+        withGlobalStyles
+        withNormalizeCSS
+        theme={makeTheme[theme]}
+      >
+        {children}
+      </MantineProvider>
     </ThemeContext.Provider>
   );
 };

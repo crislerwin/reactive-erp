@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MantineReactTable } from "mantine-react-table";
+import { type MRT_Localization, MantineReactTable } from "mantine-react-table";
 import type { MRT_SortingState, MRT_Virtualizer } from "mantine-react-table";
 import type { MantineReactTableProps } from "mantine-react-table";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
 
-export const Table: React.FC<MantineReactTableProps> = (props) => {
+export const Table: React.FC<
+  MantineReactTableProps & { isLoading: boolean }
+> = (props) => {
   const rowVirtualizerInstanceRef =
     useRef<MRT_Virtualizer<HTMLDivElement, HTMLTableRowElement>>(null);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
@@ -16,10 +18,43 @@ export const Table: React.FC<MantineReactTableProps> = (props) => {
   return (
     <MantineReactTable
       onSortingChange={setSorting}
+      mantinePaperProps={{
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
+      }}
+      mantineBottomToolbarProps={{
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
+      }}
+      mantineSearchTextInputProps={{
+        placeholder: "Pesquisar...",
+        sx: () => ({
+          minWidth: "18rem",
+        }),
+        variant: "filled",
+      }}
+      mantineTableBodyRowProps={{
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 dark:hover:bg-slate-200",
+      }}
+      mantineTopToolbarProps={{
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
+      }}
+      mantineTableHeadCellProps={{
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
+      }}
+      mantineTableBodyCellProps={{
+        className:
+          "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
+      }}
+      enableDensityToggle={false}
+      state={{ isLoading: props.isLoading, sorting, density: "xs" }}
+      enableFullScreenToggle={false}
       rowVirtualizerInstanceRef={rowVirtualizerInstanceRef}
       rowVirtualizerProps={{ overscan: 5 }}
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      localization={MRT_Localization_PT_BR}
+      localization={MRT_Localization_PT_BR as Partial<MRT_Localization>}
       columnVirtualizerProps={{ overscan: 2 }}
       {...props}
     />

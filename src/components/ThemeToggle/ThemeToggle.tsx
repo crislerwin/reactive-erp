@@ -10,7 +10,7 @@ export const ThemeToggle = () => {
         onClick={() => setTheme("dark")}
         className={`moon ${
           theme === "dark" ? "hidden" : ""
-        } cursor-pointer hover:text-purple-500 dark:text-white dark:hover:text-[#38BDF8]`}
+        } cursor-pointer text-slate-700 hover:text-purple-500 dark:text-white dark:hover:text-[#38BDF8]`}
       >
         <MoonIcon />
       </div>
