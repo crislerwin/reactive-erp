@@ -38,4 +38,14 @@ describe("Company", () => {
     const result = await caller.company.findAll();
     expect(result).toHaveLength(0);
   });
+  test("Should Update a company", async () => {
+    const caller = makeCaller();
+    const companyRequest = makeCompanyRequest();
+    const { id: companyId } = await caller.company.save(companyRequest);
+    const result = await caller.company.update({
+      companyId: companyId,
+      socialReason: "new_company_name",
+    });
+    expect(result).toHaveProperty("socialReason", "new_company_name");
+  });
 });
