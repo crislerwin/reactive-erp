@@ -1,11 +1,8 @@
 import { SideBar } from "@/components/SideBar";
 import { type NextPage } from "next";
-import { useQuery } from "@tanstack/react-query";
-import { TextInput, Button, Group, Modal } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { IconAt, IconSearch, IconUserPlus } from "@tabler/icons-react";
-import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
-import React, { useState } from "react";
+import { Button, Modal } from "@mantine/core";
+import { IconUserPlus } from "@tabler/icons-react";
+import React from "react";
 import { trpc } from "@/utils/api";
 import { useDisclosure } from "@mantine/hooks";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";

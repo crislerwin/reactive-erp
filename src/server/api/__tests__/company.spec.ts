@@ -1,5 +1,5 @@
 import { prisma } from "@/server/db";
-import { test, beforeEach, expect, describe, vi } from "vitest";
+import { test, beforeEach, expect, describe } from "vitest";
 import { makeCaller } from "./utils";
 
 describe("Company", () => {
