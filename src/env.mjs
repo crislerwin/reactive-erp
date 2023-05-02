@@ -27,11 +27,8 @@ const client = z.object(
  *
  * @type {Record<keyof z.infer<typeof server> | keyof z.infer<typeof client>, string | undefined>}
  */
-
 const processEnv = {
-  DATABASE_URL:
-    process.env.DATABASE_URL ??
-    "mysql://a6x2qj5xnvslyxlj7um9:pscale_pw_cH7hh03BLVQ3ccEB5Ri9NPv4edq5r4JhJufTPl1TCoF@aws.connect.psdb.cloud/healthopsdb?sslaccept=strict",
+  DATABASE_URL: process.env.DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
 };
 
