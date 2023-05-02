@@ -1,6 +1,6 @@
 import { SideBar } from "@/components/SideBar";
 import { type NextPage } from "next";
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { TextInput, Button, Group, Modal, UnstyledButton } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import {
@@ -17,6 +17,8 @@ import { useDisclosure } from "@mantine/hooks";
 import { Table } from "@/components/Table";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
+import { type MRT_ColumnDef } from "mantine-react-table";
+import { type Company } from "@prisma/client";
 
 const initialValues = {
   cnpj: "",
@@ -30,6 +32,7 @@ const Companies: NextPage = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const { mutate: handleSave, isLoading: isSaving } =
     trpc.company.save.useMutation();
+  const { mutate: handleDelete } = trpc.company.delete.useMutation();
   const { data, isFetching } = trpc.company.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
@@ -67,7 +70,7 @@ const Companies: NextPage = () => {
 
   const handleSearch = () => setCnpj(formValues.cnpj);
 
-  const columns = useMemo(
+  const columns: MRT_ColumnDef<Company>[] = useMemo(
     () => [
       {
         accessorKey: "cnpj",
@@ -93,13 +96,22 @@ const Companies: NextPage = () => {
         accessorKey: "id",
         header: "Excluir",
         size: 150,
-        Cell: (props: { cell: { row: { id: string } } }) => {
-          const { cell } = props;
+        Cell: (props) => {
+          const { renderedCellValue } = props;
           return (
             <UnstyledButton
               className="cursor-pointer hover:text-red-500"
               onClick={() => {
-                console.log(cell.row.id);
+                handleDelete(
+                  { companyId: Number(renderedCellValue) },
+                  {
+                    onSuccess: () => {
+                      context.company.findAll
+                        .invalidate()
+                        .catch((err) => console.log(err));
+                    },
+                  }
+                );
               }}
             >
               <IconTrash className="h-4 w-4" />
@@ -108,7 +120,7 @@ const Companies: NextPage = () => {
         },
       },
     ],
-    []
+    [context.company.findAll, handleDelete]
   );
 
   const tableData = useMemo(() => {
@@ -144,8 +156,8 @@ const Companies: NextPage = () => {
                       context.company.findAll
                         .invalidate()
                         .then(() => {
-                          close();
                           reset();
+                          close();
                         })
                         .catch((err) => console.log(err));
                     },
@@ -162,7 +174,7 @@ const Companies: NextPage = () => {
                       className="h-4 w-4 cursor-pointer dark:hover:text-gray-500"
                     />
                   }
-                  placeholder="00.000.000/0000-00"
+                  placeholder="CNPJ (Somente números)"
                 />
 
                 <TextInput
@@ -205,7 +217,7 @@ const Companies: NextPage = () => {
         <div className="mt-4 rounded-sm">
           <Table
             isLoading={isFetching || isSaving}
-            columns={columns}
+            columns={columns as MRT_ColumnDef<Record<string, unknown>>[]}
             data={tableData}
           />
         </div>
