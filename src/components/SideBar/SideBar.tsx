@@ -61,7 +61,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                   />
                 </div>
               </Menu.Target>
-              <Menu.Dropdown className="bg-slate-100  dark:bg-[#0F172A]">
+              <Menu.Dropdown className="dark:bg-[#0F172A]  dark:hover:text-orange-400">
                 <Menu.Label className="text-md  dark:text-slate-300">
                   {user.primaryEmailAddress?.emailAddress}
                 </Menu.Label>

@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { type CreateCompanyInput } from "@/server/api/routers/companies/companies";
 import { trpc } from "@/utils/api";
 
-export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
+export const useCompanyForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();
   const { mutate: handleSave } = trpc.company.save.useMutation();
   const context = trpc.useContext();
@@ -45,25 +45,33 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
       });
     },
   });
-
+  const handleSubmit = onSubmit((values) =>
+    handleSave(values, {
+      onSuccess: () => {
+        context.company.findAll
+          .invalidate()
+          .then(() => {
+            reset();
+            close();
+          })
+          .catch((err) => console.log(err));
+      },
+    })
+  );
   const handleSearch = () => setCnpj(formValues.cnpj);
+  return {
+    handleSubmit,
+    getInputProps,
+    handleSearch,
+  };
+};
+
+export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
+  const { handleSubmit, getInputProps, handleSearch } = useCompanyForm(close);
+
   return (
     <Group grow position="center" className="mb-2">
-      <form
-        onSubmit={onSubmit((values) =>
-          handleSave(values, {
-            onSuccess: () => {
-              context.company.findAll
-                .invalidate()
-                .then(() => {
-                  reset();
-                  close();
-                })
-                .catch((err) => console.log(err));
-            },
-          })
-        )}
-      >
+      <form onSubmit={handleSubmit}>
         <TextInput
           label="CNPJ"
           withAsterisk
@@ -96,12 +104,21 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
           {...getInputProps("email")}
         />
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            className="mt-2 bg-slate-200 text-gray-600 hover:bg-slate-100 dark:bg-gray-700 dark:text-gray-200 "
-          >
-            Salvar
-          </Button>
+          <div className="mt-4 flex items-center justify-between">
+            <Button
+              type="submit"
+              className="mr-2 bg-slate-200 text-gray-600 hover:bg-slate-100 dark:bg-gray-700 dark:text-gray-200"
+            >
+              Salvar
+            </Button>
+            <Button
+              onClick={close}
+              size="sm"
+              className="bg-gray-500 text-white hover:bg-gray-600"
+            >
+              Cancelar
+            </Button>
+          </div>
         </div>
       </form>
     </Group>
