@@ -1,6 +1,6 @@
 import { type AppType } from "next/app";
 import { ptBR } from "@clerk/localizations";
-import { api } from "@/utils/api";
+import { trpc } from "@/utils/api";
 import { ClerkProvider } from "@clerk/nextjs";
 import "@/styles/globals.css";
 import { SideBarProvider } from "@/components/SideBar";
@@ -20,4 +20,4 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   );
 };
 
-export default api.withTRPC(MyApp);
+export default trpc.withTRPC(MyApp);

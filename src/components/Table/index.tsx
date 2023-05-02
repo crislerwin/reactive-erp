@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MRT_Localization, MantineReactTable } from "mantine-react-table";
+import { type MRT_Localization, MantineReactTable } from "mantine-react-table";
 import type { MRT_SortingState, MRT_Virtualizer } from "mantine-react-table";
 import type { MantineReactTableProps } from "mantine-react-table";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
 
-export const Table: React.FC<MantineReactTableProps> = (props) => {
+export const Table: React.FC<
+  MantineReactTableProps & { isLoading: boolean }
+> = (props) => {
   const rowVirtualizerInstanceRef =
     useRef<MRT_Virtualizer<HTMLDivElement, HTMLTableRowElement>>(null);
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
@@ -47,6 +49,7 @@ export const Table: React.FC<MantineReactTableProps> = (props) => {
         className:
           "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
       }}
+      state={{ isLoading: props.isLoading, sorting }}
       enableFullScreenToggle={false}
       rowVirtualizerInstanceRef={rowVirtualizerInstanceRef}
       rowVirtualizerProps={{ overscan: 5 }}

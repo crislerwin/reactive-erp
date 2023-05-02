@@ -9,6 +9,7 @@ type MenuItemProps = {
 export type MenuItemType = {
   label?: string;
   visible?: boolean;
+  selected?: boolean;
   icon: React.ReactNode;
   path: string;
 };
@@ -21,14 +22,18 @@ export const MenuOpenedItems: React.FC<MenuItemProps> = ({ open, items }) => {
       } h-[calc(100vh)] w-full flex-col space-y-2  dark:text-white`}
     >
       {items.map((item) => {
-        const { icon, path, label, visible } = item;
+        const { icon, path, label, visible, selected } = item;
         return (
           <Link
             href={path}
             key={label}
             className={`flex w-full ${
-              visible === false ? "hidden" : ""
-            } transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-slate-700 duration-300 ease-in-out hover:ml-4 hover:text-purple-500 dark:bg-gray-800 dark:text-slate-200 dark:text-white dark:hover:text-blue-500`}
+              visible === false ? "hidden" : "visible"
+            } transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-slate-700 duration-300 ease-in-out ${
+              selected
+                ? "ml-4 text-purple-500 dark:text-blue-500"
+                : "hover:ml-4 hover:text-purple-500"
+            }   dark:bg-gray-800 dark:text-slate-200  dark:hover:text-blue-500`}
           >
             {icon}
             <div className="text-slate-700 dark:text-slate-200">{label}</div>
