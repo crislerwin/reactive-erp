@@ -1,8 +1,22 @@
 import { prisma } from "@/server/db";
-import { test, beforeEach, expect, describe } from "vitest";
+import {
+  test,
+  beforeEach,
+  expect,
+  describe,
+  beforeAll,
+  afterAll,
+} from "vitest";
 import { makeCaller } from "./utils";
 
 describe("Company", () => {
+  beforeAll(async () => {
+    await prisma.$connect();
+  });
+  afterAll(async () => {
+    await prisma.company.deleteMany();
+    await prisma.$disconnect();
+  });
   beforeEach(async () => {
     await prisma.company.deleteMany();
   });
