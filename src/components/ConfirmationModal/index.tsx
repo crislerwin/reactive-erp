@@ -4,6 +4,7 @@ import React from "react";
 
 type ConfirmationModalProps = {
   title: string;
+  opened: boolean;
   actionButton: {
     name: string;
     className: string;
@@ -17,8 +18,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   handleClose,
   handleConfirm,
   actionButton,
+  opened,
 }) => {
-  const [opened, { open, close }] = useDisclosure(false);
   return (
     <Modal
       centered

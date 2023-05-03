@@ -113,6 +113,7 @@ export const CompanyTable: React.FC = () => {
                 <IconTrash className="h-4 w-4" />
               </UnstyledButton>
               <ConfirmationModal
+                opened={deleteOpened}
                 actionButton={{
                   name: "Excluir",
                   className: "bg-red-500 text-white hover:bg-red-600",
