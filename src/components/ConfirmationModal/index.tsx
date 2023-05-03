@@ -1,50 +1,58 @@
-import { Button, Modal } from "@mantine/core";
+import { Button, Modal, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import React from "react";
 
 type ConfirmationModalProps = {
   title: string;
-  opened: boolean;
+  children?: React.ReactNode;
   actionButton: {
     name: string;
+    icon?: React.ReactNode;
     className: string;
   };
-  handleClose: () => void;
   handleConfirm: () => void;
 };
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   title,
-  handleClose,
   handleConfirm,
   actionButton,
-  opened,
+  children,
 }) => {
+  const [opened, { open, close }] = useDisclosure(false);
   return (
-    <Modal
-      centered
-      opened={opened}
-      onClose={handleClose}
-      size="md"
-      shadow="sm"
-      title={title}
-    >
-      <div className="mt-4 flex justify-around">
-        <Button
-          onClick={handleConfirm}
-          size="sm"
-          className={actionButton.className}
-        >
-          {actionButton.name}
-        </Button>
-        <Button
-          onClick={handleClose}
-          size="sm"
-          className="bg-gray-500 text-white hover:bg-gray-600"
-        >
-          Cancelar
-        </Button>
-      </div>
-    </Modal>
+    <>
+      <UnstyledButton
+        className="flex w-12 cursor-pointer justify-center"
+        onClick={open}
+      >
+        {children}
+      </UnstyledButton>
+      <Modal
+        centered
+        opened={opened}
+        onClose={close}
+        size="md"
+        shadow="sm"
+        title={title}
+      >
+        <div className="mt-4 flex justify-around">
+          <Button
+            onClick={handleConfirm}
+            size="sm"
+            className={actionButton.className}
+          >
+            {actionButton.name}
+          </Button>
+          <Button
+            onClick={close}
+            size="sm"
+            className="bg-gray-500 text-white hover:bg-gray-600"
+          >
+            Cancelar
+          </Button>
+        </div>
+      </Modal>
+    </>
   );
 };

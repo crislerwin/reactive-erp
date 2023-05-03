@@ -6,11 +6,8 @@ import { type Person } from "@prisma/client";
 import { UnstyledButton } from "@mantine/core";
 import { IconTrash } from "@tabler/icons-react";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { useDisclosure } from "@mantine/hooks";
 
 export const PersonTable: React.FC = () => {
-  const [deleteOpened, { open: openDelete, close: closeDelete }] =
-    useDisclosure(false);
   const { data, isFetching } = trpc.person.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
@@ -41,24 +38,16 @@ export const PersonTable: React.FC = () => {
             (person) => person.personId === renderedCellValue
           );
           return (
-            <>
-              <UnstyledButton
-                className="flex w-12 cursor-pointer justify-center hover:text-red-500"
-                onClick={openDelete}
-              >
-                <IconTrash className="h-4 w-4" />
-              </UnstyledButton>
-              <ConfirmationModal
-                opened={deleteOpened}
-                actionButton={{
-                  name: "Excluir",
-                  className: "bg-red-500 text-white hover:bg-red-600",
-                }}
-                title={`Deseja excluir ${selectedPerson?.userName ?? ""}?`}
-                handleConfirm={() => {}}
-                handleClose={closeDelete}
-              />
-            </>
+            <ConfirmationModal
+              actionButton={{
+                name: "Excluir",
+                className: "bg-red-500 text-white hover:bg-red-600",
+              }}
+              title={`Deseja excluir ${selectedPerson?.userName ?? ""}?`}
+              handleConfirm={() => {}}
+            >
+              <IconTrash className="h-4 w-4 hover:text-red-500" />
+            </ConfirmationModal>
           );
         },
       },
