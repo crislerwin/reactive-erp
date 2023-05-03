@@ -13,17 +13,20 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.15.0
+          cache: "pnpm"
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 7
+          version: 7.23.0
           run_install: false
 
-      - name: Install dependencies
+      - name: Install
         run: pnpm install
 
       - name: Test
         run: pnpm run test:ci
+        env:
+          DATABASE_URL: mysql://a6x2qj5xnvslyxlj7um9:pscale_pw_cH7hh03BLVQ3ccEB5Ri9NPv4edq5r4JhJufTPl1TCoF@aws.connect.psdb.cloud/healthopsdb?sslaccept=strict
