@@ -1,19 +1,15 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-
-const createCompanyInput = z.object({
-  cnpj: z.string(),
-  socialReason: z.string(),
-  fantasyName: z.string(),
-  email: z.string(),
-});
-
-export type CreateCompanyInput = z.infer<typeof createCompanyInput>;
+import {
+  createCompanyInputValidation,
+  findByIdInputValidation,
+  updateCompanyInputValidation,
+} from "./company-validation";
 
 export const companiesRouter = createTRPCRouter({
   save: protectedProcedure
-    .input(createCompanyInput)
+    .input(createCompanyInputValidation)
     .mutation(async ({ ctx, input }) => {
       const newCompany = await ctx.prisma.company.create({
         data: {
@@ -26,7 +22,7 @@ export const companiesRouter = createTRPCRouter({
       return newCompany;
     }),
   findById: protectedProcedure
-    .input(z.object({ companyId: z.number() }))
+    .input(findByIdInputValidation)
     .query(async ({ ctx, input }) => {
       const company = await ctx.prisma.company.findUnique({
         where: { id: input.companyId },
@@ -44,7 +40,7 @@ export const companiesRouter = createTRPCRouter({
     return companies;
   }),
   delete: protectedProcedure
-    .input(z.object({ companyId: z.number() }))
+    .input(findByIdInputValidation)
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.company.delete({
         where: { id: input.companyId },
@@ -52,15 +48,7 @@ export const companiesRouter = createTRPCRouter({
       return true;
     }),
   update: protectedProcedure
-    .input(
-      z.object({
-        companyId: z.number(),
-        cnpj: z.string().optional(),
-        socialReason: z.string().optional(),
-        fantasyName: z.string().optional(),
-        email: z.string().optional(),
-      })
-    )
+    .input(updateCompanyInputValidation)
     .mutation(async ({ ctx, input }) => {
       const company = await ctx.prisma.company.update({
         where: { id: input.companyId },

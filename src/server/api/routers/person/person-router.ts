@@ -1,6 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import {
+  getByIdInputValidation,
+  savePersonInputValidation,
+  updatePersonInputValidation,
+} from "./person-validation";
 
 export const personRouter = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {
@@ -34,13 +39,7 @@ export const personRouter = createTRPCRouter({
     return loggedUser;
   }),
   save: protectedProcedure
-    .input(
-      z.object({
-        companyId: z.number(),
-        email: z.string(),
-        userName: z.string(),
-      })
-    )
+    .input(savePersonInputValidation)
     .mutation(async ({ ctx, input }) => {
       const userAlreadyExists = await ctx.prisma.person.findUnique({
         where: {
@@ -64,14 +63,7 @@ export const personRouter = createTRPCRouter({
       return newUser;
     }),
   update: protectedProcedure
-    .input(
-      z.object({
-        personId: z.number(),
-        companyId: z.number().optional(),
-        email: z.string().optional(),
-        userName: z.string().optional(),
-      })
-    )
+    .input(updatePersonInputValidation)
     .mutation(({ ctx, input }) => {
       return ctx.prisma.person.update({
         where: {
@@ -147,11 +139,7 @@ export const personRouter = createTRPCRouter({
       });
     }),
   getById: protectedProcedure
-    .input(
-      z.object({
-        personId: z.number(),
-      })
-    )
+    .input(getByIdInputValidation)
     .query(({ ctx, input }) => {
       return ctx.prisma.person.findUnique({
         where: {
