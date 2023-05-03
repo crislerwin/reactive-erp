@@ -3,14 +3,21 @@ import { useForm } from "@mantine/form";
 import { IconAt, IconSearch } from "@tabler/icons-react";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import React, { useState } from "react";
-import { type CreateCompanyInput } from "@/server/api/routers/companies/companies";
 import { trpc } from "@/utils/api";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
+import {
+  createCompanyInputValidation,
+  updateCompanyInputValidation,
+} from "@/server/api/routers/companies";
+import { z } from "zod";
 
 export const useCompanyForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();
   const { mutate: handleUpdate } = trpc.company.update.useMutation();
+  const context = trpc.useContext();
+
+  type CreateCompanyInput = z.infer<typeof createCompanyInputValidation>;
 
   const { mutate: handleSave } = trpc.company.save.useMutation();
   const router = useRouter();
@@ -40,7 +47,6 @@ export const useCompanyForm = (close: () => void) => {
     }
   );
 
-  const context = trpc.useContext();
   const {
     onSubmit,
     getInputProps,
@@ -53,6 +59,27 @@ export const useCompanyForm = (close: () => void) => {
       socialReason: "",
       fantasyName: "",
       email: "",
+    },
+    validate: {
+      cnpj: (value) => {
+        if (!value) return "Campo obrigatório";
+        if (value.length !== 14) return "CNPJ inválido";
+        return true;
+      },
+      socialReason: (value) => {
+        if (!value) return "Campo obrigatório";
+        return true;
+      },
+      fantasyName: (value) => {
+        if (!value) return "Campo obrigatório";
+        return true;
+      },
+      email: (value) => {
+        if (!value) return "Campo obrigatório";
+        const isValidMail = z.string().email().safeParse(value);
+        if (!isValidMail.success) return "E-mail inválido";
+        return true;
+      },
     },
   });
 
