@@ -1,12 +1,9 @@
+import { type NextPage } from "next";
 import { SideBar } from "@/components/SideBar";
-import { CompanyForm } from "@/components/pages/companies/Forms";
-import { CompanyTable } from "@/components/pages/companies/Table";
-import { PersonForm } from "@/components/pages/persons";
-import { PersonTable } from "@/components/pages/persons/Table";
+import { PersonForm, PersonTable } from "@/components/pages/persons";
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconUserPlus } from "@tabler/icons-react";
-import { type NextPage } from "next";
 
 const Persons: NextPage = () => {
   const [opened, { open, close }] = useDisclosure(false);
