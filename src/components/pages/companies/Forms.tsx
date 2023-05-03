@@ -6,10 +6,7 @@ import React, { useState } from "react";
 import { trpc } from "@/utils/api";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import {
-  createCompanyInputValidation,
-  updateCompanyInputValidation,
-} from "@/server/api/routers/company";
+import { type createCompanyInputValidation } from "@/server/api/routers/company";
 import { z } from "zod";
 
 export const useCompanyForm = (close: () => void) => {

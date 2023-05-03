@@ -1,22 +1,16 @@
-import { createPersonInputValidation } from "@/server/api/routers/person";
+import { type createPersonInputValidation } from "@/server/api/routers/person";
 import { trpc } from "@/utils/api";
 import { Button, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconAt } from "@tabler/icons-react";
-import { z } from "zod";
+import { type z } from "zod";
 
 type CreatePersonInput = z.infer<typeof createPersonInputValidation>;
 
 const usePersonForm = (close: () => void) => {
   const { mutate } = trpc.person.save.useMutation();
   const context = trpc.useContext();
-  const {
-    onSubmit,
-    getInputProps,
-    setFieldValue,
-    reset,
-    values: formValues,
-  } = useForm<CreatePersonInput>({
+  const { onSubmit, getInputProps, reset } = useForm<CreatePersonInput>({
     initialValues: {
       email: "",
       userName: "",
@@ -25,7 +19,7 @@ const usePersonForm = (close: () => void) => {
   const handleSubmit = onSubmit((values) =>
     mutate(values, {
       onSuccess: () => {
-        context.person.findAll.invalidate();
+        context.person.findAll.invalidate().catch((err) => console.log(err));
         reset();
         close();
       },
