@@ -23,9 +23,9 @@ describe("Company", () => {
 
   const makeCompanyRequest = () => ({
     socialReason: "any_company_name",
-    cnpj: "any_cnpj",
+    cnpj: "43745206000153",
     fantasyName: "any_fantasy_name",
-    email: "any_email",
+    email: "any_email@mail.com",
   });
 
   test("Should create a new company", async () => {
