@@ -24,7 +24,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     <Modal
       centered
       opened={opened}
-      onClose={close}
+      onClose={handleClose}
       size="md"
       shadow="sm"
       title={title}

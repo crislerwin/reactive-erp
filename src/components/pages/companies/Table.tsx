@@ -98,8 +98,7 @@ export const CompanyTable: React.FC = () => {
         accessorKey: "id",
         header: "Excluir",
         size: 80,
-        Cell: (props) => {
-          const { renderedCellValue } = props;
+        Cell: ({ renderedCellValue }) => {
           const selectedCompany = tableData.find(
             (company) => company.id === renderedCellValue
           );
