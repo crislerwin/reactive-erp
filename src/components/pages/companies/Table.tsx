@@ -8,6 +8,7 @@ import { Button, Modal, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import { CompanyForm } from "./Forms";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 
 export const CompanyTable: React.FC = () => {
   const { mutate: handleDelete } = trpc.company.delete.useMutation();
@@ -111,46 +112,30 @@ export const CompanyTable: React.FC = () => {
               >
                 <IconTrash className="h-4 w-4" />
               </UnstyledButton>
-              <Modal
-                centered
-                opened={deleteOpened}
-                onClose={closeDelete}
-                size="md"
-                shadow="sm"
+              <ConfirmationModal
+                actionButton={{
+                  name: "Excluir",
+                  className: "bg-red-500 text-white hover:bg-red-600",
+                }}
                 title={`Deseja excluir a empresa ${
                   selectedCompany?.fantasyName ?? ""
                 }?`}
-              >
-                <div className="mt-4 flex justify-around">
-                  <Button
-                    onClick={() => {
-                      handleDelete(
-                        { companyId: Number(renderedCellValue) },
-                        {
-                          onSuccess: () => {
-                            context.company.findAll
-                              .invalidate()
-                              .catch((err) => console.log(err));
+                handleConfirm={() => {
+                  handleDelete(
+                    { companyId: Number(renderedCellValue) },
+                    {
+                      onSuccess: () => {
+                        context.company.findAll
+                          .invalidate()
+                          .catch((err) => console.log(err));
 
-                            closeDelete();
-                          },
-                        }
-                      );
-                    }}
-                    size="sm"
-                    className="bg-red-500 text-white hover:bg-red-600"
-                  >
-                    Excluir
-                  </Button>
-                  <Button
-                    onClick={closeDelete}
-                    size="sm"
-                    className="bg-gray-500 text-white hover:bg-gray-600"
-                  >
-                    Cancelar
-                  </Button>
-                </div>
-              </Modal>
+                        closeDelete();
+                      },
+                    }
+                  );
+                }}
+                handleClose={closeDelete}
+              />
             </>
           );
         },
