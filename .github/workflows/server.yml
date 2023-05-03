@@ -1,15 +1,13 @@
 on:
-  push:
-    paths:
-      - "src/server/api**"
+  - push
+  - pull_request
 
 jobs:
   test:
-    name: Tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Install Node.js
