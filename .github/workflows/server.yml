@@ -25,9 +25,6 @@ jobs:
       - name: Install
         run: pnpm install
 
-
-      - name: Lint and Build
-      - run: pnpm run lint && pnpm run build
       # - name: Test
       #   run: pnpm run test:ci
       #   env:
