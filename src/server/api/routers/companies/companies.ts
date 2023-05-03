@@ -6,7 +6,7 @@ const createCompanyInput = z.object({
   cnpj: z.string().min(14).max(14).regex(/^\d+$/),
   socialReason: z.string(),
   fantasyName: z.string(),
-  email: z.string(),
+  email: z.string().email(),
 });
 
 export type CreateCompanyInput = z.infer<typeof createCompanyInput>;
