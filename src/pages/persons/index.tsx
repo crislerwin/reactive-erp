@@ -2,6 +2,7 @@ import { SideBar } from "@/components/SideBar";
 import { CompanyForm } from "@/components/pages/companies/Forms";
 import { CompanyTable } from "@/components/pages/companies/Table";
 import { PersonForm } from "@/components/pages/persons";
+import { PersonTable } from "@/components/pages/persons/Table";
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconUserPlus } from "@tabler/icons-react";
@@ -40,7 +41,7 @@ const Persons: NextPage = () => {
           </Button>
         </div>
         <div className="mt-4 rounded-sm">
-          <CompanyTable />
+          <PersonTable />
         </div>
       </div>
     </SideBar>
