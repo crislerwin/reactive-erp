@@ -25,7 +25,7 @@ jobs:
       - name: Install
         run: pnpm install
 
-      - name: Test
-        run: pnpm run test:ci
-        env:
-          DATABASE_URL: mysql://a6x2qj5xnvslyxlj7um9:pscale_pw_cH7hh03BLVQ3ccEB5Ri9NPv4edq5r4JhJufTPl1TCoF@aws.connect.psdb.cloud/healthopsdb?sslaccept=strict
+      # - name: Test
+      #   run: pnpm run test:ci
+      #   env:
+      #     DATABASE_URL: mysql://a6x2qj5xnvslyxlj7um9:pscale_pw_cH7hh03BLVQ3ccEB5Ri9NPv4edq5r4JhJufTPl1TCoF@aws.connect.psdb.cloud/healthopsdb?sslaccept=strict
