@@ -1,2 +1,2 @@
-export * from "./companies";
+export * from "./company-router";
 export * from "./company-validation";

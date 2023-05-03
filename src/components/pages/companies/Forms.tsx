@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   createCompanyInputValidation,
   updateCompanyInputValidation,
-} from "@/server/api/routers/companies";
+} from "@/server/api/routers/company";
 import { z } from "zod";
 
 export const useCompanyForm = (close: () => void) => {

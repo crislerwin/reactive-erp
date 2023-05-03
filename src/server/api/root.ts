@@ -1,6 +1,6 @@
 import { createTRPCRouter } from "@/server/api/trpc";
-import { personRouter } from "./routers/person/persons";
-import { companiesRouter } from "./routers/companies/companies";
+import { personRouter } from "./routers/person";
+import { companiesRouter } from "./routers/company";
 
 export const appRouter = createTRPCRouter({
   person: personRouter,
