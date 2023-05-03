@@ -3,19 +3,46 @@ import { trpc } from "@/utils/api";
 import { Button, Group, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconAt } from "@tabler/icons-react";
-import { type z } from "zod";
+import { useRouter } from "next/router";
+import { z } from "zod";
 
 type CreatePersonInput = z.infer<typeof createPersonInputValidation>;
 
 const usePersonForm = (close: () => void) => {
   const { mutate } = trpc.person.save.useMutation();
-  const context = trpc.useContext();
   const { onSubmit, getInputProps, reset } = useForm<CreatePersonInput>({
     initialValues: {
       email: "",
       userName: "",
     },
+    validate: {
+      email: (value) => {
+        const validEmail = z.string().email().safeParse(value);
+        if (!validEmail.success) return "Email inválido";
+        return null;
+      },
+
+      userName: (value) => {
+        const validUserName = z.string().min(3).safeParse(value);
+        if (!validUserName.success) return "Nome inválido";
+        return null;
+      },
+    },
   });
+  const router = useRouter();
+  const { personId } = router.query;
+
+  trpc.person.getById.useQuery(
+    { personId: Number(personId) },
+    {
+      enabled: !!personId,
+      onSuccess: (data) => {
+        console.log(data);
+      },
+    }
+  );
+  const context = trpc.useContext();
+
   const handleSubmit = onSubmit((values) =>
     mutate(values, {
       onSuccess: () => {

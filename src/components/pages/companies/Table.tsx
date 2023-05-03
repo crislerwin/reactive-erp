@@ -4,11 +4,11 @@ import { trpc } from "@/utils/api";
 import { Table } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
 import { type Company } from "@prisma/client";
-import { Button, Modal, UnstyledButton } from "@mantine/core";
+import { Modal, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import { CompanyForm } from "./Forms";
-import { ConfirmationModal } from "@/components/ConfirmationModal";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 
 export const CompanyTable: React.FC = () => {
   const { mutate: handleDelete } = trpc.company.delete.useMutation();
@@ -21,8 +21,7 @@ export const CompanyTable: React.FC = () => {
       },
     }
   );
-  const [deleteOpened, { open: openDelete, close: closeDelete }] =
-    useDisclosure(false);
+
   const { data, isFetching } = trpc.company.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
@@ -104,7 +103,7 @@ export const CompanyTable: React.FC = () => {
           );
 
           return (
-            <ConfirmationModal
+            <ConfirmActionModal
               actionButton={{
                 name: "Excluir",
                 className: "bg-red-500 text-white hover:bg-red-600",
@@ -120,15 +119,13 @@ export const CompanyTable: React.FC = () => {
                       context.company.findAll
                         .invalidate()
                         .catch((err) => console.log(err));
-
-                      closeDelete();
                     },
                   }
                 );
               }}
             >
               <IconTrash className="h-4 w-4 hover:text-red-500" />
-            </ConfirmationModal>
+            </ConfirmActionModal>
           );
         },
       },
@@ -139,9 +136,6 @@ export const CompanyTable: React.FC = () => {
       router,
       openEdit,
       tableData,
-      openDelete,
-      deleteOpened,
-      closeDelete,
       handleDelete,
       context.company.findAll,
     ]

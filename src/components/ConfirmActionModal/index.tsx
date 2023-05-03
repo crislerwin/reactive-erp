@@ -13,7 +13,7 @@ type ConfirmationModalProps = {
   handleConfirm: () => void;
 };
 
-export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+export const ConfirmActionModal: React.FC<ConfirmationModalProps> = ({
   title,
   handleConfirm,
   actionButton,
