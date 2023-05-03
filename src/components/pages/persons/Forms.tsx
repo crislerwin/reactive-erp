@@ -10,25 +10,26 @@ type CreatePersonInput = z.infer<typeof createPersonInputValidation>;
 
 const usePersonForm = (close: () => void) => {
   const { mutate } = trpc.person.save.useMutation();
-  const { onSubmit, getInputProps, reset } = useForm<CreatePersonInput>({
-    initialValues: {
-      email: "",
-      userName: "",
-    },
-    validate: {
-      email: (value) => {
-        const validEmail = z.string().email().safeParse(value);
-        if (!validEmail.success) return "Email inválido";
-        return null;
+  const { onSubmit, getInputProps, reset, setFieldValue } =
+    useForm<CreatePersonInput>({
+      initialValues: {
+        email: "",
+        userName: "",
       },
+      validate: {
+        email: (value) => {
+          const validEmail = z.string().email().safeParse(value);
+          if (!validEmail.success) return "Email inválido";
+          return null;
+        },
 
-      userName: (value) => {
-        const validUserName = z.string().min(3).safeParse(value);
-        if (!validUserName.success) return "Nome inválido";
-        return null;
+        userName: (value) => {
+          const validUserName = z.string().min(3).safeParse(value);
+          if (!validUserName.success) return "Nome inválido";
+          return null;
+        },
       },
-    },
-  });
+    });
   const router = useRouter();
   const { personId } = router.query;
 
@@ -37,7 +38,15 @@ const usePersonForm = (close: () => void) => {
     {
       enabled: !!personId,
       onSuccess: (data) => {
-        console.log(data);
+        if (!data) return;
+        const valuesToLoad: (keyof CreatePersonInput)[] = ["email", "userName"];
+        valuesToLoad.forEach((field) => {
+          const loadFormData: CreatePersonInput = {
+            email: data.email,
+            userName: data.userName,
+          };
+          setFieldValue(field, loadFormData[field]);
+        });
       },
     }
   );
