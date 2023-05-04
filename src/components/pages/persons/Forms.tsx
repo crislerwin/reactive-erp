@@ -1,4 +1,4 @@
-import { Button, Group, TextInput, UnstyledButton } from "@mantine/core";
+import { Button, Group, TextInput } from "@mantine/core";
 import { IconAt, IconPlus, IconTrash, IconX } from "@tabler/icons-react";
 import { usePersonForm } from "./hooks";
 import { useDisclosure } from "@mantine/hooks";
@@ -46,6 +46,7 @@ export const PersonForm: React.FC<{ close: () => void }> = ({ close }) => {
               Salvar
             </Button>
             <Button
+              onClick={openDelete}
               size="sm"
               leftIcon={<IconTrash className="h-4 w-4" />}
               className="mr-2 bg-red-500 text-white hover:bg-red-600"

@@ -4,7 +4,7 @@ import { PersonForm, PersonTable } from "@/components/pages/persons";
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconUserPlus } from "@tabler/icons-react";
-import { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
 
 const Persons: NextPage = () => {
