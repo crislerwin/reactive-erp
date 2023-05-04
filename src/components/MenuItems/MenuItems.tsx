@@ -31,8 +31,8 @@ export const MenuOpenedItems: React.FC<MenuItemProps> = ({ open, items }) => {
               visible === false ? "hidden" : "visible"
             } transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-slate-700 duration-300 ease-in-out ${
               selected
-                ? "ml-4 text-purple-500 dark:text-blue-500"
-                : "hover:ml-4 hover:text-purple-500"
+                ? "ml-2 text-purple-500 dark:text-blue-500"
+                : "hover:ml-2 hover:text-purple-500"
             }   dark:bg-gray-800 dark:text-slate-200  dark:hover:text-blue-500`}
           >
             {icon}
@@ -58,8 +58,8 @@ export const MenuClosedItems: React.FC<MenuItemProps> = ({ open, items }) => {
             key={item.label}
             className={`flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out ${
               item.selected
-                ? "ml-4  text-purple-500 dark:text-blue-500"
-                : "hover:ml-4 hover:text-purple-500"
+                ? "ml-2  text-purple-500 dark:text-blue-500"
+                : "hover:ml-2 hover:text-purple-500"
             } bg-slate-100 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500`}
           >
             {item.icon}
