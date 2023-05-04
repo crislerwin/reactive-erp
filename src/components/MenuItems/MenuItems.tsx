@@ -58,9 +58,9 @@ export const MenuClosedItems: React.FC<MenuItemProps> = ({ open, items }) => {
             key={item.label}
             className={`flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out ${
               item.selected
-                ? "ml-4 text-purple-500 dark:text-blue-500"
+                ? "ml-4  text-purple-500 dark:text-blue-500"
                 : "hover:ml-4 hover:text-purple-500"
-            } dark:bg-gray-800 dark:text-white dark:hover:text-blue-500`}
+            } bg-slate-100 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500`}
           >
             {item.icon}
           </Link>
