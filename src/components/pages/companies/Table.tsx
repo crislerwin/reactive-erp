@@ -1,14 +1,14 @@
-import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 import React, { useMemo } from "react";
 import { trpc } from "@/utils/api";
 import { Table } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
 import { type Company } from "@prisma/client";
-import { Modal, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import { CompanyForm } from "./Forms";
 import { ConfirmActionModal } from "@/components/ConfirmActionModal";
+import { EditModalFormWrapper } from "@/components/EditModalFormWrapper";
 
 export const CompanyTable: React.FC = () => {
   const { mutate: handleDelete } = trpc.company.delete.useMutation();
@@ -62,34 +62,12 @@ export const CompanyTable: React.FC = () => {
         Cell: (props) => {
           const { renderedCellValue } = props;
           return (
-            <>
-              <UnstyledButton
-                className="flex w-12 cursor-pointer justify-center hover:text-orange-400 dark:hover:text-blue-500"
-                onClick={() => {
-                  router
-                    .push(`/companies?companyId=${String(renderedCellValue)}`)
-                    .then(() => openEdit())
-                    .catch((err) => console.log(err));
-                }}
-              >
-                <IconPencil className="h-4 w-4" />
-              </UnstyledButton>
-              <Modal
-                transitionProps={{
-                  transition: "fade",
-                  duration: 600,
-                  timingFunction: "linear",
-                }}
-                centered
-                opened={editOpen}
-                onClose={closeEdit}
-                size="md"
-                shadow="sm"
-                title="Editar Empresa"
-              >
-                <CompanyForm close={closeEdit} />
-              </Modal>
-            </>
+            <EditModalFormWrapper
+              pathName={`/companies?companyId=${String(renderedCellValue)}`}
+              label="Editar Empresa"
+            >
+              {(close) => <CompanyForm close={close} />}
+            </EditModalFormWrapper>
           );
         },
       },
@@ -130,15 +108,7 @@ export const CompanyTable: React.FC = () => {
         },
       },
     ],
-    [
-      editOpen,
-      closeEdit,
-      router,
-      openEdit,
-      tableData,
-      handleDelete,
-      context.company.findAll,
-    ]
+    [tableData, handleDelete, context.company.findAll]
   );
 
   return (

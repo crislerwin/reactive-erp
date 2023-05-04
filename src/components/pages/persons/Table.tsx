@@ -3,54 +3,10 @@ import { trpc } from "@/utils/api";
 import { Table } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
 import { type Person } from "@prisma/client";
-import { Modal, UnstyledButton } from "@mantine/core";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 import { PersonForm } from "./Forms";
-import { useDisclosure } from "@mantine/hooks";
-import { useRouter } from "next/router";
-
-const PersonEditModal: React.FC<{ personId: number }> = ({ personId }) => {
-  const [editOpen, { open: openEdit, close: closeEdit }] = useDisclosure(
-    false,
-    {
-      onClose() {
-        router.push("/persons").catch((err) => console.log(err));
-      },
-    }
-  );
-  const router = useRouter();
-  return (
-    <>
-      <UnstyledButton
-        className="flex w-12 cursor-pointer justify-center hover:text-orange-400 dark:hover:text-blue-500"
-        onClick={() => {
-          router
-            .push(`/persons?personId=${String(personId)}`)
-            .then(() => openEdit())
-            .catch((err) => console.log(err));
-        }}
-      >
-        <IconPencil className="h-4 w-4" />
-      </UnstyledButton>
-      <Modal
-        transitionProps={{
-          transition: "fade",
-          duration: 600,
-          timingFunction: "linear",
-        }}
-        centered
-        opened={editOpen}
-        onClose={closeEdit}
-        size="md"
-        shadow="sm"
-        title="Editar Empresa"
-      >
-        <PersonForm close={closeEdit} />
-      </Modal>
-    </>
-  );
-};
+import { EditModalFormWrapper } from "@/components/EditModalFormWrapper";
+import { IconTrash } from "@tabler/icons-react";
 
 export const PersonTable: React.FC = () => {
   const { data, isFetching } = trpc.person.findAll.useQuery(undefined, {
@@ -82,7 +38,14 @@ export const PersonTable: React.FC = () => {
         size: 80,
         Cell: (props) => {
           const { renderedCellValue } = props;
-          return <PersonEditModal personId={Number(renderedCellValue)} />;
+          return (
+            <EditModalFormWrapper
+              label="Editar Pessoa"
+              pathName={`/persons?personId=${String(renderedCellValue)}`}
+            >
+              {(close) => <PersonForm close={close} />}
+            </EditModalFormWrapper>
+          );
         },
       },
       {
