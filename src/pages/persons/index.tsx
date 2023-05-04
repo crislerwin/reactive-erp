@@ -4,6 +4,8 @@ import { PersonForm, PersonTable } from "@/components/pages/persons";
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconUserPlus } from "@tabler/icons-react";
+import { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { getAuth } from "@clerk/nextjs/server";
 
 const Persons: NextPage = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -46,3 +48,19 @@ const Persons: NextPage = () => {
 };
 
 export default Persons;
+
+export const getServerSideProps = (ctx: CreateNextContextOptions) => {
+  const { userId } = getAuth(ctx.req);
+  if (!userId) {
+    return {
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
