@@ -1,8 +1,8 @@
 import { type createPersonInputValidation } from "@/server/api/routers/person";
 import { trpc } from "@/utils/api";
-import { Button, Group, TextInput } from "@mantine/core";
+import { Button, Group, TextInput, UnstyledButton } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconAt } from "@tabler/icons-react";
+import { IconAt, IconTrash } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { z } from "zod";
 
@@ -87,6 +87,13 @@ export const PersonForm: React.FC<{ close: () => void }> = ({ close }) => {
         />
         <div className="flex justify-end">
           <div className="mt-4 flex items-center justify-between">
+            <Button
+              size="sm"
+              leftIcon={<IconTrash className="h-4 w-4" />}
+              className="mr-2 bg-red-500 text-white hover:bg-red-600"
+            >
+              Excluir
+            </Button>
             <Button
               type="submit"
               className="mr-2 bg-slate-200 text-gray-600 hover:bg-slate-100 dark:bg-gray-700 dark:text-gray-200"
