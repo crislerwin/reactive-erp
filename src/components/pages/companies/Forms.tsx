@@ -6,10 +6,7 @@ import React, { useState } from "react";
 import { trpc } from "@/utils/api";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import {
-  createCompanyInputValidation,
-  updateCompanyInputValidation,
-} from "@/server/api/routers/company";
+import { type createCompanyInputValidation } from "@/server/api/routers/company";
 import { z } from "zod";
 
 export const useCompanyForm = (close: () => void) => {
@@ -62,23 +59,24 @@ export const useCompanyForm = (close: () => void) => {
     },
     validate: {
       cnpj: (value) => {
-        if (!value) return "Campo obrigatório";
-        if (value.length !== 14) return "CNPJ inválido";
-        return true;
+        const validCnpj = z.string().min(14).max(14).safeParse(value);
+        if (!validCnpj.success) return "CNPJ inválido";
+        return null;
       },
       socialReason: (value) => {
-        if (!value) return "Campo obrigatório";
-        return true;
+        const validSocialReason = z.string().min(3).safeParse(value);
+        if (!validSocialReason.success) return "Campo obrigatório";
+        return null;
       },
       fantasyName: (value) => {
-        if (!value) return "Campo obrigatório";
-        return true;
+        const validFantasyName = z.string().min(3).safeParse(value);
+        if (!validFantasyName.success) return "Campo obrigatório";
+        return null;
       },
       email: (value) => {
-        if (!value) return "Campo obrigatório";
-        const isValidMail = z.string().email().safeParse(value);
-        if (!isValidMail.success) return "E-mail inválido";
-        return true;
+        const validEmail = z.string().email().safeParse(value);
+        if (!validEmail.success) return "Email inválido";
+        return null;
       },
     },
   });

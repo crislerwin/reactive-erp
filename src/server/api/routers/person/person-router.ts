@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   getByIdInputValidation,
-  savePersonInputValidation,
+  createPersonInputValidation,
   updatePersonInputValidation,
 } from "./person-validation";
 
@@ -39,7 +39,7 @@ export const personRouter = createTRPCRouter({
     return loggedUser;
   }),
   save: protectedProcedure
-    .input(savePersonInputValidation)
+    .input(createPersonInputValidation)
     .mutation(async ({ ctx, input }) => {
       const userAlreadyExists = await ctx.prisma.person.findUnique({
         where: {

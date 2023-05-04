@@ -1,47 +1,30 @@
-import { IconTrash } from "@tabler/icons-react";
 import React, { useMemo } from "react";
 import { trpc } from "@/utils/api";
 import { Table } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
-import { type Company } from "@prisma/client";
-import { useDisclosure } from "@mantine/hooks";
-import { useRouter } from "next/router";
-import { CompanyForm } from "./Forms";
+import { type Person } from "@prisma/client";
 import { ConfirmActionModal } from "@/components/ConfirmActionModal";
+import { PersonForm } from "./Forms";
 import { EditModalFormWrapper } from "@/components/EditModalFormWrapper";
+import { IconTrash } from "@tabler/icons-react";
 
-export const CompanyTable: React.FC = () => {
-  const { mutate: handleDelete } = trpc.company.delete.useMutation();
-  const router = useRouter();
-  const [editOpen, { open: openEdit, close: closeEdit }] = useDisclosure(
-    false,
-    {
-      onClose: () => {
-        router.push("/companies").catch((err) => console.log(err));
-      },
-    }
-  );
-
-  const { data, isFetching } = trpc.company.findAll.useQuery(undefined, {
+export const PersonTable: React.FC = () => {
+  const { data, isFetching } = trpc.person.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
+  const { mutate: handleDelete } = trpc.person.delete.useMutation();
+  const context = trpc.useContext();
 
   const tableData = useMemo(() => {
     if (!data) return [];
     return data;
   }, [data]);
 
-  const context = trpc.useContext();
-  const columns: MRT_ColumnDef<Company>[] = useMemo(
+  const columns: MRT_ColumnDef<Person>[] = useMemo(
     () => [
       {
-        accessorKey: "fantasyName",
-        header: "Nome Fantasia",
-        size: 150,
-      },
-      {
-        accessorKey: "cnpj",
-        header: "CNPJ",
+        accessorKey: "userName",
+        header: "Nome",
         size: 150,
       },
       {
@@ -49,52 +32,43 @@ export const CompanyTable: React.FC = () => {
         header: "Email",
         size: 150,
       },
-
       {
-        accessorKey: "socialReason",
-        header: "Razão Social",
-        size: 150,
-      },
-      {
-        accessorKey: "id",
+        accessorKey: "personId",
         header: "Editar",
         size: 80,
         Cell: (props) => {
           const { renderedCellValue } = props;
           return (
             <EditModalFormWrapper
-              redirectTo={`/companies?companyId=${String(renderedCellValue)}`}
-              label="Editar Empresa"
+              label="Editar Pessoa"
+              redirectTo={`/persons?personId=${String(renderedCellValue)}`}
             >
-              {(close) => <CompanyForm close={close} />}
+              {(close) => <PersonForm close={close} />}
             </EditModalFormWrapper>
           );
         },
       },
       {
-        accessorKey: "id",
-        header: "Excluir",
-        size: 80,
+        accessorKey: "personId",
+        header: "Deletar",
+        size: 150,
         Cell: ({ renderedCellValue }) => {
-          const selectedCompany = tableData.find(
-            (company) => company.id === renderedCellValue
+          const selectedPerson = tableData.find(
+            (person) => person.personId === renderedCellValue
           );
-
           return (
             <ConfirmActionModal
               actionButton={{
                 name: "Excluir",
                 className: "bg-red-500 text-white hover:bg-red-600",
               }}
-              title={`Deseja excluir a empresa ${
-                selectedCompany?.fantasyName ?? ""
-              }?`}
+              title={`Deseja excluir ${selectedPerson?.userName ?? ""}?`}
               handleConfirm={() => {
                 handleDelete(
-                  { companyId: Number(renderedCellValue) },
+                  { personId: Number(renderedCellValue) },
                   {
                     onSuccess: () => {
-                      context.company.findAll
+                      context.person.findAll
                         .invalidate()
                         .catch((err) => console.log(err));
                     },
@@ -108,7 +82,7 @@ export const CompanyTable: React.FC = () => {
         },
       },
     ],
-    [tableData, handleDelete, context.company.findAll]
+    [context.person.findAll, handleDelete, tableData]
   );
 
   return (

@@ -1,47 +1,47 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider     = "mysql"
-    url          = env("DATABASE_URL")
-    relationMode = "prisma"
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Person {
-    personId    Int          @id @unique @default(autoincrement())
-    companyId   Int?         @unique
-    email       String       @unique @default("")
-    userName    String?
-    createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @updatedAt
-    permissions Permission[]
-    company     Company?
-
-    @@index([email])
+  personId    Int          @id @unique @default(autoincrement())
+  userId      String?      @unique
+  companyId   Int?         @unique
+  email       String       @unique @default("")
+  userName    String       @default("")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  permissions Permission[]
+  company     Company?
+  @@index([email])
 }
 
 model Permission {
-    id       Int     @id @default(autoincrement())
-    name     String  @default("")
-    value    String  @default("")
-    person   Person? @relation(fields: [personId], references: [personId])
-    personId Int?
-
-    @@index([id])
-    @@index([personId])
+  id       Int     @id @default(autoincrement())
+  name     String  @default("")
+  value    String  @default("")
+  person   Person? @relation(fields: [personId], references: [personId])
+  personId Int?
+  @@index([id])
+  @@index([name])
+  @@index([personId])
 }
 
 model Company {
-    id           Int      @id @unique @default(autoincrement())
-    cnpj         String   @default("")
-    socialReason String   @default("")
-    fantasyName  String   @default("")
-    email        String   @default("")
-    owner        Person?  @relation(fields: [ownerId], references: [personId])
-    ownerId      Int?     @unique
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+  id           Int      @id @unique @default(autoincrement())
+  cnpj         String   @default("")
+  socialReason String   @default("")
+  fantasyName  String   @default("")
+  email        String   @default("")
+  companyOwner Person?  @relation(fields: [ownerId], references: [personId])
+  ownerId      Int?     @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-    @@index([ownerId])
+  @@index([cnpj])
 }

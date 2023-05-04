@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-export const savePersonInputValidation = z.object({
-  companyId: z.number(),
+export const createPersonInputValidation = z.object({
   email: z.string(),
   userName: z.string(),
+  companyId: z.number().optional(),
 });
 export const updatePersonInputValidation = z.object({
   personId: z.number(),
