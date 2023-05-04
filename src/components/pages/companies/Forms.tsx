@@ -1,6 +1,6 @@
 import { TextInput, Button, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconAt, IconSearch } from "@tabler/icons-react";
+import { IconAt, IconSearch, IconTrash } from "@tabler/icons-react";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import React, { useState } from "react";
 import { trpc } from "@/utils/api";
@@ -172,6 +172,13 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
         />
         <div className="flex justify-end">
           <div className="mt-4 flex items-center justify-between">
+            <Button
+              size="sm"
+              leftIcon={<IconTrash className="h-4 w-4" />}
+              className="mr-2 bg-red-500 text-white hover:bg-red-600"
+            >
+              Excluir
+            </Button>
             <Button
               type="submit"
               className="mr-2 bg-slate-200 text-gray-600 hover:bg-slate-100 dark:bg-gray-700 dark:text-gray-200"
