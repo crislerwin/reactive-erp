@@ -1,11 +1,10 @@
 import React from "react";
 import { useClerk, useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
-import { ChevronRightIcon, HomeRoundedIcon, LotusIcon } from "../Icons";
+import { LotusIcon } from "../Icons";
 import { Avatar, Menu, Tabs } from "@mantine/core";
 import {
   IconSettings,
@@ -13,13 +12,6 @@ import {
   IconMessageCircle,
 } from "@tabler/icons-react";
 import { IconPhoto } from "@tabler/icons-react";
-
-const makePrettyPathNames: Record<string, string> = {
-  home: "Home",
-  account: "Conta",
-  companies: "Empresas",
-  persons: "Equipe",
-};
 
 export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   children,
@@ -31,9 +23,6 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
   const router = useRouter();
   const { route } = router;
   const menuItems = useMenuItems();
-  const [primaryPath, secondaryPath] = route
-    .split("/")
-    .filter((item) => item !== "");
 
   const handleLogout = () => {
     signOut().catch((err) => console.log(err));
