@@ -41,7 +41,7 @@ export const PersonTable: React.FC = () => {
           return (
             <EditModalFormWrapper
               label="Editar Pessoa"
-              pathName={`/persons?personId=${String(renderedCellValue)}`}
+              redirectTo={`/persons?personId=${String(renderedCellValue)}`}
             >
               {(close) => <PersonForm close={close} />}
             </EditModalFormWrapper>

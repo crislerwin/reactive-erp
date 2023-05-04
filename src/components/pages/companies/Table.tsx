@@ -63,7 +63,7 @@ export const CompanyTable: React.FC = () => {
           const { renderedCellValue } = props;
           return (
             <EditModalFormWrapper
-              pathName={`/companies?companyId=${String(renderedCellValue)}`}
+              redirectTo={`/companies?companyId=${String(renderedCellValue)}`}
               label="Editar Empresa"
             >
               {(close) => <CompanyForm close={close} />}

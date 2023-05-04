@@ -4,13 +4,13 @@ import { IconPencil } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 
 type EditModalProps = {
-  pathName: string;
+  redirectTo: string;
   label: string;
   children: (close: () => void) => React.ReactNode;
 };
 
 export const EditModalFormWrapper: React.FC<EditModalProps> = ({
-  pathName,
+  redirectTo,
   label,
   children,
 }) => {
@@ -28,7 +28,7 @@ export const EditModalFormWrapper: React.FC<EditModalProps> = ({
         className="flex w-12 cursor-pointer justify-center hover:text-orange-400 dark:hover:text-blue-500"
         onClick={() => {
           router
-            .push(pathName)
+            .push(redirectTo)
             .then(() => openEdit())
             .catch((err) => console.log(err));
         }}
