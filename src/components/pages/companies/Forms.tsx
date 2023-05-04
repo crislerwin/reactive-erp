@@ -1,6 +1,12 @@
 import { TextInput, Button, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconAt, IconSearch, IconTrash } from "@tabler/icons-react";
+import {
+  IconAt,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+  IconX,
+} from "@tabler/icons-react";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import React, { useState } from "react";
 import { trpc } from "@/utils/api";
@@ -8,17 +14,20 @@ import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { type createCompanyInputValidation } from "@/server/api/routers/company";
 import { z } from "zod";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
+import { useDisclosure } from "@mantine/hooks";
 
+type CreateCompanyInput = z.infer<typeof createCompanyInputValidation>;
 export const useCompanyForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();
   const { mutate: handleUpdate } = trpc.company.update.useMutation();
   const context = trpc.useContext();
+  const router = useRouter();
 
-  type CreateCompanyInput = z.infer<typeof createCompanyInputValidation>;
+  const { companyId } = router.query;
 
   const { mutate: handleSave } = trpc.company.save.useMutation();
-  const router = useRouter();
-  const { companyId } = router.query;
+  const { mutate: handleDelete } = trpc.company.delete.useMutation();
 
   trpc.company.findById.useQuery(
     { companyId: Number(companyId) },
@@ -126,16 +135,36 @@ export const useCompanyForm = (close: () => void) => {
   });
 
   const handleSearch = () => setCnpj(formValues.cnpj);
+
+  const handleDeleteCompany = () =>
+    handleDelete(
+      { companyId: Number(companyId) },
+      {
+        onSuccess: () => {
+          context.company.findAll.invalidate().catch((err) => console.log(err));
+          close();
+        },
+      }
+    );
   return {
     handleSubmit,
     getInputProps,
     handleSearch,
+    formValues,
+    handleDeleteCompany,
   };
 };
 
 export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
-  const { handleSubmit, getInputProps, handleSearch } = useCompanyForm(close);
-
+  const {
+    handleSubmit,
+    getInputProps,
+    handleSearch,
+    formValues,
+    handleDeleteCompany,
+  } = useCompanyForm(close);
+  const [deleteModalOpened, { close: closeDelete, open: openDelete }] =
+    useDisclosure(false);
   return (
     <Group grow position="center" className="mb-2">
       <form onSubmit={handleSubmit}>
@@ -172,20 +201,35 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
         />
         <div className="flex justify-end">
           <div className="mt-4 flex items-center justify-between">
+            <ConfirmActionModal
+              actionButton={{
+                name: "Excluir",
+                className: "bg-red-500 text-white hover:bg-red-600",
+                icon: <IconTrash className="h-4 w-4" />,
+              }}
+              title={`Deseja mesmo excluir a empresa ${formValues.fantasyName}?`}
+              handleConfirm={handleDeleteCompany}
+              opened={deleteModalOpened}
+              close={closeDelete}
+            />
             <Button
-              size="sm"
-              leftIcon={<IconTrash className="h-4 w-4" />}
-              className="mr-2 bg-red-500 text-white hover:bg-red-600"
-            >
-              Excluir
-            </Button>
-            <Button
+              leftIcon={<IconPlus className="h-4 w-4" />}
               type="submit"
               className="mr-2 bg-slate-200 text-gray-600 hover:bg-slate-100 dark:bg-gray-700 dark:text-gray-200"
             >
               Salvar
             </Button>
             <Button
+              onClick={openDelete}
+              size="sm"
+              leftIcon={<IconTrash className="h-4 w-4" />}
+              className="mr-2 bg-red-500 text-white hover:bg-red-600"
+            >
+              Excluir
+            </Button>
+
+            <Button
+              leftIcon={<IconX className="h-4 w-4" />}
               onClick={close}
               size="sm"
               className="bg-gray-500 text-white hover:bg-gray-600"

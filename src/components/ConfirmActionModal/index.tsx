@@ -4,13 +4,13 @@ import React from "react";
 type ConfirmationModalProps = {
   title: string;
   close: () => void;
+  handleConfirm: () => void;
   opened: boolean;
   actionButton: {
     name: string;
     icon?: React.ReactNode;
     className: string;
   };
-  handleConfirm: () => void;
 };
 
 export const ConfirmActionModal: React.FC<ConfirmationModalProps> = ({
