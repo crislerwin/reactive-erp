@@ -6,8 +6,13 @@ import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { ChevronRightIcon, HomeRoundedIcon, LotusIcon } from "../Icons";
-import { Avatar, Menu } from "@mantine/core";
-import { IconSettings, IconLogout } from "@tabler/icons-react";
+import { Avatar, Menu, Tabs } from "@mantine/core";
+import {
+  IconSettings,
+  IconLogout,
+  IconMessageCircle,
+} from "@tabler/icons-react";
+import { IconPhoto } from "@tabler/icons-react";
 
 const makePrettyPathNames: Record<string, string> = {
   home: "Home",
@@ -131,28 +136,28 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
           className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
           aria-label="Breadcrumb"
         >
-          <ol className="inline-flex items-center space-x-1 md:space-x-3">
-            <li className="inline-flex items-center">
-              <Link
-                href={primaryPath ? `/${primaryPath}` : "/home"}
-                className="inline-flex items-center text-sm font-medium text-slate-700  hover:text-purple-500 dark:text-slate-300 dark:hover:text-blue-500"
+          <Tabs defaultValue="gallery">
+            <Tabs.List>
+              <Tabs.Tab
+                onClick={() => {
+                  router.push("/home").catch((err) => console.error(err));
+                }}
+                value="gallery"
+                icon={<IconPhoto size="0.8rem" />}
               >
-                <HomeRoundedIcon className="mr-2 h-4 w-4" />
-                {primaryPath && makePrettyPathNames[primaryPath]}
-              </Link>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <ChevronRightIcon className="h-4 w-4 text-gray-400" />
-                <Link
-                  href="/"
-                  className="ml-1 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:ml-2"
-                >
-                  {secondaryPath && makePrettyPathNames[secondaryPath]}
-                </Link>
-              </div>
-            </li>
-          </ol>
+                Gallery
+              </Tabs.Tab>
+              <Tabs.Tab
+                value="messages"
+                icon={<IconMessageCircle size="0.8rem" />}
+              >
+                Messages
+              </Tabs.Tab>
+              <Tabs.Tab value="settings" icon={<IconSettings size="0.8rem" />}>
+                Settings
+              </Tabs.Tab>
+            </Tabs.List>
+          </Tabs>
         </nav>
 
         {children}
