@@ -1,8 +1,9 @@
+import { BrandIcon } from "@/components/Icons/BrandIcon";
 import { SignIn, useUser } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import type { NextPage } from "next";
-import Image from "next/image";
+
 import React from "react";
 
 const SignInPage: NextPage = () => {
@@ -11,26 +12,20 @@ const SignInPage: NextPage = () => {
   return (
     <>
       {!isSignedIn && (
-        <div className="relative bg-white lg:py-20">
+        <div className="relative lg:py-20">
           <div
             className="mb-0 ml-auto mr-auto mt-0 flex max-w-7xl flex-col items-center justify-between pb-0 pl-10 pr-10 pt-0
         lg:flex-row xl:px-5"
           >
             <div className="flex w-full flex-col items-center pb-20 pl-10 pr-10 pt-5 lg:flex-row lg:pt-20">
               <div className="relative w-full max-w-md bg-cover lg:w-7/12 lg:max-w-2xl">
-                <div className="relative flex h-full w-full flex-col items-center justify-center lg:pr-10">
-                  <Image
-                    width={500}
-                    height={500}
-                    src="https://res.cloudinary.com/macxenon/image/upload/v1631570592/Run_-_Health_qcghbu.png"
-                    className="btn btn-ghost btn-sm rounded-btn"
-                    alt="Run - Health"
-                  />
+                <div className="relative flex h-full w-full  flex-col items-center justify-center lg:pr-10">
+                  <BrandIcon />
                 </div>
               </div>
               <div className="relative z-10 mb-0 ml-0 mr-0 mt-20 w-full max-w-2xl lg:mt-0 lg:w-5/12">
                 <div
-                  className="relative z-10 flex flex-col items-start justify-start rounded-xl bg-white pb-10 pl-10 pr-10
+                  className="relative z-10 flex flex-col items-start justify-start rounded-xl pb-10 pl-10 pr-10
               pt-10 shadow-2xl"
                 >
                   <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />

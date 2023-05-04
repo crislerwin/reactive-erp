@@ -4,6 +4,8 @@ import { PersonForm, PersonTable } from "@/components/pages/persons";
 import { Button, Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconUserPlus } from "@tabler/icons-react";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { getAuth } from "@clerk/nextjs/server";
 
 const Persons: NextPage = () => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -25,7 +27,7 @@ const Persons: NextPage = () => {
               title: "dark:text-gray-200 text-gray-600 font-bold",
               content: "dark:bg-gray-800 dark:text-gray-200 bg-slate-200",
             }}
-            title="Adicionar Pessoa"
+            title="Adicionar Membro"
           >
             <PersonForm close={close} />
           </Modal>
@@ -34,7 +36,7 @@ const Persons: NextPage = () => {
             rightIcon={<IconUserPlus className="h-4 w-4" />}
             className="add-button bg-slate-200 text-gray-600 hover:bg-slate-100 dark:bg-gray-700 dark:text-gray-200 "
           >
-            Adicionar Pessoa
+            Adicionar
           </Button>
         </div>
         <div className="mt-4 rounded-sm">
@@ -46,3 +48,19 @@ const Persons: NextPage = () => {
 };
 
 export default Persons;
+
+export const getServerSideProps = (ctx: CreateNextContextOptions) => {
+  const { userId } = getAuth(ctx.req);
+  if (!userId) {
+    return {
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};

@@ -1,141 +1,26 @@
 import { TextInput, Button, Group } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { IconAt, IconSearch } from "@tabler/icons-react";
-import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
-import React, { useState } from "react";
-import { trpc } from "@/utils/api";
-import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
-import { type createCompanyInputValidation } from "@/server/api/routers/company";
-import { z } from "zod";
+import {
+  IconAt,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+  IconX,
+} from "@tabler/icons-react";
+import React from "react";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
+import { useDisclosure } from "@mantine/hooks";
+import { useCompanyForm } from "./hooks";
 
-export const useCompanyForm = (close: () => void) => {
-  const [cnpj, setCnpj] = useState<string | undefined>();
-  const { mutate: handleUpdate } = trpc.company.update.useMutation();
-  const context = trpc.useContext();
-
-  type CreateCompanyInput = z.infer<typeof createCompanyInputValidation>;
-
-  const { mutate: handleSave } = trpc.company.save.useMutation();
-  const router = useRouter();
-  const { companyId } = router.query;
-
-  trpc.company.findById.useQuery(
-    { companyId: Number(companyId) },
-    {
-      enabled: !!companyId,
-      onSuccess: (data) => {
-        const fieldValues: (keyof CreateCompanyInput)[] = [
-          "fantasyName",
-          "socialReason",
-          "cnpj",
-          "email",
-        ];
-        const formatedData: CreateCompanyInput = {
-          fantasyName: data.fantasyName,
-          socialReason: data.socialReason,
-          cnpj: data.cnpj,
-          email: data.email,
-        };
-        fieldValues.forEach((field) => {
-          setFieldValue(field, formatedData[field]);
-        });
-      },
-    }
-  );
-
+export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
   const {
-    onSubmit,
-    getInputProps,
-    setFieldValue,
-    reset,
-    values: formValues,
-  } = useForm<CreateCompanyInput>({
-    initialValues: {
-      cnpj: "",
-      socialReason: "",
-      fantasyName: "",
-      email: "",
-    },
-    validate: {
-      cnpj: (value) => {
-        const validCnpj = z.string().min(14).max(14).safeParse(value);
-        if (!validCnpj.success) return "CNPJ inválido";
-        return null;
-      },
-      socialReason: (value) => {
-        const validSocialReason = z.string().min(3).safeParse(value);
-        if (!validSocialReason.success) return "Campo obrigatório";
-        return null;
-      },
-      fantasyName: (value) => {
-        const validFantasyName = z.string().min(3).safeParse(value);
-        if (!validFantasyName.success) return "Campo obrigatório";
-        return null;
-      },
-      email: (value) => {
-        const validEmail = z.string().email().safeParse(value);
-        if (!validEmail.success) return "Email inválido";
-        return null;
-      },
-    },
-  });
-
-  useQuery(["brasil-api-company", cnpj], () => getEnterpriseByCnpj(cnpj), {
-    enabled: !!cnpj,
-    retry: false,
-    onError: () => {
-      reset();
-      setCnpj(undefined);
-    },
-    onSuccess: (data) => {
-      const fieldValues: (keyof Omit<CreateCompanyInput, "cnpj" | "email">)[] =
-        ["fantasyName", "socialReason"];
-      const formatedData: Omit<CreateCompanyInput, "cnpj" | "email"> = {
-        fantasyName: data.nome_fantasia,
-        socialReason: data.razao_social,
-      };
-      fieldValues.forEach((field) => {
-        setFieldValue(field, formatedData[field]);
-      });
-    },
-  });
-  const handleSubmit = onSubmit((values) => {
-    if (companyId) {
-      handleUpdate(
-        { companyId: Number(companyId), ...values },
-        {
-          onSuccess: () => {
-            context.company.findAll
-              .invalidate()
-              .catch((err) => console.log(err));
-            close();
-          },
-        }
-      );
-      return;
-    }
-
-    handleSave(values, {
-      onSuccess: () => {
-        context.company.findAll.invalidate().catch((err) => console.log(err));
-        reset();
-        close();
-      },
-    });
-  });
-
-  const handleSearch = () => setCnpj(formValues.cnpj);
-  return {
     handleSubmit,
     getInputProps,
     handleSearch,
-  };
-};
-
-export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
-  const { handleSubmit, getInputProps, handleSearch } = useCompanyForm(close);
-
+    formValues,
+    handleDeleteCompany,
+  } = useCompanyForm(close);
+  const [deleteModalOpened, { close: closeDelete, open: openDelete }] =
+    useDisclosure(false);
   return (
     <Group grow position="center" className="mb-2">
       <form onSubmit={handleSubmit}>
@@ -172,13 +57,35 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
         />
         <div className="flex justify-end">
           <div className="mt-4 flex items-center justify-between">
+            <ConfirmActionModal
+              actionButton={{
+                name: "Excluir",
+                className: "bg-red-500 text-white hover:bg-red-600",
+                icon: <IconTrash className="h-4 w-4" />,
+              }}
+              title={`Deseja mesmo excluir a empresa ${formValues.fantasyName}?`}
+              handleConfirm={handleDeleteCompany}
+              opened={deleteModalOpened}
+              close={closeDelete}
+            />
             <Button
+              leftIcon={<IconPlus className="h-4 w-4" />}
               type="submit"
               className="mr-2 bg-slate-200 text-gray-600 hover:bg-slate-100 dark:bg-gray-700 dark:text-gray-200"
             >
               Salvar
             </Button>
             <Button
+              onClick={openDelete}
+              size="sm"
+              leftIcon={<IconTrash className="h-4 w-4" />}
+              className="mr-2 bg-red-500 text-white hover:bg-red-600"
+            >
+              Excluir
+            </Button>
+
+            <Button
+              leftIcon={<IconX className="h-4 w-4" />}
               onClick={close}
               size="sm"
               className="bg-gray-500 text-white hover:bg-gray-600"
