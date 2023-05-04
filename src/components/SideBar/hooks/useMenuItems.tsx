@@ -20,7 +20,7 @@ export const useMenuItems = () => {
     },
     {
       icon: <AddPeopleIcon />,
-      label: "Usuários",
+      label: "Equipe",
       path: "/persons",
       selected: pathname === "/persons",
     },

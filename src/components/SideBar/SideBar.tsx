@@ -13,7 +13,7 @@ const makePrettyPathNames: Record<string, string> = {
   home: "Home",
   account: "Conta",
   companies: "Empresas",
-  persons: "Usuários",
+  persons: "Equipe",
 };
 
 export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
