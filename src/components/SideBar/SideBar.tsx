@@ -36,6 +36,8 @@ export const SideBar: React.FC<{
   };
 
   if (!user) return <></>;
+
+  const hasTabs = tabs.length > 0;
   return (
     <>
       <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-slate-300">
@@ -128,28 +130,30 @@ export const SideBar: React.FC<{
           open ? "ml-12 md:ml-60" : "ml-12"
         } transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
-        <Tabs defaultValue={route}>
-          <nav
-            aria-label="Breadcrumb"
-            className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
-          >
-            <Tabs.List>
-              {tabs.map((tab, index) => (
-                <Link href={tab.href} key={index}>
-                  <Tabs.Tab value={tab.href} icon={tab.icon}>
-                    {tab.label}
-                  </Tabs.Tab>
-                </Link>
-              ))}
-            </Tabs.List>
-          </nav>
+        {hasTabs && (
+          <Tabs defaultValue={route}>
+            <nav
+              aria-label="Breadcrumb"
+              className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
+            >
+              <Tabs.List>
+                {tabs.map((tab, index) => (
+                  <Link href={tab.href} key={index}>
+                    <Tabs.Tab value={tab.href} icon={tab.icon}>
+                      {tab.label}
+                    </Tabs.Tab>
+                  </Link>
+                ))}
+              </Tabs.List>
+            </nav>
 
-          {pages.map((page, index) => (
-            <Tabs.Panel key={index} value={page.value} pt="xs">
-              {page.page}
-            </Tabs.Panel>
-          ))}
-        </Tabs>
+            {pages.map((page, index) => (
+              <Tabs.Panel key={index} value={page.value} pt="xs">
+                {page.page}
+              </Tabs.Panel>
+            ))}
+          </Tabs>
+        )}
       </div>
     </>
   );
