@@ -7,7 +7,8 @@ import { z } from "zod";
 type CreatePersonInput = z.infer<typeof createPersonInputValidation>;
 
 export const usePersonForm = (close: () => void) => {
-  const { mutate } = trpc.person.save.useMutation();
+  const { mutate: savePerson } = trpc.person.save.useMutation();
+  const { mutate: updatePerson } = trpc.person.update.useMutation();
   const { mutate: deletePerson } = trpc.person.delete.useMutation();
   const router = useRouter();
   const { personId } = router.query;
@@ -47,7 +48,7 @@ export const usePersonForm = (close: () => void) => {
         valuesToLoad.forEach((field) => {
           const loadFormData: CreatePersonInput = {
             email: data.email,
-            userName: data.userName,
+            userName: data.userName || "",
           };
           setFieldValue(field, loadFormData[field]);
         });
@@ -56,15 +57,31 @@ export const usePersonForm = (close: () => void) => {
   );
   const context = trpc.useContext();
 
-  const handleSubmit = onSubmit((values) =>
-    mutate(values, {
+  const isEdit = !!personId;
+  const handleSubmit = onSubmit((values) => {
+    if (isEdit) {
+      updatePerson(
+        { ...values, personId: Number(personId) },
+        {
+          onSuccess: () => {
+            context.person.findAll
+              .invalidate()
+              .catch((err) => console.log(err));
+            reset();
+            close();
+          },
+        }
+      );
+      return;
+    }
+    savePerson(values, {
       onSuccess: () => {
         context.person.findAll.invalidate().catch((err) => console.log(err));
         reset();
         close();
       },
-    })
-  );
+    });
+  });
 
   const handleDeletePerson = () => {
     deletePerson(
@@ -81,6 +98,7 @@ export const usePersonForm = (close: () => void) => {
   return {
     getInputProps,
     handleSubmit,
+    isEdit,
     formValues,
     handleDeletePerson,
   };

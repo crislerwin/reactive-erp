@@ -5,8 +5,13 @@ import { useDisclosure } from "@mantine/hooks";
 import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 
 export const PersonForm: React.FC<{ close: () => void }> = ({ close }) => {
-  const { handleSubmit, getInputProps, formValues, handleDeletePerson } =
-    usePersonForm(close);
+  const {
+    handleSubmit,
+    isEdit,
+    getInputProps,
+    formValues,
+    handleDeletePerson,
+  } = usePersonForm(close);
   const [deleteModalOpened, { close: closeDelete, open: openDelete }] =
     useDisclosure(false);
   return (
@@ -45,15 +50,16 @@ export const PersonForm: React.FC<{ close: () => void }> = ({ close }) => {
             >
               Salvar
             </Button>
-            <Button
-              onClick={openDelete}
-              size="sm"
-              leftIcon={<IconTrash className="h-4 w-4" />}
-              className="mr-2 bg-red-500 text-white hover:bg-red-600"
-            >
-              Excluir
-            </Button>
-
+            {isEdit && (
+              <Button
+                onClick={openDelete}
+                size="sm"
+                leftIcon={<IconTrash className="h-4 w-4" />}
+                className="mr-2 bg-red-500 text-white hover:bg-red-600"
+              >
+                Excluir
+              </Button>
+            )}
             <Button
               leftIcon={<IconX className="h-4 w-4" />}
               onClick={close}

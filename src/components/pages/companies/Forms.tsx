@@ -18,6 +18,7 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
     handleSearch,
     formValues,
     handleDeleteCompany,
+    isEdit,
   } = useCompanyForm(close);
   const [deleteModalOpened, { close: closeDelete, open: openDelete }] =
     useDisclosure(false);
@@ -75,15 +76,16 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
             >
               Salvar
             </Button>
-            <Button
-              onClick={openDelete}
-              size="sm"
-              leftIcon={<IconTrash className="h-4 w-4" />}
-              className="mr-2 bg-red-500 text-white hover:bg-red-600"
-            >
-              Excluir
-            </Button>
-
+            {isEdit && (
+              <Button
+                onClick={openDelete}
+                size="sm"
+                leftIcon={<IconTrash className="h-4 w-4" />}
+                className="mr-2 bg-red-500 text-white hover:bg-red-600"
+              >
+                Excluir
+              </Button>
+            )}
             <Button
               leftIcon={<IconX className="h-4 w-4" />}
               onClick={close}
