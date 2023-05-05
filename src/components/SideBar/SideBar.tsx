@@ -6,20 +6,26 @@ import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { LotusIcon } from "../Icons";
 import { Avatar, Menu, Tabs } from "@mantine/core";
-import {
-  IconSettings,
-  IconLogout,
-  IconMessageCircle,
-} from "@tabler/icons-react";
-import { IconPhoto } from "@tabler/icons-react";
+import { IconSettings, IconLogout } from "@tabler/icons-react";
 
-export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
-  children,
-}) => {
+export type TabType = {
+  icon: React.ReactNode;
+  label: string;
+  route: string;
+};
+
+type PageType = {
+  value: string;
+  page: React.ReactNode;
+};
+
+export const SideBar: React.FC<{
+  pages?: PageType[];
+  tabs?: TabType[];
+}> = ({ pages = [], tabs = [] }) => {
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();
-
   const router = useRouter();
   const { route } = router;
   const menuItems = useMenuItems();
@@ -121,35 +127,33 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
           open ? "ml-12 md:ml-60" : "ml-12"
         } transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
-        <nav
-          className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
-          aria-label="Breadcrumb"
-        >
-          <Tabs defaultValue="gallery">
+        <Tabs defaultValue={route}>
+          <nav
+            aria-label="Breadcrumb"
+            className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
+          >
             <Tabs.List>
-              <Tabs.Tab
-                onClick={() => {
-                  router.push("/home").catch((err) => console.error(err));
-                }}
-                value="gallery"
-                icon={<IconPhoto size="0.8rem" />}
-              >
-                Gallery
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="messages"
-                icon={<IconMessageCircle size="0.8rem" />}
-              >
-                Messages
-              </Tabs.Tab>
-              <Tabs.Tab value="settings" icon={<IconSettings size="0.8rem" />}>
-                Settings
-              </Tabs.Tab>
+              {tabs.map((tab, index) => (
+                <Tabs.Tab
+                  key={index}
+                  onClick={() => {
+                    router.push(tab.route).catch((err) => console.error(err));
+                  }}
+                  value={tab.route}
+                  icon={tab.icon}
+                >
+                  {tab.label}
+                </Tabs.Tab>
+              ))}
             </Tabs.List>
-          </Tabs>
-        </nav>
+          </nav>
 
-        {children}
+          {pages.map((page, index) => (
+            <Tabs.Panel key={index} value={page.value} pt="xs">
+              {page.page}
+            </Tabs.Panel>
+          ))}
+        </Tabs>
       </div>
     </>
   );
