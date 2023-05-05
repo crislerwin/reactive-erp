@@ -134,11 +134,14 @@ export const useCompanyForm = (close: () => void) => {
         },
       }
     );
+
+  const isEdit = !!companyId;
   return {
     handleSubmit,
     getInputProps,
     handleSearch,
     formValues,
+    isEdit,
     handleDeleteCompany,
   };
 };

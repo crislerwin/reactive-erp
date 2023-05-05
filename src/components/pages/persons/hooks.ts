@@ -47,7 +47,7 @@ export const usePersonForm = (close: () => void) => {
         valuesToLoad.forEach((field) => {
           const loadFormData: CreatePersonInput = {
             email: data.email,
-            userName: data.userName,
+            userName: data.userName || "",
           };
           setFieldValue(field, loadFormData[field]);
         });
@@ -78,9 +78,11 @@ export const usePersonForm = (close: () => void) => {
     );
   };
 
+  const isEdit = !!personId;
   return {
     getInputProps,
     handleSubmit,
+    isEdit,
     formValues,
     handleDeletePerson,
   };
