@@ -7,6 +7,7 @@ import { MenuItems } from "../MenuItems";
 import { LotusIcon } from "../Icons";
 import { Avatar, Menu, Tabs } from "@mantine/core";
 import { IconSettings, IconLogout } from "@tabler/icons-react";
+import Link from "next/link";
 
 export type TabType = {
   icon: React.ReactNode;
@@ -134,16 +135,11 @@ export const SideBar: React.FC<{
           >
             <Tabs.List>
               {tabs.map((tab, index) => (
-                <Tabs.Tab
-                  key={index}
-                  onClick={() => {
-                    router.push(tab.href).catch((err) => console.error(err));
-                  }}
-                  value={tab.href}
-                  icon={tab.icon}
-                >
-                  {tab.label}
-                </Tabs.Tab>
+                <Link href={tab.href} key={index}>
+                  <Tabs.Tab value={tab.href} icon={tab.icon}>
+                    {tab.label}
+                  </Tabs.Tab>
+                </Link>
               ))}
             </Tabs.List>
           </nav>
