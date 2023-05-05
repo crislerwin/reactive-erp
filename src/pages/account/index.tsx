@@ -2,29 +2,27 @@ import { type NextPage } from "next";
 import { type PageType, SideBar, type TabType } from "@/components/SideBar";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
-import Home from "./home";
-import { IconUsersGroup } from "@tabler/icons-react";
+import { IconUser } from "@tabler/icons-react";
+import AccountPage from "./[userId]";
 
 const pages: PageType[] = [
   {
-    page: <Home />,
-    value: "/persons",
+    page: <AccountPage />,
+    value: "/account",
   },
 ];
-
-const tabRoutes: TabType[] = [
+const tabs: TabType[] = [
   {
-    label: "Equipe",
-    href: "/persons",
-    icon: <IconUsersGroup size="0.8rem" />,
+    label: "Conta",
+    href: "/account",
+    icon: <IconUser size="0.8rem" />,
   },
 ];
-
-const Persons: NextPage = () => {
-  return <SideBar pages={pages} tabs={tabRoutes} />;
+const Profile: NextPage = () => {
+  return <SideBar pages={pages} tabs={tabs} />;
 };
 
-export default Persons;
+export default Profile;
 
 export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   const { userId } = getAuth(ctx.req);

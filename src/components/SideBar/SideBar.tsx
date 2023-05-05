@@ -1,34 +1,35 @@
 import React from "react";
 import { useClerk, useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
-import { ChevronRightIcon, HomeRoundedIcon, LotusIcon } from "../Icons";
-import { Avatar, Menu } from "@mantine/core";
+import { LotusIcon } from "../Icons";
+import { Avatar, Menu, Tabs } from "@mantine/core";
 import { IconSettings, IconLogout } from "@tabler/icons-react";
+import Link from "next/link";
 
-const makePrettyPathNames: Record<string, string> = {
-  home: "Home",
-  account: "Conta",
-  companies: "Empresas",
-  persons: "Equipe",
+export type TabType = {
+  icon: React.ReactNode;
+  label: string;
+  href: string;
 };
 
-export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
-  children,
-}) => {
+export type PageType = {
+  value: string;
+  page: React.ReactNode;
+};
+
+export const SideBar: React.FC<{
+  pages?: PageType[];
+  tabs?: TabType[];
+}> = ({ pages = [], tabs = [] }) => {
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();
-
   const router = useRouter();
   const { route } = router;
   const menuItems = useMenuItems();
-  const [primaryPath, secondaryPath] = route
-    .split("/")
-    .filter((item) => item !== "");
 
   const handleLogout = () => {
     signOut().catch((err) => console.log(err));
@@ -69,7 +70,7 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
                   onClick={() => {
                     router
                       .push({
-                        pathname: "/home/account/[userId]",
+                        pathname: "/account",
                         query: { userId: user.id },
                       })
                       .catch((err) => console.error(err));
@@ -127,35 +128,28 @@ export const SideBar: React.FC<{ children?: React.ReactNode }> = ({
           open ? "ml-12 md:ml-60" : "ml-12"
         } transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
-        <nav
-          className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
-          aria-label="Breadcrumb"
-        >
-          <ol className="inline-flex items-center space-x-1 md:space-x-3">
-            <li className="inline-flex items-center">
-              <Link
-                href={primaryPath ? `/${primaryPath}` : "/home"}
-                className="inline-flex items-center text-sm font-medium text-slate-700  hover:text-purple-500 dark:text-slate-300 dark:hover:text-blue-500"
-              >
-                <HomeRoundedIcon className="mr-2 h-4 w-4" />
-                {primaryPath && makePrettyPathNames[primaryPath]}
-              </Link>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <ChevronRightIcon className="h-4 w-4 text-gray-400" />
-                <Link
-                  href="/"
-                  className="ml-1 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white md:ml-2"
-                >
-                  {secondaryPath && makePrettyPathNames[secondaryPath]}
+        <Tabs defaultValue={route}>
+          <nav
+            aria-label="Breadcrumb"
+            className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
+          >
+            <Tabs.List>
+              {tabs.map((tab, index) => (
+                <Link href={tab.href} key={index}>
+                  <Tabs.Tab value={tab.href} icon={tab.icon}>
+                    {tab.label}
+                  </Tabs.Tab>
                 </Link>
-              </div>
-            </li>
-          </ol>
-        </nav>
+              ))}
+            </Tabs.List>
+          </nav>
 
-        {children}
+          {pages.map((page, index) => (
+            <Tabs.Panel key={index} value={page.value} pt="xs">
+              {page.page}
+            </Tabs.Panel>
+          ))}
+        </Tabs>
       </div>
     </>
   );

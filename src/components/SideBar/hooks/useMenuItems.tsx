@@ -1,5 +1,5 @@
-import { AddPeopleIcon, DashBoardIcon, HomeIcon } from "@/components/Icons";
 import { type MenuItemType } from "@/components/MenuItems";
+import { IconBuilding, IconHome, IconUsersGroup } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 
 export const useMenuItems = () => {
@@ -7,21 +7,21 @@ export const useMenuItems = () => {
   const { pathname } = router;
   const menuItems: MenuItemType[] = [
     {
-      icon: <HomeIcon />,
+      icon: <IconHome className="h-4 w-4" />,
       label: "Home",
-      path: "/home",
-      selected: pathname === "/home",
+      href: "/",
+      selected: pathname === "/",
     },
     {
-      icon: <DashBoardIcon />,
+      icon: <IconBuilding className="h-4 w-4" />,
       label: "Empresas",
-      path: "/companies",
+      href: "/companies",
       selected: pathname === "/companies",
     },
     {
-      icon: <AddPeopleIcon />,
+      icon: <IconUsersGroup className="h-4 w-4" />,
       label: "Equipe",
-      path: "/persons",
+      href: "/persons",
       selected: pathname === "/persons",
     },
   ];

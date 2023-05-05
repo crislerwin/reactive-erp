@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 
 const SignupPage: NextPage = () => {
   return (
-    <div>
+    <div className="m-40 flex justify-center">
       <SignUp path="/sign-up" routing="path" signInUrl="/sign-in" />
     </div>
   );
