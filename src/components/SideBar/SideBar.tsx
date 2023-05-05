@@ -11,10 +11,10 @@ import { IconSettings, IconLogout } from "@tabler/icons-react";
 export type TabType = {
   icon: React.ReactNode;
   label: string;
-  route: string;
+  href: string;
 };
 
-type PageType = {
+export type PageType = {
   value: string;
   page: React.ReactNode;
 };
@@ -69,7 +69,7 @@ export const SideBar: React.FC<{
                   onClick={() => {
                     router
                       .push({
-                        pathname: "/home/account/[userId]",
+                        pathname: "/account",
                         query: { userId: user.id },
                       })
                       .catch((err) => console.error(err));
@@ -137,9 +137,9 @@ export const SideBar: React.FC<{
                 <Tabs.Tab
                   key={index}
                   onClick={() => {
-                    router.push(tab.route).catch((err) => console.error(err));
+                    router.push(tab.href).catch((err) => console.error(err));
                   }}
-                  value={tab.route}
+                  value={tab.href}
                   icon={tab.icon}
                 >
                   {tab.label}

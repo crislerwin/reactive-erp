@@ -3,14 +3,14 @@ import { IconBuilding } from "@tabler/icons-react";
 import React from "react";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
-import { Home } from "./home";
+import Home from "./home";
 import { SideBar, type TabType } from "@/components/SideBar";
 
 const tabRoutes: TabType[] = [
   {
     icon: <IconBuilding size="0.8rem" />,
     label: "Empresas",
-    route: "/companies",
+    href: "/companies",
   },
 ];
 
