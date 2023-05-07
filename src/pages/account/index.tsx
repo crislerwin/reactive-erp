@@ -7,7 +7,7 @@ import AccountPage from "./[userId]";
 
 const pages: PageType[] = [
   {
-    page: <AccountPage />,
+    element: <AccountPage />,
     value: "/account",
   },
 ];

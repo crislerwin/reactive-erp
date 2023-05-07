@@ -17,7 +17,7 @@ export type TabType = {
 
 export type PageType = {
   value: string;
-  page: React.ReactElement;
+  element: React.ReactElement;
 };
 
 type LayoutProps = {
@@ -151,7 +151,7 @@ export const Layout: React.FC<LayoutProps> = ({ pages = [], tabs = [] }) => {
 
             {pages.map((page, index) => (
               <Tabs.Panel key={index} value={page.value} pt="xs">
-                {page.page}
+                {page.element}
               </Tabs.Panel>
             ))}
           </Tabs>

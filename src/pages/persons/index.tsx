@@ -7,7 +7,7 @@ import { IconUsersGroup } from "@tabler/icons-react";
 
 const pages: PageType[] = [
   {
-    page: <Home />,
+    element: <Home />,
     value: "/persons",
   },
 ];
