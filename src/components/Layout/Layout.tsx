@@ -17,13 +17,15 @@ export type TabType = {
 
 export type PageType = {
   value: string;
-  page: React.ReactNode;
+  page: React.ReactElement;
 };
 
-export const SideBar: React.FC<{
+type LayoutProps = {
   pages?: PageType[];
   tabs?: TabType[];
-}> = ({ pages = [], tabs = [] }) => {
+};
+
+export const Layout: React.FC<LayoutProps> = ({ pages = [], tabs = [] }) => {
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();

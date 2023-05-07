@@ -4,7 +4,7 @@ import React from "react";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
 import Home from "./home";
-import { SideBar, type TabType } from "@/components/SideBar";
+import { Layout, type TabType } from "@/components/Layout";
 
 const tabRoutes: TabType[] = [
   {
@@ -21,7 +21,7 @@ const pages = [
   },
 ];
 const Companies: NextPage = () => {
-  return <SideBar pages={pages} tabs={tabRoutes} />;
+  return <Layout pages={pages} tabs={tabRoutes} />;
 };
 
 export default Companies;
