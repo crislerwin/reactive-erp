@@ -1,4 +1,4 @@
-import { MoonIcon, SunIcon } from "../Icons";
+import { IconMoon, IconSun } from "@tabler/icons-react";
 import { useTheme } from "./useTheme";
 
 export const ThemeToggle = () => {
@@ -12,7 +12,7 @@ export const ThemeToggle = () => {
           theme === "dark" ? "hidden" : ""
         } cursor-pointer text-slate-700 hover:text-purple-500 dark:text-white dark:hover:text-[#38BDF8]`}
       >
-        <MoonIcon />
+        <IconMoon className="h-4 w-4" />
       </div>
       <div
         onClick={() => setTheme("light")}
@@ -20,7 +20,7 @@ export const ThemeToggle = () => {
           theme === "light" ? "hidden" : ""
         } cursor-pointer hover:text-blue-500 dark:text-white dark:hover:text-[#38BDF8]`}
       >
-        <SunIcon />
+        <IconSun className="h-4 w-4" />
       </div>
     </div>
   );
