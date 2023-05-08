@@ -12,9 +12,9 @@ export const CompanyTable: React.FC = () => {
   });
 
   const tableData = useMemo(() => {
-    if (!data) return [];
+    if (!data || isFetching) return [];
     return data;
-  }, [data]);
+  }, [data, isFetching]);
 
   const columns: MRT_ColumnDef<Company>[] = useMemo(
     () => [

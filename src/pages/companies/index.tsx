@@ -4,7 +4,7 @@ import React from "react";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
 import Home from "./home";
-import { SideBar, type TabType } from "@/components/SideBar";
+import { type PageType, SideBar, type TabType } from "@/components/SideBar";
 
 const tabRoutes: TabType[] = [
   {
@@ -14,7 +14,7 @@ const tabRoutes: TabType[] = [
   },
 ];
 
-const pages = [
+const pages: PageType[] = [
   {
     value: "/companies",
     page: <Home />,
