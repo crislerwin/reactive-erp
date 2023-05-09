@@ -43,6 +43,7 @@
     "next": "^13.2.4",
     "nookies": "^2.5.2",
     "react": "18.2.0",
+    "react-data-grid": "7.0.0-beta.30",
     "react-dom": "18.2.0",
     "superjson": "1.12.2",
     "vitest": "^0.30.1",

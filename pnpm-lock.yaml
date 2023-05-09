@@ -47,6 +47,7 @@ specifiers:
   prettier-plugin-tailwindcss: ^0.2.6
   prisma: ^4.13.0
   react: 18.2.0
+  react-data-grid: 7.0.0-beta.30
   react-dom: 18.2.0
   storybook: ^7.0.6
   superjson: 1.12.2
@@ -80,6 +81,7 @@ dependencies:
   next: 13.3.4_3j7hb26pwgm6spbxoejtjx6xja
   nookies: 2.5.2
   react: 18.2.0
+  react-data-grid: 7.0.0-beta.30_biqbaboplfbrettd7655fr4n2y
   react-dom: 18.2.0_react@18.2.0
   superjson: 1.12.2
   vitest: 0.30.1_less@4.1.3
@@ -9039,6 +9041,17 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: true
+
+  /react-data-grid/7.0.0-beta.30_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-QdNXxl+fSGTy+S6TD7O9h1slSX7X+0dTy8Z3n1zWvhlfNoNdWmS5VsUbbv2xHyVywBvyUVuSOFIueKnuQ4IeSw==}
+    peerDependencies:
+      react: ^18.0
+      react-dom: ^18.0
+    dependencies:
+      clsx: 1.1.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
 
   /react-docgen-typescript/2.2.2_typescript@5.0.4:
     resolution: {integrity: sha512-tvg2ZtOpOi6QDwsb3GZhOjDkkX0h8Z2gipvTg6OVMUyoYoURhEiRNePT8NZItTVCDh39JJHnLdfCOkzoLbFnTg==}
