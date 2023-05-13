@@ -9,7 +9,3 @@ body {
 .rdg-cell {
   @apply border border-gray-300 bg-slate-200 text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100;
 }
-
-.rdg-headerCell {
-  @apply bg-red-400 dark:bg-red-600;
-}
