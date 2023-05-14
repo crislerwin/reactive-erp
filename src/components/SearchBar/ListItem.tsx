@@ -1,18 +1,18 @@
-import Icon, { IconType } from "./Icon";
+import { CustomIcon } from "./Icon";
 import React, {
-  AnchorHTMLAttributes,
-  ButtonHTMLAttributes,
-  DetailedHTMLProps,
-  FC,
-  Fragment,
-  ReactNode,
+  type ButtonHTMLAttributes,
+  type DetailedHTMLProps,
+  type FC,
+  type ReactNode,
   useContext,
 } from "react";
-import { IconName, RenderLink } from "../types";
-import { OpenContext, RenderLinkContext, SelectContext } from "../lib/context";
-import { classNames } from "../lib/utils";
+import { type IconName } from "./types";
+import { OpenContext, SelectContext } from "./lib/context";
+import { classNames } from "./lib/utils";
+import { type TablerIconsProps } from "@tabler/icons-react";
+import Link, { type LinkProps } from "next/link";
 
-export type ListItemType = "Link" | "Action";
+export type ListItemType = "Link" | "Ação";
 
 function getListItemWrapperStyles(selected: boolean, disabled?: boolean) {
   return classNames(
@@ -29,48 +29,34 @@ function getListItemWrapperStyles(selected: boolean, disabled?: boolean) {
 interface ListItemBaseProps {
   closeOnSelect?: boolean;
   icon?: FC | IconName;
-  iconType?: IconType;
   showType?: boolean;
   disabled?: boolean;
   keywords?: string[];
   index: number;
 }
 
-export interface LinkProps
-  extends ListItemBaseProps,
-    DetailedHTMLProps<
-      AnchorHTMLAttributes<HTMLAnchorElement>,
-      HTMLAnchorElement
-    > {
-  renderLink?: RenderLink;
+export interface SearchLinkProps extends ListItemBaseProps, LinkProps {
+  className?: string;
+  children: ReactNode;
 }
 
-export function Link({
-  renderLink: localRenderLink,
+export const SearchLink: React.FC<SearchLinkProps> = ({
   closeOnSelect = true,
   disabled = false,
   showType = true,
   className,
-  iconType,
   children,
   onClick,
   index,
   icon,
   ...rest
-}: LinkProps) {
-  const { renderLink: globalRenderLink } = useContext(RenderLinkContext);
+}) => {
   const { onChangeOpen } = useContext(OpenContext);
   const { selected } = useContext(SelectContext);
 
-  const renderLink = localRenderLink || globalRenderLink;
-
   function renderLinkContent() {
     return (
-      <ListItemContent
-        type={showType ? "Link" : undefined}
-        iconType={iconType}
-        icon={icon}
-      >
+      <ListItemContent type={showType ? "Link" : undefined} icon={icon}>
         {children}
       </ListItemContent>
     );
@@ -81,31 +67,21 @@ export function Link({
     className
   );
 
-  function clickAndClose(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+  const clickAndClose = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
     if (rest.href && !disabled) {
       if (onClick) {
         onClick(e);
       }
-
       if (closeOnSelect) {
         onChangeOpen(false);
       }
     }
-  }
+  };
 
-  return renderLink ? (
-    <Fragment>
-      {renderLink({
-        ...rest,
-        "data-close-on-select": closeOnSelect,
-        children: renderLinkContent(),
-        "aria-disabled": disabled,
-        onClick: clickAndClose,
-        className: styles,
-      })}
-    </Fragment>
-  ) : (
-    <a
+  return (
+    <Link
       {...rest}
       data-close-on-select={closeOnSelect}
       aria-disabled={disabled}
@@ -113,9 +89,9 @@ export function Link({
       className={styles}
     >
       {renderLinkContent()}
-    </a>
+    </Link>
   );
-}
+};
 
 export interface ButtonProps
   extends ListItemBaseProps,
@@ -129,7 +105,6 @@ export function Button({
   showType = true,
   className,
   children,
-  iconType,
   onClick,
   index,
   icon,
@@ -141,7 +116,6 @@ export function Button({
   function clickAndClose(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     if (onClick) {
       onClick(e);
-
       if (closeOnSelect) {
         onChangeOpen(false);
       }
@@ -159,11 +133,7 @@ export function Button({
         className
       )}
     >
-      <ListItemContent
-        type={showType ? "Action" : undefined}
-        iconType={iconType}
-        icon={icon}
-      >
+      <ListItemContent type={showType ? "Ação" : undefined} icon={icon}>
         {children}
       </ListItemContent>
     </button>
@@ -171,15 +141,13 @@ export function Button({
 }
 
 interface ListItemContentProps {
-  icon?: FC<any> | IconName;
-  iconType?: IconType;
+  icon?: FC<TablerIconsProps> | IconName;
   children: ReactNode;
   type?: ListItemType;
 }
 
 function ListItemContent({
   icon: ListItemIcon,
-  iconType,
   children,
   type,
 }: ListItemContentProps) {
@@ -188,25 +156,28 @@ function ListItemContent({
       <div className="flex w-full items-center space-x-2.5">
         {ListItemIcon &&
           (typeof ListItemIcon === "string" ? (
-            <Icon name={ListItemIcon as IconName} type={iconType} />
+            <CustomIcon
+              className="h-4 w-4  text-gray-500"
+              iconName={ListItemIcon}
+            />
           ) : (
-            <ListItemIcon className="w-5 h-5 text-gray-500" />
+            <ListItemIcon className="h-4 w-4 text-gray-500" />
           ))}
 
         {typeof children === "string" ? (
-          <span className="truncate max-w-md dark:text-white">{children}</span>
+          <span className="max-w-md truncate dark:text-white">{children}</span>
         ) : (
           children
         )}
       </div>
 
-      {type && <span className="text-gray-500 text-sm">{type}</span>}
+      {type && <span className="text-sm text-gray-500">{type}</span>}
     </>
   );
 }
 
-export default function ListItem(props: ButtonProps & LinkProps) {
-  const Wrapper = props.href ? Link : Button;
+export default function ListItem(props: ButtonProps & SearchLinkProps) {
+  const Wrapper = props.href ? SearchLink : Button;
 
   return <Wrapper {...props} />;
 }

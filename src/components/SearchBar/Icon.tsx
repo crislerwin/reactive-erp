@@ -1,13 +1,15 @@
-import React, { type SVGProps } from "react";
+import React from "react";
 import { type IconName } from "./types";
+import * as TablerIcon from "@tabler/icons-react";
 
-export type IconType = "outline" | "solid";
-
-export interface IconProps extends SVGProps<SVGSVGElement> {
-  type?: IconType;
-  name: IconName;
+export interface IconProps extends TablerIcon.TablerIconsProps {
+  iconName: IconName;
 }
 
-export default function Icon({ name, type = "solid", ...rest }: IconProps) {
-  return <></>;
-}
+export const CustomIcon: React.FC<IconProps> = ({
+  iconName,
+  ...rest
+}): JSX.Element => {
+  const Icon = TablerIcon[iconName] as React.FC<TablerIcon.TablerIconsProps>;
+  return <Icon {...rest} />;
+};

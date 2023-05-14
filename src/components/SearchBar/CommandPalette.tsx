@@ -1,8 +1,8 @@
 import FreeSearchAction from "./FreeSearchAction";
-import Icon from "./Icon";
+import { CustomIcon } from "./Icon";
 import List from "./List";
 import ListItem from "./ListItem";
-import Page from "./Page";
+
 import React, {
   Fragment,
   type ReactNode,
@@ -14,18 +14,15 @@ import Search from "./Search";
 import {
   OpenContext,
   PageContext,
-  RenderLinkContext,
   SearchContext,
   SelectContext,
 } from "./lib/context";
-import { type RenderLink } from "./types";
 import { Transition, Dialog } from "@headlessui/react";
 
 interface CommandPaletteProps {
   onChangeSelected?: (value: number) => void;
   onChangeSearch: (search: string) => void;
   onChangeOpen: (isOpen: boolean) => void;
-  renderLink?: RenderLink;
   placeholder?: string;
   children: ReactNode;
   footer?: ReactNode;
@@ -41,7 +38,6 @@ function CommandPalette({
   onChangeSelected,
   onChangeSearch,
   onChangeOpen,
-  renderLink,
   children,
   isOpen,
   footer,
@@ -49,6 +45,7 @@ function CommandPalette({
   page,
 }: CommandPaletteProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [searchPrefix, setSearchPrefix] = useState<string[] | undefined>();
 
   const [selected, setSelected] =
     typeof selectedParent === "number" && onChangeSelected
@@ -56,9 +53,7 @@ function CommandPalette({
       : // eslint-disable-next-line react-hooks/rules-of-hooks
         useState<number>(0);
 
-  const [searchPrefix, setSearchPrefix] = useState<string[] | undefined>();
-
-  function handleChangeSelected(direction?: "up" | "down") {
+  const handleChangeSelected = (direction?: "up" | "down") => {
     const items = document.querySelectorAll(".command-palette-list-item");
 
     let index = 0;
@@ -95,11 +90,10 @@ function CommandPalette({
         block: newIndex ? "center" : "end",
       });
     }
-  }
+  };
 
-  function handleSelect() {
+  const handleSelect = () => {
     const items = document.querySelectorAll(".command-palette-list-item");
-
     let index = 0;
     let item: HTMLAnchorElement | HTMLButtonElement | undefined;
 
@@ -111,7 +105,6 @@ function CommandPalette({
 
     // eslint-disable-next-line prefer-const
     item = items[index] as HTMLAnchorElement | HTMLButtonElement;
-
     if (item) {
       item.click();
       if (
@@ -120,7 +113,7 @@ function CommandPalette({
         onChangeOpen(false);
       }
     }
-  }
+  };
 
   useEffect(() => {
     handleChangeSelected();
@@ -128,7 +121,7 @@ function CommandPalette({
 
   useEffect(() => {
     setSelected(0);
-  }, [page]);
+  }, [page, setSelected]);
 
   return (
     <div
@@ -216,11 +209,7 @@ function CommandPalette({
                         >
                           <SearchContext.Provider value={{ search }}>
                             <SelectContext.Provider value={{ selected }}>
-                              <RenderLinkContext.Provider
-                                value={{ renderLink }}
-                              >
-                                {children}
-                              </RenderLinkContext.Provider>
+                              {children}
                             </SelectContext.Provider>
                           </SearchContext.Provider>
                         </PageContext.Provider>
@@ -239,10 +228,9 @@ function CommandPalette({
   );
 }
 
-CommandPalette.Page = Page;
 CommandPalette.List = List;
 CommandPalette.ListItem = ListItem;
-CommandPalette.Icon = Icon;
+CommandPalette.Icon = CustomIcon;
 CommandPalette.FreeSearchAction = FreeSearchAction;
 
 export default CommandPalette;

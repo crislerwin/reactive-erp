@@ -1,13 +1,9 @@
-import CommandPalette from "../components/CommandPalette";
-import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { Children, ReactNode } from "react";
-import { JsonStructure } from "../types";
+import CommandPalette from "../CommandPalette";
+import React, { type Dispatch, type SetStateAction, useEffect } from "react";
+import { Children, type ReactNode } from "react";
+import { type JsonStructure } from "../types";
 
-export function getItemIndex(
-  items: JsonStructure,
-  id: string,
-  startIndex: number = 0
-) {
+export function getItemIndex(items: JsonStructure, id: string, startIndex = 0) {
   return (
     items
       .map((list) => list.items)

@@ -1,8 +1,9 @@
-import ListItem, { type ButtonProps, type LinkProps } from "./ListItem";
+import ListItem, { type ButtonProps, type SearchLinkProps } from "./ListItem";
 import React, { useContext } from "react";
 import { SearchContext } from "./lib/context";
 
-interface FreeSearchActionProps extends Omit<ButtonProps & LinkProps, "index"> {
+interface FreeSearchActionProps
+  extends Omit<ButtonProps & SearchLinkProps, "index"> {
   index?: number;
   label?: string;
 }
@@ -14,7 +15,7 @@ export default function FreeSearchAction({
   const { search } = useContext(SearchContext);
 
   return (
-    <ListItem index={0} icon="MagnifyingGlassIcon" showType={false} {...props}>
+    <ListItem index={0} icon="IconGlass" showType={false} {...props}>
       <span className="max-w-md truncate dark:text-white">
         {label} <span className="font-semibold">{search}</span>
       </span>

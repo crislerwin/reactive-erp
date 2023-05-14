@@ -8,10 +8,10 @@ interface SearchProps {
   value: string;
 }
 
-function Search(
+const Search = (
   { onChange, placeholder, prefix, value }: SearchProps,
   ref: Ref<HTMLInputElement>
-) {
+) => {
   return (
     <div className="flex items-center space-x-1.5 pl-3">
       <IconGlass className="pointer-events-none w-4 text-gray-400 dark:text-gray-600" />
@@ -72,6 +72,6 @@ function Search(
       </div>
     </div>
   );
-}
+};
 
 export default forwardRef(Search);

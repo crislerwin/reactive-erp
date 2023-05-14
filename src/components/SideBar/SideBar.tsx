@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { LotusIcon } from "../Icons";
-import { Avatar, Menu, Tabs } from "@mantine/core";
-import { IconSettings, IconLogout } from "@tabler/icons-react";
+import { Avatar, Button, Menu, Tabs } from "@mantine/core";
+import { IconSettings, IconLogout, IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
+
+import CommandPalette, {
+  filterItems,
+  getItemIndex,
+  useHandleOpenCommandPalette,
+} from "../SearchBar";
 
 export type TabType = {
   icon: React.ReactNode;
@@ -27,9 +33,43 @@ export const SideBar: React.FC<{
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();
+  const [openSearch, setOpenSearch] = useState<boolean>(false);
   const router = useRouter();
   const { route } = router;
   const menuItems = useMenuItems();
+  const [search, setSearch] = useState("");
+
+  useHandleOpenCommandPalette(setOpenSearch);
+
+  const filteredItems = filterItems(
+    [
+      {
+        heading: "Paginas",
+        id: "home",
+        items: [
+          {
+            id: "home",
+            children: "Home",
+            icon: "IconHome",
+            href: "/",
+          },
+          {
+            id: "company",
+            children: "Empresas",
+            icon: "IconBuilding",
+            href: "/companies",
+          },
+          {
+            id: "persons",
+            children: "Equipe",
+            icon: "IconUsers",
+            href: "/persons",
+          },
+        ],
+      },
+    ],
+    search
+  );
 
   const handleLogout = () => {
     signOut().catch((err) => console.log(err));
@@ -40,6 +80,25 @@ export const SideBar: React.FC<{
   const hasTabs = tabs.length > 0;
   return (
     <>
+      <CommandPalette
+        onChangeSearch={setSearch}
+        onChangeOpen={setOpenSearch}
+        search={search}
+        isOpen={openSearch}
+        placeholder="Procurar..."
+      >
+        {filteredItems.map((list) => (
+          <CommandPalette.List key={list.id} heading={list.heading}>
+            {list.items.map(({ id, ...rest }) => (
+              <CommandPalette.ListItem
+                key={id}
+                index={getItemIndex(filteredItems, id)}
+                {...rest}
+              />
+            ))}
+          </CommandPalette.List>
+        ))}
+      </CommandPalette>
       <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-slate-300">
         <div
           className={`logo ${
@@ -54,6 +113,13 @@ export const SideBar: React.FC<{
             <div className="flex flex-none justify-center">
               <div className="flex h-8 w-8 "></div>
             </div>
+            <Button
+              leftIcon={<IconSearch className="h-4 w-4" />}
+              className="border border-slate-100 bg-slate-100 hover:bg-slate-200 dark:border-gray-600 dark:bg-[#0F172A] dark:text-slate-300 dark:hover:bg-gray-800"
+              onClick={() => setOpenSearch(true)}
+            >
+              Procurar (Ctrl + K)
+            </Button>
             <Menu width={240} position="bottom-end" shadow="md">
               <Menu.Target>
                 <div className="flex flex-none cursor-pointer justify-center">
