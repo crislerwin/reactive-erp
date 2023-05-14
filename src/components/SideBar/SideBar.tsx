@@ -67,6 +67,18 @@ export const SideBar: React.FC<{
           },
         ],
       },
+      {
+        heading: "Equipe",
+        id: "persons",
+        items: [
+          {
+            id: "persons",
+            children: "Equipe",
+            icon: "IconUsers",
+            href: "/persons",
+          },
+        ],
+      },
     ],
     search
   );
