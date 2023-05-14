@@ -44,7 +44,7 @@ export const SideBar: React.FC<{
   const filteredItems = filterItems(
     [
       {
-        heading: "Paginas",
+        heading: "Home",
         id: "home",
         items: [
           {
@@ -53,17 +53,17 @@ export const SideBar: React.FC<{
             icon: "IconHome",
             href: "/",
           },
+        ],
+      },
+      {
+        heading: "Empresas",
+        id: "companies",
+        items: [
           {
-            id: "company",
+            id: "companies",
             children: "Empresas",
             icon: "IconBuilding",
             href: "/companies",
-          },
-          {
-            id: "persons",
-            children: "Equipe",
-            icon: "IconUsers",
-            href: "/persons",
           },
         ],
       },
@@ -78,6 +78,7 @@ export const SideBar: React.FC<{
   if (!user) return <></>;
 
   const hasTabs = tabs.length > 0;
+
   return (
     <>
       <CommandPalette
@@ -85,6 +86,7 @@ export const SideBar: React.FC<{
         onChangeOpen={setOpenSearch}
         search={search}
         isOpen={openSearch}
+        page={route}
         placeholder="Procurar..."
       >
         {filteredItems.map((list) => (

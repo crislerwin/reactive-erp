@@ -3,16 +3,20 @@ import React, { type Dispatch, type SetStateAction, useEffect } from "react";
 import { Children, type ReactNode } from "react";
 import { type JsonStructure } from "../types";
 
-export function getItemIndex(items: JsonStructure, id: string, startIndex = 0) {
+export const getItemIndex = (
+  items: JsonStructure,
+  id: string,
+  startIndex = 0
+): number => {
   return (
     items
       .map((list) => list.items)
       .reduce((a, b) => a.concat(b))
       .findIndex((i) => i.id === id) + startIndex
   );
-}
+};
 
-export function filterItems(
+export const filterItems = (
   items: JsonStructure,
   search: string,
   {
@@ -22,7 +26,7 @@ export function filterItems(
   } = {
     filterOnListHeading: true,
   }
-) {
+) => {
   return items
     .filter((list) => {
       const listHasMatchingItem = list.items.some(
@@ -52,25 +56,25 @@ export function filterItems(
           : matchingItems,
       };
     });
-}
+};
 
-function doesChildMatchSearch(search: string, children?: ReactNode) {
+const doesChildMatchSearch = (search: string, children?: ReactNode) => {
   return children
     ? getLabelFromChildren(children)
         .toLowerCase()
         .includes(search.toLowerCase())
     : false;
-}
+};
 
-function doesKeywordsMatchSearch(search: string, keywords: string[]) {
+const doesKeywordsMatchSearch = (search: string, keywords: string[]) => {
   return keywords.includes("*")
     ? true
     : keywords.some((keyword) =>
         keyword.toLowerCase().includes(search.toLowerCase())
       );
-}
+};
 
-function getLabelFromChildren(children: ReactNode) {
+const getLabelFromChildren = (children: ReactNode) => {
   let label = "";
 
   Children.map(children, (child) => {
@@ -80,15 +84,15 @@ function getLabelFromChildren(children: ReactNode) {
   });
 
   return label;
-}
+};
 
-export function classNames(
+export const classNames = (
   ...classes: Array<string | null | boolean | undefined>
-) {
+) => {
   return classes.filter(Boolean).join(" ");
-}
+};
 
-export function renderJsonStructure(jsonStructure: JsonStructure) {
+export const renderJsonStructure = (jsonStructure: JsonStructure) => {
   return jsonStructure.map((list) => (
     <CommandPalette.List heading={list.heading} key={list.id}>
       {list.items.map(({ id, ...rest }) => (
@@ -100,11 +104,11 @@ export function renderJsonStructure(jsonStructure: JsonStructure) {
       ))}
     </CommandPalette.List>
   ));
-}
+};
 
-export function useHandleOpenCommandPalette(
+export const useHandleOpenCommandPalette = (
   setIsOpen: Dispatch<SetStateAction<boolean>>
-) {
+) => {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (
@@ -128,4 +132,4 @@ export function useHandleOpenCommandPalette(
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [setIsOpen]);
-}
+};

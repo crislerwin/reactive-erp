@@ -1,4 +1,4 @@
-import { IconGlass, IconX } from "@tabler/icons-react";
+import { IconGlass, IconSearch, IconX } from "@tabler/icons-react";
 import React, { forwardRef, Fragment, type Ref } from "react";
 
 interface SearchProps {
@@ -14,7 +14,7 @@ const Search = (
 ) => {
   return (
     <div className="flex items-center space-x-1.5 pl-3">
-      <IconGlass className="pointer-events-none w-4 text-gray-400 dark:text-gray-600" />
+      <IconSearch className="pointer-events-none w-4 text-gray-400 dark:text-gray-600" />
 
       {prefix?.length
         ? prefix.map((p) => {
