@@ -6,6 +6,7 @@ specifiers:
   '@emotion/react': ^11.10.8
   '@emotion/server': ^11.10.0
   '@faker-js/faker': ^7.6.0
+  '@headlessui/react': ^1.7.14
   '@mantine/core': ^6.0.9
   '@mantine/dates': ^6.0.9
   '@mantine/form': ^6.0.9
@@ -64,6 +65,7 @@ dependencies:
   '@clerk/nextjs': 4.16.4_vwuoxxmoeydgew5hhkavebkk4e
   '@emotion/react': 11.10.8_3mjolpizrsjgnt7s4ahgoveqvu
   '@emotion/server': 11.10.0
+  '@headlessui/react': 1.7.14_biqbaboplfbrettd7655fr4n2y
   '@mantine/core': 6.0.10_3iwjtwovyuvzmh2mcy4gpdn7ty
   '@mantine/dates': 6.0.10_lcwiclvumdddaqf2u4s444sdr4
   '@mantine/form': 6.0.10_react@18.2.0
@@ -1913,6 +1915,18 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       tabbable: 6.1.1
+    dev: false
+
+  /@headlessui/react/1.7.14_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-znzdq9PG8rkwcu9oQ2FwIy0ZFtP9Z7ycS+BAqJ3R5EIqC/0bJGvhT7193rFf+45i9nnPsYvCQVW4V/bB9Xc+gA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+    dependencies:
+      client-only: 0.0.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@humanwhocodes/config-array/0.11.8:

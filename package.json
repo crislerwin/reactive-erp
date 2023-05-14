@@ -24,6 +24,7 @@
     "@clerk/nextjs": "^4.16.4",
     "@emotion/react": "^11.10.8",
     "@emotion/server": "^11.10.0",
+    "@headlessui/react": "^1.7.14",
     "@mantine/core": "^6.0.9",
     "@mantine/dates": "^6.0.9",
     "@mantine/form": "^6.0.9",
