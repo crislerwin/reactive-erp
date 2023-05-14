@@ -116,10 +116,6 @@ function CommandPalette({
   };
 
   useEffect(() => {
-    handleChangeSelected();
-  }, [search]);
-
-  useEffect(() => {
     setSelected(0);
   }, [page, setSelected]);
 

@@ -127,5 +127,5 @@ export function useHandleOpenCommandPalette(
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [setIsOpen]);
 }
