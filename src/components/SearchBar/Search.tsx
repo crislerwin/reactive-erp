@@ -1,4 +1,4 @@
-import { IconGlass, IconSearch, IconX } from "@tabler/icons-react";
+import { IconSearch, IconX } from "@tabler/icons-react";
 import React, { forwardRef, Fragment, type Ref } from "react";
 
 interface SearchProps {

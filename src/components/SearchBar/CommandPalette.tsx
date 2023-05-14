@@ -1,5 +1,5 @@
 import FreeSearchAction from "./FreeSearchAction";
-import { CustomIcon } from "./Icon";
+import { CustomIcon } from "../Icons/CustomIcon";
 import List from "./List";
 import ListItem from "./ListItem";
 

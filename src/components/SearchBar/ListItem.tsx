@@ -1,4 +1,4 @@
-import { CustomIcon } from "./Icon";
+import { CustomIcon } from "../Icons";
 import React, {
   type ButtonHTMLAttributes,
   type DetailedHTMLProps,

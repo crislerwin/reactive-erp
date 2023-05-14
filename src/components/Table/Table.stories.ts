@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Table } from ".";
+import { faker } from "@faker-js/faker";
 
 const meta: Meta<typeof Table> = {
-  title: "Example/Table",
+  title: "Components/Table",
   component: Table,
   tags: ["autodocs"],
   argTypes: {},
@@ -35,13 +36,11 @@ export const Primary: Story = {
         size: 150,
       },
     ],
-    data: [
-      {
-        cnpj: "123456789",
-        email: "test@email.com",
-        fantasyName: "Test",
-        socialReason: "Test",
-      },
-    ],
+    data: Array.from({ length: 10 }, () => ({
+      cnpj: faker.datatype.number(),
+      email: faker.internet.email(),
+      fantasyName: faker.company.name(),
+      socialReason: faker.company.companySuffix(),
+    })),
   },
 };
