@@ -1,6 +1,9 @@
 import React from "react";
-import { type IconName } from "../SearchBar/types";
 import * as TablerIcon from "@tabler/icons-react";
+
+type $Keys<T> = keyof T;
+
+export type IconName = $Keys<typeof TablerIcon>;
 
 export interface IconProps extends TablerIcon.TablerIconsProps {
   iconName: IconName;

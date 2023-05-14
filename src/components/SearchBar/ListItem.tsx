@@ -1,4 +1,4 @@
-import { CustomIcon } from "../Icons";
+import { CustomIcon, type IconName } from "../Icons";
 import React, {
   type ButtonHTMLAttributes,
   type DetailedHTMLProps,
@@ -6,7 +6,6 @@ import React, {
   type ReactNode,
   useContext,
 } from "react";
-import { type IconName } from "./types";
 import { OpenContext, SelectContext } from "./lib/context";
 import { classNames } from "./lib/utils";
 import { type TablerIconsProps } from "@tabler/icons-react";
@@ -14,7 +13,7 @@ import Link, { type LinkProps } from "next/link";
 
 export type ListItemType = "Link" | "Ação";
 
-function getListItemWrapperStyles(selected: boolean, disabled?: boolean) {
+const getListItemWrapperStyles = (selected: boolean, disabled?: boolean) => {
   return classNames(
     "command-palette-list-item block w-full text-left px-3.5 py-2.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-1 focus:ring-gray-300 focus:outline-none flex items-center space-x-2.5 justify-between",
     selected && !disabled
@@ -24,7 +23,7 @@ function getListItemWrapperStyles(selected: boolean, disabled?: boolean) {
       ? "cursor-default pointer-events-none opacity-50"
       : "cursor-pointer"
   );
-}
+};
 
 interface ListItemBaseProps {
   closeOnSelect?: boolean;
@@ -178,6 +177,5 @@ function ListItemContent({
 
 export default function ListItem(props: ButtonProps & SearchLinkProps) {
   const Wrapper = props.href ? SearchLink : Button;
-
   return <Wrapper {...props} />;
 }
