@@ -3,7 +3,7 @@ import { CustomDataGrid } from "./CustomDataGrid";
 import { faker } from "@faker-js/faker";
 
 const meta: Meta<typeof CustomDataGrid> = {
-  title: "Example/CustomDataGrid",
+  title: "Components/CustomDataGrid",
   component: CustomDataGrid,
   tags: ["autodocs"],
   argTypes: {
