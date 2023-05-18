@@ -1,25 +1,15 @@
 import { type NextPage } from "next";
-import { type PageType, SideBar, type TabType } from "@/components/SideBar";
+import { SideBar } from "@/components/SideBar";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
-import { IconUser } from "@tabler/icons-react";
 import AccountPage from "./[userId]";
 
-const pages: PageType[] = [
-  {
-    page: <AccountPage />,
-    value: "/account",
-  },
-];
-const tabs: TabType[] = [
-  {
-    label: "Conta",
-    href: "/account",
-    icon: <IconUser size="0.8rem" />,
-  },
-];
 const Profile: NextPage = () => {
-  return <SideBar pages={pages} tabs={tabs} />;
+  return (
+    <SideBar iconName="IconUser" label="Conta">
+      <AccountPage />
+    </SideBar>
+  );
 };
 
 export default Profile;

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { CustomDataGrid } from "./CustomDataGrid";
+import { CustomDataGrid, headerCellClass } from "./DataGrid";
 import { faker } from "@faker-js/faker";
 
 const meta: Meta<typeof CustomDataGrid> = {
@@ -35,10 +35,10 @@ export const Primary: Story = {
   args: {
     enableVirtualization: true,
     columns: [
-      { key: "id", name: "ID" },
-      { key: "title", name: "Title" },
-      { key: "firstName", name: "First Name" },
-      { key: "lastName", name: "Last Name" },
+      { key: "id", name: "ID", headerCellClass },
+      { key: "title", name: "Title", headerCellClass },
+      { key: "firstName", name: "First Name", headerCellClass },
+      { key: "lastName", name: "Last Name", headerCellClass },
     ],
     rows: Array.from({ length: 1000 }, () => ({
       id: faker.datatype.uuid(),
