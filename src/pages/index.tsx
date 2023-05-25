@@ -23,22 +23,22 @@ const Table = () => {
     {
       key: "id",
       name: "ID",
-      headerCellClass,
+      headerCellClass: headerCellClass(),
     },
     {
       key: "title",
       name: "Title",
-      headerCellClass,
+      headerCellClass: headerCellClass(),
     },
     {
       key: "firstName",
       name: "First Name",
-      headerCellClass,
+      headerCellClass: headerCellClass(),
     },
     {
       key: "lastName",
       name: "Last Name",
-      headerCellClass,
+      headerCellClass: headerCellClass(),
     },
   ];
   return <CustomDataGrid columns={columns} rows={rows} />;

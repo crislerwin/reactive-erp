@@ -201,7 +201,7 @@ export const SideBar: React.FC<SideBarProps> = ({
       <div
         className={`content ${
           open ? "ml-12 md:ml-60" : "ml-12"
-        } transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
+        } bg- bg transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
         <Tabs defaultValue={route}>
           <nav
