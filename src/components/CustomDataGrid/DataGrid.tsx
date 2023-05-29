@@ -64,6 +64,7 @@ export const CustomDataGrid: React.FC<CustomDataGridProps> = ({
         onClose={() => setContextMenuState(initialState)}
       />
       <DataGrid
+        enableVirtualization
         onCellContextMenu={onCellContextMenu}
         onCellClick={() => setContextMenuState(initialState)}
         className={tableClass()}
