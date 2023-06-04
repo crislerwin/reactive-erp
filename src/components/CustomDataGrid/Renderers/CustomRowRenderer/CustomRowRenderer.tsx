@@ -8,7 +8,7 @@ import { tv } from "tailwind-variants";
 import { type CustomRowContextType } from "../../types";
 
 const row = tv({
-  base: "bg-white text-gray-700 dark:text-white dark:bg-gray-800 border-b border-gray-400 dark:border-gray-300",
+  base: "bg-white text-gray-700 dark:text-white dark:bg-gray-800 border border-gray-400 dark:border-gray-100",
 });
 
 export const CustomRowContext = React.createContext<CustomRowContextType>({});
