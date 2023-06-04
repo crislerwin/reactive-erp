@@ -1,78 +1,106 @@
 import "react-data-grid/lib/styles.css";
 import DataGrid from "react-data-grid";
-import React from "react";
-
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { type CustomDataGridProps } from "./types";
 import {
   CustomRowContext,
   CustomRowRenderer,
 } from "./Renderers/CustomRowRenderer";
 import { tableClass } from "./styles";
-import { Box, Button } from "@mantine/core";
+import { createPortal } from "react-dom";
+import { Button, List } from "@mantine/core";
+import { CustomIcon } from "../Icons";
 
-type MenuProps = {
-  anchorEl: HTMLElement | null;
-  columnName: string;
-  onClose: () => void;
-};
-
-const ContextMenu: React.FC<MenuProps> = ({
-  anchorEl,
-  onClose,
-  columnName,
-}) => {
-  if (!anchorEl) return null;
-  return (
-    <Box
-      className="absolute z-10
-       h-40 w-40 rounded-sm bg-slate-100 dark:bg-[#0F172A]"
-      top={anchorEl?.offsetTop}
-      left={anchorEl?.offsetLeft}
-    >
-      <h1>{columnName}</h1>
-    </Box>
-  );
-};
-const initialState = {
-  currentTarget: null,
-  columnName: "",
-};
 export const CustomDataGrid: React.FC<CustomDataGridProps> = ({
   onRowFocusCapture,
-  ...rest
+  contextMenuOptions = [],
+  ...props
 }) => {
-  const [contextMenuState, setContextMenuState] = React.useState<{
-    currentTarget: HTMLElement | null;
-    columnName: string;
-  }>(initialState);
-  const onCellContextMenu: CustomDataGridProps["onCellContextMenu"] = (
-    { column },
-    evt
-  ) => {
-    evt.preventDefault();
-    evt.stopPropagation();
-    setContextMenuState({
-      currentTarget: evt.currentTarget,
-      columnName: column.name.toString(),
-    });
-  };
+  const { rows } = props;
+  const [contextMenuProps, setContextMenuProps] = useState<{
+    rowIdx: number;
+    top: number;
+    left: number;
+  } | null>(null);
+  const menuRef = useRef<HTMLMenuElement | null>(null);
+  const isContextMenuOpen = contextMenuProps !== null;
+
+  useLayoutEffect(() => {
+    if (!isContextMenuOpen) return;
+
+    const onClick = (event: MouseEvent) => {
+      if (
+        event.target instanceof Node &&
+        menuRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+      setContextMenuProps(null);
+    };
+
+    addEventListener("click", onClick);
+
+    return () => {
+      removeEventListener("click", onClick);
+    };
+  }, [isContextMenuOpen]);
+
   return (
     <CustomRowContext.Provider value={{ onRowFocusCapture }}>
-      <ContextMenu
-        columnName={contextMenuState.columnName}
-        anchorEl={contextMenuState.currentTarget}
-        onClose={() => setContextMenuState(initialState)}
-      />
       <DataGrid
         enableVirtualization
-        onCellContextMenu={onCellContextMenu}
-        onCellClick={() => setContextMenuState(initialState)}
+        onCellContextMenu={({ row }, event) => {
+          if (!contextMenuOptions.length) return;
+          event.preventGridDefault();
+          event.preventDefault();
+          setContextMenuProps({
+            rowIdx: rows.indexOf(row),
+            top: event.clientY,
+            left: event.clientX,
+          });
+        }}
         className={tableClass()}
         renderers={{
           rowRenderer: CustomRowRenderer,
         }}
-        {...rest}
+        {...props}
       />
+      {isContextMenuOpen &&
+        createPortal(
+          <menu
+            className="absolute m-2 rounded bg-slate-200 p-2 text-black dark:bg-[#0F172A] dark:text-white"
+            ref={menuRef}
+            style={{
+              top: contextMenuProps.top,
+              left: contextMenuProps.left,
+            }}
+          >
+            <List>
+              {contextMenuOptions.map((item) => (
+                <List.Item
+                  onClick={() => {
+                    item.onClick();
+                    setContextMenuProps(null);
+                  }}
+                  key={item.label}
+                >
+                  <Button
+                    compact
+                    leftIcon={
+                      <CustomIcon
+                        className="h-4 w-4"
+                        iconName={item.iconName}
+                      />
+                    }
+                  >
+                    {item.label}
+                  </Button>
+                </List.Item>
+              ))}
+            </List>
+          </menu>,
+          document.body
+        )}
     </CustomRowContext.Provider>
   );
 };
