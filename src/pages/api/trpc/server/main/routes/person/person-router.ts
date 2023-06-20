@@ -1,4 +1,3 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
@@ -6,6 +5,7 @@ import {
   createPersonInputValidation,
   updatePersonInputValidation,
 } from "./person-validation";
+import { createTRPCRouter, protectedProcedure } from "../../trpc";
 
 export const personRouter = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {

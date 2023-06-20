@@ -1,10 +1,10 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import {
   createCompanyInputValidation,
   findByIdInputValidation,
   updateCompanyInputValidation,
 } from "./company-validation";
+import { createTRPCRouter, protectedProcedure } from "../../trpc";
 
 export const companiesRouter = createTRPCRouter({
   save: protectedProcedure

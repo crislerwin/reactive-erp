@@ -1,10 +1,9 @@
-import { prisma } from "@/server/db";
-
+import { prisma } from "../infra/db/prisma/prisma";
 import { TRPCError, initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { type User, getServerAuthSession } from "./auth";
+import { type User, getServerAuthSession } from "../auth/auth";
 import { type PrismaClient } from "@prisma/client";
 
 type CreateContextOptions = {

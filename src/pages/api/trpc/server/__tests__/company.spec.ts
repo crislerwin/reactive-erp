@@ -1,4 +1,3 @@
-import { prisma } from "@/server/db";
 import {
   test,
   beforeEach,
@@ -8,15 +7,18 @@ import {
   afterAll,
 } from "vitest";
 import { makeCaller } from "./utils";
+import { prisma } from "../infra/db/prisma/prisma";
 
 describe("Company", () => {
   beforeAll(async () => {
     await prisma.$connect();
   });
+
   afterAll(async () => {
     await prisma.company.deleteMany();
     await prisma.$disconnect();
   });
+
   beforeEach(async () => {
     await prisma.company.deleteMany();
   });
@@ -37,6 +39,7 @@ describe("Company", () => {
     });
     expect(result).toHaveProperty("socialReason", "any_company_name");
   });
+
   test("Should list all companies", async () => {
     const caller = makeCaller();
     const companyRequest = makeCompanyRequest();
@@ -44,6 +47,7 @@ describe("Company", () => {
     const result = await caller.company.findAll();
     expect(result).toHaveLength(1);
   });
+
   test("Should Delete a company", async () => {
     const caller = makeCaller();
     const companyRequest = makeCompanyRequest();
@@ -52,6 +56,7 @@ describe("Company", () => {
     const result = await caller.company.findAll();
     expect(result).toHaveLength(0);
   });
+
   test("Should Update a company", async () => {
     const caller = makeCaller();
     const companyRequest = makeCompanyRequest();

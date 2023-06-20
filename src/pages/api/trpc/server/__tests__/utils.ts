@@ -1,6 +1,6 @@
-import { prisma } from "@/server/db";
-import { appRouter } from "../root";
-import { createInnerTRPCContext } from "../trpc";
+import { prisma } from "../infra/db/prisma/prisma";
+import { appRouter } from "../main/root";
+import { createInnerTRPCContext } from "../main/trpc";
 
 export const makeCaller = () => {
   const ctx = createInnerTRPCContext({

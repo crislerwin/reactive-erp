@@ -1,4 +1,4 @@
-import { type createCompanyInputValidation } from "@/server/api/routers/company";
+import { type createCompanyInputValidation } from "@/pages/api/trpc/server/main/routes/company/company-validation";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";

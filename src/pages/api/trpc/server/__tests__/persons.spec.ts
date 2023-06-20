@@ -6,8 +6,9 @@ import {
   afterAll,
   beforeEach,
 } from "vitest";
-import { prisma } from "@/server/db";
+
 import { makeCaller } from "./utils";
+import { prisma } from "../infra/db/prisma/prisma";
 
 describe("Staff", () => {
   beforeAll(async () => {
