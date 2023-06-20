@@ -4,10 +4,9 @@ import { useRouter } from "next/router";
 import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
-import { LotusIcon } from "../Icons";
+import { type IconName, LotusIcon, CustomIcon } from "../Icons";
 import { Avatar, Button, Menu, Tabs } from "@mantine/core";
 import { IconSettings, IconLogout, IconSearch } from "@tabler/icons-react";
-import Link from "next/link";
 
 import CommandPalette, {
   filterItems,
@@ -15,21 +14,17 @@ import CommandPalette, {
   useHandleOpenCommandPalette,
 } from "../SearchBar";
 
-export type TabType = {
-  icon: React.ReactNode;
+export type SideBarProps = {
+  iconName: IconName;
   label: string;
-  href: string;
+  children?: React.ReactNode;
 };
 
-export type PageType = {
-  value: string;
-  page: React.ReactNode;
-};
-
-export const SideBar: React.FC<{
-  pages?: PageType[];
-  tabs?: TabType[];
-}> = ({ pages = [], tabs = [] }) => {
+export const SideBar: React.FC<SideBarProps> = ({
+  iconName,
+  label,
+  children,
+}) => {
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();
@@ -88,8 +83,6 @@ export const SideBar: React.FC<{
   };
 
   if (!user) return <></>;
-
-  const hasTabs = tabs.length > 0;
 
   return (
     <>
@@ -208,32 +201,26 @@ export const SideBar: React.FC<{
       <div
         className={`content ${
           open ? "ml-12 md:ml-60" : "ml-12"
-        } transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
+        } bg- bg transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
-        {hasTabs && (
-          <Tabs defaultValue={route}>
-            <nav
-              aria-label="Breadcrumb"
-              className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
-            >
-              <Tabs.List>
-                {tabs.map((tab, index) => (
-                  <Link href={tab.href} key={index}>
-                    <Tabs.Tab value={tab.href} icon={tab.icon}>
-                      {tab.label}
-                    </Tabs.Tab>
-                  </Link>
-                ))}
-              </Tabs.List>
-            </nav>
-
-            {pages.map((page, index) => (
-              <Tabs.Panel key={index} value={page.value} pt="xs">
-                {page.page}
-              </Tabs.Panel>
-            ))}
-          </Tabs>
-        )}
+        <Tabs defaultValue={route}>
+          <nav
+            aria-label="Breadcrumb"
+            className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
+          >
+            <Tabs.List>
+              <Tabs.Tab
+                value={route}
+                icon={<CustomIcon className="h-4 w-4" iconName={iconName} />}
+              >
+                {label}
+              </Tabs.Tab>
+            </Tabs.List>
+          </nav>
+          <Tabs.Panel value={route} pt="xs">
+            {children}
+          </Tabs.Panel>
+        </Tabs>
       </div>
     </>
   );

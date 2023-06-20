@@ -13,6 +13,7 @@ export const CustomIcon: React.FC<IconProps> = ({
   iconName,
   ...rest
 }): JSX.Element => {
+  if (typeof iconName !== "string") return iconName;
   const Icon = TablerIcon[iconName] as React.FC<TablerIcon.TablerIconsProps>;
   return <Icon {...rest} />;
 };

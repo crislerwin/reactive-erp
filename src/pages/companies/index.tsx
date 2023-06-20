@@ -1,27 +1,16 @@
 import { type NextPage } from "next";
-import { IconBuilding } from "@tabler/icons-react";
 import React from "react";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
 import Home from "./home";
-import { type PageType, SideBar, type TabType } from "@/components/SideBar";
+import { SideBar } from "@/components/SideBar";
 
-const tabRoutes: TabType[] = [
-  {
-    icon: <IconBuilding size="0.8rem" />,
-    label: "Empresas",
-    href: "/companies",
-  },
-];
-
-const pages: PageType[] = [
-  {
-    value: "/companies",
-    page: <Home />,
-  },
-];
 const Companies: NextPage = () => {
-  return <SideBar pages={pages} tabs={tabRoutes} />;
+  return (
+    <SideBar iconName="IconBuilding" label="Empresas">
+      <Home />
+    </SideBar>
+  );
 };
 
 export default Companies;

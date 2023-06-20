@@ -16,8 +16,8 @@ export const CompanyTable: React.FC = () => {
     return data;
   }, [data, isFetching]);
 
-  const columns: MRT_ColumnDef<Company>[] = useMemo(
-    () => [
+  const columns = useMemo(
+    (): MRT_ColumnDef<Company>[] => [
       {
         accessorKey: "fantasyName",
         header: "Nome Fantasia",
@@ -42,6 +42,7 @@ export const CompanyTable: React.FC = () => {
       {
         accessorKey: "id",
         header: "Editar",
+        enableColumnOrdering: false,
         size: 80,
         Cell: ({ renderedCellValue }) => {
           return (
