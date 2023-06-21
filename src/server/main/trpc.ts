@@ -1,4 +1,4 @@
-import { prisma } from "../infra/db/prisma/prisma";
+import { prisma } from "../infra/db/prisma";
 import { TRPCError, initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";

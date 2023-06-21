@@ -1,4 +1,4 @@
 import React from "react";
-import { SideBarContext } from "@/Providers/SideBarProvider";
+import { SideBarContext } from "@/providers/SideBarProvider";
 
 export const useSideBar = () => React.useContext(SideBarContext);

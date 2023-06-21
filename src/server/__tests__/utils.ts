@@ -1,4 +1,4 @@
-import { prisma } from "../infra/db/prisma/prisma";
+import { prisma } from "../infra/db/prisma";
 import { appRouter } from "../main/root";
 import { createInnerTRPCContext } from "../main/trpc";
 

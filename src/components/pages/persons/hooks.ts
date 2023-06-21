@@ -1,4 +1,4 @@
-import { type createPersonInputValidation } from "@/pages/api/trpc/server/main/routes/person/person-validation";
+import { type createPersonInputValidation } from "@/server/main/routes/person/person-validation";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";

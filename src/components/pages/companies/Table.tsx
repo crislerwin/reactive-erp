@@ -3,6 +3,7 @@ import { trpc } from "@/utils/api";
 import { Table } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
 import { type Company } from "@prisma/client";
+
 import { CompanyForm } from "./Forms";
 import { EditModalFormWrapper } from "@/components/EditModalFormWrapper";
 

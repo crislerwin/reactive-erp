@@ -30,7 +30,7 @@
     "**/*.mjs",
     "**/*.config.ts",
     "**/*.spec.ts",
-    "src/pages/api/trpc/server/infra/db"
+    "src/server/infra/db"
   ],
   "exclude": ["node_modules"]
 }
