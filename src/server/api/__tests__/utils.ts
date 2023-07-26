@@ -12,7 +12,7 @@ export const makeCaller = () => {
         updatedAt: 1,
         userName: "test",
         emailAddress: "crislerwintler@gmail.com",
-        isSuperAdmin: true,
+        isSuper: true,
       },
     },
   });

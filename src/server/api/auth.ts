@@ -5,7 +5,7 @@ export type User = {
   id: string | null;
   userName: string | null;
   emailAddress?: string;
-  isSuperAdmin?: boolean | null;
+  isSuper?: boolean | null;
   createdAt: number;
   updatedAt: number;
 };
@@ -22,13 +22,13 @@ export const getServerAuthSession = async (
     cUser.firstName && cUser.lastName
       ? `${cUser.firstName} ${cUser.lastName}`
       : cUser.username;
-  const isSuperAdmin = cUser.emailAddresses[0]?.emailAddress
+  const isSuper = cUser.emailAddresses[0]?.emailAddress
     ? authorizedMails.includes(cUser.emailAddresses[0]?.emailAddress)
     : null;
   const user: User = {
     id: cUser.id,
     userName: userName,
-    isSuperAdmin: isSuperAdmin,
+    isSuper,
     emailAddress: cUser.emailAddresses[0]?.emailAddress,
     createdAt: cUser.createdAt,
     updatedAt: cUser.updatedAt,

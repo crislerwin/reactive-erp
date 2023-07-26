@@ -9,7 +9,7 @@ import {
 
 export const personRouter = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {
-    if (!ctx.session.user.isSuperAdmin)
+    if (!ctx.session.user.isSuper)
       throw new TRPCError({
         code: "UNAUTHORIZED",
         message: "You are not allowed to see all users",
@@ -25,9 +25,6 @@ export const personRouter = createTRPCRouter({
     const loggedUser = await ctx.prisma.person.findUnique({
       where: {
         email: user.emailAddress,
-      },
-      include: {
-        permissions: true,
       },
     });
     if (!loggedUser)
@@ -55,7 +52,7 @@ export const personRouter = createTRPCRouter({
       }
       const newUser = ctx.prisma.person.create({
         data: {
-          companyId: input.companyId,
+          id: input.id,
           email: input.email,
           userName: input.userName,
         },
@@ -67,12 +64,11 @@ export const personRouter = createTRPCRouter({
     .mutation(({ ctx, input }) => {
       return ctx.prisma.person.update({
         where: {
-          personId: input.personId,
+          id: input.id,
         },
         data: {
           email: input.email,
           userName: input.userName,
-          companyId: input.companyId,
         },
       });
     }),
@@ -80,73 +76,23 @@ export const personRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(
       z.object({
-        personId: z.number(),
+        id: z.string(),
       })
     )
     .mutation(({ ctx, input }) => {
       return ctx.prisma.person.delete({
         where: {
-          personId: input.personId,
+          id: input.id,
         },
       });
     }),
 
-  addPermission: protectedProcedure
-    .input(
-      z.object({
-        personId: z.number(),
-        name: z.string(),
-        value: z.string(),
-      })
-    )
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.person.update({
-        where: {
-          personId: input.personId,
-        },
-        include: {
-          permissions: true,
-        },
-        data: {
-          permissions: {
-            create: {
-              name: input.name,
-              value: input.value,
-            },
-          },
-        },
-      });
-    }),
-
-  getByCompanyId: protectedProcedure
-    .input(
-      z.object({
-        companyId: z.number(),
-      })
-    )
-    .query(({ ctx, input }) => {
-      if (!ctx.session.user.isSuperAdmin)
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "You are not allowed to see all users",
-          cause: "You are not allowed to see all users",
-        });
-
-      return ctx.prisma.person.findMany({
-        where: {
-          companyId: input.companyId,
-        },
-      });
-    }),
   getById: protectedProcedure
     .input(getByIdInputValidation)
     .query(({ ctx, input }) => {
       return ctx.prisma.person.findUnique({
         where: {
-          personId: input.personId,
-        },
-        include: {
-          permissions: true,
+          id: input.id,
         },
       });
     }),

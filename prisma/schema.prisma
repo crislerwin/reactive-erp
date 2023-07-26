@@ -9,39 +9,31 @@ datasource db {
 }
 
 model Person {
-  personId    Int          @id @unique @default(autoincrement())
-  userId      String?      @unique
-  companyId   Int?         @unique
-  email       String       @unique @default("")
-  userName    String       @default("")
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  permissions Permission[]
-  company     Company?
+  id        String   @unique @default(uuid())
+  userId    String?  @unique
+  email     String   @unique
+  userName  String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([email])
 }
 
-model Permission {
-  id       Int     @id @default(autoincrement())
-  name     String  @default("")
-  value    String  @default("")
-  person   Person? @relation(fields: [personId], references: [personId])
-  personId Int?
-  @@index([id])
-  @@index([name])
-  @@index([personId])
-}
-
 model Company {
-  id           Int      @id @unique @default(autoincrement())
-  cnpj         String   @default("")
-  socialReason String   @default("")
-  fantasyName  String   @default("")
-  email        String   @default("")
-  companyOwner Person?  @relation(fields: [ownerId], references: [personId])
-  ownerId      Int?     @unique
+  id           String   @unique @default(uuid())
+  cnpj         String   @unique @default("")
+  socialReason String
+  fantasyName  String
+  email        String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   @@index([cnpj])
+}
+
+model Permission {
+  id       Int    @id @default(autoincrement())
+  name     String @default("")
+  value    String @default("")
+  personId Int?
 }

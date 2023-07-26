@@ -39,7 +39,7 @@ export const usePersonForm = (close: () => void) => {
   });
 
   trpc.person.getById.useQuery(
-    { personId: Number(personId) },
+    { id: String(personId) },
     {
       enabled: !!personId,
       onSuccess: (data) => {
@@ -61,7 +61,7 @@ export const usePersonForm = (close: () => void) => {
   const handleSubmit = onSubmit((values) => {
     if (isEdit) {
       updatePerson(
-        { ...values, personId: Number(personId) },
+        { ...values, id: String(personId) },
         {
           onSuccess: () => {
             context.person.findAll
@@ -85,7 +85,7 @@ export const usePersonForm = (close: () => void) => {
 
   const handleDeletePerson = () => {
     deletePerson(
-      { personId: Number(personId) },
+      { id: String(personId) },
       {
         onSuccess: () => {
           context.person.findAll.invalidate().catch((err) => console.log(err));

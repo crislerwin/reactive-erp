@@ -55,7 +55,7 @@ export const useCompanyForm = (close: () => void) => {
   });
 
   trpc.company.findById.useQuery(
-    { companyId: Number(companyId) },
+    { id: String(companyId) },
     {
       enabled: !!companyId,
       onSuccess: (data) => {
@@ -100,7 +100,7 @@ export const useCompanyForm = (close: () => void) => {
   const handleSubmit = onSubmit((values) => {
     if (companyId) {
       handleUpdate(
-        { companyId: Number(companyId), ...values },
+        { id: String(companyId), ...values },
         {
           onSuccess: () => {
             context.company.findAll
@@ -126,7 +126,7 @@ export const useCompanyForm = (close: () => void) => {
 
   const handleDeleteCompany = () =>
     handleDelete(
-      { companyId: Number(companyId) },
+      { id: String(companyId) },
       {
         onSuccess: () => {
           context.company.findAll.invalidate().catch((err) => console.log(err));

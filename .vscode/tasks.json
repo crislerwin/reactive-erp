@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "pnpm run dev",
+            "type": "process",
+            "command": "${workspaceRoot}/.vscode/scripts/run.sh",
+            "group": {
+              "kind": "none",
+              "isDefault": true
+            },
+            "isBackground": true
+          },
+          {
+            "label": "prisma db push",
+            "type": "process",
+            "command": "${workspaceRoot}/.vscode/scripts/dbpush.sh",
+            "group": {
+              "kind": "none",
+              "isDefault": true
+            },
+            "isBackground": true
+          },
+    ]
+}

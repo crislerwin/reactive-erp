@@ -10,7 +10,17 @@ export const companiesRouter = createTRPCRouter({
   save: protectedProcedure
     .input(createCompanyInputValidation)
     .mutation(async ({ ctx, input }) => {
-      const newCompany = await ctx.prisma.company.create({
+      const existentCompany = await ctx.prisma.company.findUnique({
+        where: { cnpj: input.cnpj },
+      });
+
+      if (existentCompany) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Company already exists",
+        });
+      }
+      return await ctx.prisma.company.create({
         data: {
           cnpj: input.cnpj,
           socialReason: input.socialReason,
@@ -18,13 +28,12 @@ export const companiesRouter = createTRPCRouter({
           email: input.email,
         },
       });
-      return newCompany;
     }),
   findById: protectedProcedure
     .input(findByIdInputValidation)
     .query(async ({ ctx, input }) => {
       const company = await ctx.prisma.company.findUnique({
-        where: { id: input.companyId },
+        where: { id: input.id },
       });
       if (!company) {
         throw new TRPCError({
@@ -42,7 +51,7 @@ export const companiesRouter = createTRPCRouter({
     .input(findByIdInputValidation)
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.company.delete({
-        where: { id: input.companyId },
+        where: { id: input.id },
       });
       return true;
     }),
@@ -50,7 +59,7 @@ export const companiesRouter = createTRPCRouter({
     .input(updateCompanyInputValidation)
     .mutation(async ({ ctx, input }) => {
       const company = await ctx.prisma.company.update({
-        where: { id: input.companyId },
+        where: { id: input.id },
         data: {
           cnpj: input.cnpj,
           socialReason: input.socialReason,

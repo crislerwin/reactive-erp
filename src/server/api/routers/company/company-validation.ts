@@ -8,11 +8,11 @@ export const createCompanyInputValidation = z.object({
 });
 
 export const updateCompanyInputValidation = z.object({
-  companyId: z.number(),
+  id: z.string(),
   cnpj: z.string().optional(),
   socialReason: z.string().optional(),
   fantasyName: z.string().optional(),
   email: z.string().optional(),
 });
 
-export const findByIdInputValidation = z.object({ companyId: z.number() });
+export const findByIdInputValidation = z.object({ id: z.string() });

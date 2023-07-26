@@ -29,7 +29,7 @@ export const PersonTable: React.FC = () => {
         size: 150,
       },
       {
-        accessorKey: "personId",
+        accessorKey: "id",
         header: "Editar",
         size: 80,
         Cell: (props) => {
