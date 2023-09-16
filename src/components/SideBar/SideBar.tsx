@@ -4,27 +4,21 @@ import { useRouter } from "next/router";
 import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
-import { type IconName, LotusIcon, CustomIcon } from "../Icons";
-import { Avatar, Button, Menu, Tabs } from "@mantine/core";
+import { LotusIcon } from "../Icons";
+import { Avatar, Button, Menu } from "@mantine/core";
 import { IconSettings, IconLogout, IconSearch } from "@tabler/icons-react";
 
 import CommandPalette, {
-  filterItems,
   getItemIndex,
   useHandleOpenCommandPalette,
 } from "../SearchBar";
+import { makeFilterItems } from "./utils";
 
 export type SideBarProps = {
-  iconName: IconName;
-  label: string;
   children?: React.ReactNode;
 };
 
-export const SideBar: React.FC<SideBarProps> = ({
-  iconName,
-  label,
-  children,
-}) => {
+export const SideBar: React.FC<SideBarProps> = ({ children }) => {
   const { user } = useUser();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();
@@ -36,51 +30,7 @@ export const SideBar: React.FC<SideBarProps> = ({
 
   useHandleOpenCommandPalette(setOpenSearch);
 
-  const filteredItems = filterItems(
-    [
-      {
-        heading: "Home",
-        id: "home",
-        items: [
-          {
-            id: "home",
-            children: "Home",
-            icon: "IconHome",
-            href: "/",
-          },
-        ],
-      },
-      {
-        heading: "Empresas",
-        id: "companies",
-        items: [
-          {
-            id: "companies",
-            children: "Empresas",
-            icon: "IconBuilding",
-            href: "/companies",
-          },
-        ],
-      },
-      {
-        heading: "Equipe",
-        id: "persons",
-        items: [
-          {
-            id: "persons",
-            children: "Equipe",
-            icon: "IconUsers",
-            href: "/persons",
-          },
-        ],
-      },
-    ],
-    search
-  );
-
-  const handleLogout = () => {
-    signOut().catch((err) => console.log(err));
-  };
+  const filterItems = makeFilterItems(search);
 
   if (!user) return <></>;
 
@@ -94,12 +44,12 @@ export const SideBar: React.FC<SideBarProps> = ({
         page={route}
         placeholder="Procurar..."
       >
-        {filteredItems.map((list) => (
+        {filterItems.map((list) => (
           <CommandPalette.List key={list.id} heading={list.heading}>
             {list.items.map(({ id, ...rest }) => (
               <CommandPalette.ListItem
                 key={id}
-                index={getItemIndex(filteredItems, id)}
+                index={getItemIndex(filterItems, id)}
                 {...rest}
               />
             ))}
@@ -160,7 +110,7 @@ export const SideBar: React.FC<SideBarProps> = ({
                   Configurações da conta
                 </Menu.Item>
                 <Menu.Item
-                  onClick={handleLogout}
+                  onClick={() => signOut()}
                   className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-[#0F172A] dark:text-slate-300 dark:hover:bg-gray-800"
                   icon={<IconLogout className="text-white" size={14} />}
                 >
@@ -203,24 +153,7 @@ export const SideBar: React.FC<SideBarProps> = ({
           open ? "ml-12 md:ml-60" : "ml-12"
         } bg- bg transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
-        <Tabs defaultValue={route}>
-          <nav
-            aria-label="Breadcrumb"
-            className="flex rounded-lg bg-slate-100 px-5  py-3  dark:bg-gray-800"
-          >
-            <Tabs.List>
-              <Tabs.Tab
-                value={route}
-                icon={<CustomIcon className="h-4 w-4" iconName={iconName} />}
-              >
-                {label}
-              </Tabs.Tab>
-            </Tabs.List>
-          </nav>
-          <Tabs.Panel value={route} pt="xs">
-            {children}
-          </Tabs.Panel>
-        </Tabs>
+        {children}
       </div>
     </>
   );
