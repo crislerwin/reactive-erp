@@ -25,6 +25,12 @@ const config = {
     "plugin:storybook/recommended",
   ],
   rules: {
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        checksVoidReturn: false,
+      },
+    ],
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {

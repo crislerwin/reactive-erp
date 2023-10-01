@@ -3,19 +3,11 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { SideBar } from "@/components/SideBar";
 import { useUser } from "@clerk/nextjs";
 
-const Table = () => {
-  return <></>;
-};
-
 const Home = () => {
   const { user } = useUser();
   if (!user) return <></>;
 
-  return (
-    <SideBar iconName="IconHome" label="Home">
-      <Table />
-    </SideBar>
-  );
+  return <SideBar />;
 };
 export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   const { userId } = getAuth(ctx.req);
