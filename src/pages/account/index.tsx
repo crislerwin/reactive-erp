@@ -6,7 +6,7 @@ import AccountPage from "./[userId]";
 
 const Profile: NextPage = () => {
   return (
-    <SideBar iconName="IconUser" label="Conta">
+    <SideBar>
       <AccountPage />
     </SideBar>
   );
