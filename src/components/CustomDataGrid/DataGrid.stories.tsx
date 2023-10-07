@@ -10,7 +10,6 @@ import {
   type TextCell,
 } from "@silevis/reactgrid";
 import React from "react";
-import { Grid } from "@mantine/core";
 const meta: Meta<typeof CustomDataGrid> = {
   title: "Components/CustomDataGrid",
   component: CustomDataGrid,
