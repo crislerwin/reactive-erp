@@ -9,7 +9,8 @@ import {
   type CellChange,
   type TextCell,
 } from "@silevis/reactgrid";
-import React from "react";
+import React, { useEffect } from "react";
+import { faker } from "@faker-js/faker";
 const meta: Meta<typeof CustomDataGrid> = {
   title: "Components/CustomDataGrid",
   component: CustomDataGrid,
@@ -38,35 +39,14 @@ interface Person {
   surname: string;
 }
 
-const getPeople = (): Person[] => [
-  { name: "Thomas", surname: "Goldman" },
-  { name: "Susie", surname: "Quattro" },
-  { name: "", surname: "" },
-];
-
-const getColumns = (): Column[] => [
-  { columnId: "name", resizable: true },
-  { columnId: "surname", resizable: true },
-];
-
 const headerRow: Row = {
   rowId: "header",
+
   cells: [
-    { type: "header", text: "Name" },
+    { type: "text", text: "Name" },
     { type: "header", text: "Surname" },
   ],
 };
-
-const getRows = (people: Person[]): Row[] => [
-  headerRow,
-  ...people.map<Row>((person, idx) => ({
-    rowId: idx,
-    cells: [
-      { type: "text", text: person.name },
-      { type: "text", text: person.surname },
-    ],
-  })),
-];
 
 const applyChangesToPeople = (
   changes: CellChange<TextCell>[],
@@ -81,13 +61,50 @@ const applyChangesToPeople = (
   }
   return peopleWithChanges;
 };
-const TestComponent: React.FC<ReactGridProps> = () => {
-  const [people, setPeople] = React.useState<Person[]>(getPeople());
+
+const columns = [
+  { columnId: "name", resizable: true },
+  { columnId: "surname", resizable: true },
+];
+
+function makeTableData<T = unknown[]>(length: number): T {
+  const dataMap = new Map<string, string>();
+  for (const column of columns) {
+    dataMap.set(column.columnId, "");
+  }
+  return Array.from({ length }, () => Object.fromEntries(dataMap)) as T;
+}
+
+const getRows = (people: Person[]): Row[] => [
+  headerRow,
+  ...people.map<Row>((person, idx) => ({
+    rowId: idx,
+    cells: [
+      { type: "text", text: person.name },
+      { type: "text", text: person.surname },
+    ],
+  })),
+];
+
+const TestComponent: React.FC = () => {
+  const [people, setPeople] = React.useState<Person[]>(makeTableData(2));
+
+  useEffect(() => {
+    const newData = [
+      {
+        name: faker.name.lastName(),
+        surname: faker.name.lastName(),
+      },
+      ...makeTableData<Person[]>(2),
+    ];
+    setPeople(newData);
+  }, []);
+
   const rows = getRows(people);
-  const columns = getColumns();
   const handleChanges = (changes: CellChange<TextCell>[]) => {
     setPeople((prevPeople) => applyChangesToPeople(changes, prevPeople));
   };
+
   return (
     <CustomDataGrid
       rows={rows}
@@ -100,14 +117,8 @@ const TestComponent: React.FC<ReactGridProps> = () => {
   );
 };
 
-const rows = getRows(getPeople());
-const columns = getColumns();
-
 export const Primary: Story = {
-  args: {
-    columns,
-    rows,
-  },
+  args: {},
 
-  render: (props) => <TestComponent {...props} />,
+  render: () => <TestComponent />,
 };
