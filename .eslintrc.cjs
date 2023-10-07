@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 
 /** @type {import("eslint").Linter.Config} */
@@ -8,7 +8,7 @@ const config = {
       extends: [
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
       ],
-      files: ["*.ts", "*.tsx"],
+      files: ["*.ts", "*.tsx", "*.stories.tsx"],
       parserOptions: {
         project: path.join(__dirname, "tsconfig.json"),
       },
@@ -25,6 +25,7 @@ const config = {
     "plugin:storybook/recommended",
   ],
   rules: {
+    "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-misused-promises": [
       "error",
       {

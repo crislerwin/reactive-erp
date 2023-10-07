@@ -1,13 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import type { Meta, StoryObj } from "@storybook/react";
 import { CustomDataGrid } from "./DataGrid";
 import {
-  ReactGridProps,
+  type ReactGridProps,
   type Column,
   type Row,
-  CellChange,
-  TextCell,
+  type CellChange,
+  type TextCell,
 } from "@silevis/reactgrid";
-import React, { useState } from "react";
+import React from "react";
+import { Grid } from "@mantine/core";
 const meta: Meta<typeof CustomDataGrid> = {
   title: "Components/CustomDataGrid",
   component: CustomDataGrid,
@@ -43,8 +46,8 @@ const getPeople = (): Person[] => [
 ];
 
 const getColumns = (): Column[] => [
-  { columnId: "name", width: 150 },
-  { columnId: "surname", width: 150 },
+  { columnId: "name", resizable: true },
+  { columnId: "surname", resizable: true },
 ];
 
 const headerRow: Row = {
@@ -70,17 +73,19 @@ const applyChangesToPeople = (
   changes: CellChange<TextCell>[],
   prevPeople: Person[]
 ): Person[] => {
-  changes.forEach((change) => {
-    prevPeople[change.rowId][change.columnId] = change.newCell.text;
-  });
-  return [...prevPeople];
+  const peopleWithChanges = [...prevPeople];
+  for (const change of changes) {
+    const rowId = change.rowId;
+    const columnId = change.columnId;
+    // @ts-ignore
+    peopleWithChanges[rowId][columnId] = change.newCell.text;
+  }
+  return peopleWithChanges;
 };
-
-const TestComponent: React.FC<ReactGridProps> = (props) => {
+const TestComponent: React.FC<ReactGridProps> = () => {
   const [people, setPeople] = React.useState<Person[]>(getPeople());
   const rows = getRows(people);
   const columns = getColumns();
-
   const handleChanges = (changes: CellChange<TextCell>[]) => {
     setPeople((prevPeople) => applyChangesToPeople(changes, prevPeople));
   };
@@ -88,7 +93,9 @@ const TestComponent: React.FC<ReactGridProps> = (props) => {
     <CustomDataGrid
       rows={rows}
       enableRangeSelection
+      enableFillHandle
       columns={columns}
+      enableRowSelection
       onCellsChanged={handleChanges as ReactGridProps["onCellsChanged"]}
     />
   );
