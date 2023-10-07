@@ -1,19 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { CustomDataGrid } from "./DataGrid";
-import { faker } from "@faker-js/faker";
-import { headerCellClass } from "./styles";
-
+import {
+  ReactGridProps,
+  type Column,
+  type Row,
+  CellChange,
+  TextCell,
+} from "@silevis/reactgrid";
+import React, { useState } from "react";
 const meta: Meta<typeof CustomDataGrid> = {
   title: "Components/CustomDataGrid",
   component: CustomDataGrid,
   tags: ["autodocs"],
   argTypes: {
-    enableVirtualization: {
-      description: "Enable virtualization",
-      control: {
-        type: "boolean",
-      },
-    },
     columns: {
       description: "The columns to display",
       control: {
@@ -32,28 +31,77 @@ const meta: Meta<typeof CustomDataGrid> = {
 export default meta;
 type Story = StoryObj<typeof CustomDataGrid>;
 
+interface Person {
+  name: string;
+  surname: string;
+}
+
+const getPeople = (): Person[] => [
+  { name: "Thomas", surname: "Goldman" },
+  { name: "Susie", surname: "Quattro" },
+  { name: "", surname: "" },
+];
+
+const getColumns = (): Column[] => [
+  { columnId: "name", width: 150 },
+  { columnId: "surname", width: 150 },
+];
+
+const headerRow: Row = {
+  rowId: "header",
+  cells: [
+    { type: "header", text: "Name" },
+    { type: "header", text: "Surname" },
+  ],
+};
+
+const getRows = (people: Person[]): Row[] => [
+  headerRow,
+  ...people.map<Row>((person, idx) => ({
+    rowId: idx,
+    cells: [
+      { type: "text", text: person.name },
+      { type: "text", text: person.surname },
+    ],
+  })),
+];
+
+const applyChangesToPeople = (
+  changes: CellChange<TextCell>[],
+  prevPeople: Person[]
+): Person[] => {
+  changes.forEach((change) => {
+    prevPeople[change.rowId][change.columnId] = change.newCell.text;
+  });
+  return [...prevPeople];
+};
+
+const TestComponent: React.FC<ReactGridProps> = (props) => {
+  const [people, setPeople] = React.useState<Person[]>(getPeople());
+  const rows = getRows(people);
+  const columns = getColumns();
+
+  const handleChanges = (changes: CellChange<TextCell>[]) => {
+    setPeople((prevPeople) => applyChangesToPeople(changes, prevPeople));
+  };
+  return (
+    <CustomDataGrid
+      rows={rows}
+      enableRangeSelection
+      columns={columns}
+      onCellsChanged={handleChanges as ReactGridProps["onCellsChanged"]}
+    />
+  );
+};
+
+const rows = getRows(getPeople());
+const columns = getColumns();
+
 export const Primary: Story = {
   args: {
-    enableVirtualization: true,
-    columns: [
-      { key: "id", name: "ID", headerCellClass: headerCellClass() },
-      { key: "title", name: "Title", headerCellClass: headerCellClass() },
-      {
-        key: "firstName",
-        name: "First Name",
-        headerCellClass: headerCellClass(),
-      },
-      {
-        key: "lastName",
-        name: "Last Name",
-        headerCellClass: headerCellClass(),
-      },
-    ],
-    rows: Array.from({ length: 1000 }, () => ({
-      id: faker.datatype.uuid(),
-      title: faker.name.prefix(),
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-    })),
+    columns,
+    rows,
   },
+
+  render: (props) => <TestComponent {...props} />,
 };
