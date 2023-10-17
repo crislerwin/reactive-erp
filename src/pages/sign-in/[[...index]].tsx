@@ -230,7 +230,7 @@ export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   if (userId) {
     return {
       redirect: {
-        destination: "/",
+        destination: "/home",
         permanent: false,
       },
     };

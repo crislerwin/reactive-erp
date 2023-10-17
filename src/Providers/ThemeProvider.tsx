@@ -37,7 +37,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     setUserTheme(theme);
     setCookie(null, "themePrefs", theme, {
       maxAge: 30 * 24 * 60 * 60,
-      path: "/",
+      path: "/home",
     });
   };
 

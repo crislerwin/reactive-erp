@@ -34,7 +34,7 @@ export const SideBarProvider: React.FC<SideBarProviderProps> = ({
     setOpen(open);
     setCookie(null, "sideBarPrefs", open.toString(), {
       maxAge: 30 * 24 * 60 * 60,
-      path: "/",
+      path: "/home",
     });
   };
 
