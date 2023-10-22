@@ -52,16 +52,16 @@ export default Persons;
 
 export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   const { userId } = getAuth(ctx.req);
-  if (!userId) {
+  if (userId) {
+    debugger;
     return {
-      redirect: {
-        destination: "/sign-in",
-        permanent: false,
-      },
+      props: {},
     };
   }
-
   return {
-    props: {},
+    redirect: {
+      destination: "/sign-in",
+      permanent: false,
+    },
   };
 };

@@ -51,16 +51,15 @@ export default Companies;
 
 export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   const { userId } = getAuth(ctx.req);
-  if (!userId) {
+  if (userId) {
     return {
-      redirect: {
-        destination: "/sign-in",
-        permanent: false,
-      },
+      props: {},
     };
   }
-
   return {
-    props: {},
+    redirect: {
+      destination: "/sign-in",
+      permanent: false,
+    },
   };
 };

@@ -1,26 +1,22 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { SideBar } from "@/components/SideBar";
-import { useUser } from "@clerk/nextjs";
 
 const Home = () => {
-  const { user } = useUser();
-  if (!user) return <></>;
-
-  return <SideBar />;
+  return <SideBar>HEllo</SideBar>;
 };
 export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   const { userId } = getAuth(ctx.req);
-  if (!userId) {
+  if (userId) {
     return {
-      redirect: {
-        destination: "/sign-in",
-        permanent: false,
-      },
+      props: {},
     };
   }
   return {
-    props: {},
+    redirect: {
+      destination: "/sign-in",
+      permanent: false,
+    },
   };
 };
 
