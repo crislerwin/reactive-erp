@@ -1,4 +1,4 @@
-import { type createPersonSchema } from "@/server/api/routers/person";
+import { type createPersonSchema } from "@/server/api/routes/person";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";

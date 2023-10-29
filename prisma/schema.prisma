@@ -3,37 +3,42 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "sqlite"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
-model Person {
-  id        String   @unique @default(uuid())
-  userId    String?  @unique
-  email     String   @unique
-  userName  String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Patient {
+  id           String        @id() @default(uuid())
+  email        String        @unique
+  firstName    String        @default("")
+  lastName     String        @default("")
+  phoneNumber  String        @default("")
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@index([email])
 }
 
-model Company {
-  id           String   @unique @default(uuid())
-  cnpj         String   @unique @default("")
-  socialReason String
-  fantasyName  String
-  email        String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model Appointment {
+  id         String   @unique @default(uuid())
+  patient    Patient? @relation(fields: [patientId], references: [id])
+  patientId  String?
+  speciality String
 
-  @@index([cnpj])
+  @@index([patientId])
 }
 
-model Permission {
-  id       Int    @id @default(autoincrement())
-  name     String @default("")
-  value    String @default("")
-  personId Int?
+model Office {
+  id             String   @unique @default(uuid())
+  registrationId String   @unique @default("") @map("registrationId")
+  socialReason   String
+  fantasyName    String
+  email          String
+  phoneNumber    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([registrationId])
 }

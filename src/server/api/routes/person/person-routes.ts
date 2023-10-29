@@ -7,7 +7,7 @@ import {
   updatePersonSchema,
 } from "./person-schema";
 
-export const personRouter = createTRPCRouter({
+export const personRoutes = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {
     if (!ctx.session.user)
       throw new TRPCError({
@@ -16,13 +16,13 @@ export const personRouter = createTRPCRouter({
         cause: "No user",
       });
 
-    return ctx.prisma.person.findMany();
+    return ctx.prisma.patient.findMany();
   }),
 
   getByEmail: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
     if (!user.id) throw new TRPCError({ code: "UNAUTHORIZED" });
-    const loggedUser = await ctx.prisma.person.findUnique({
+    const loggedUser = await ctx.prisma.patient.findUnique({
       where: {
         email: user?.emailAddresses?.[0]?.emailAddress,
       },
@@ -38,23 +38,23 @@ export const personRouter = createTRPCRouter({
   save: protectedProcedure
     .input(createPersonSchema)
     .mutation(async ({ ctx, input }) => {
-      const userAlreadyExists = await ctx.prisma.person.findUnique({
+      const patientAlreadyExist = await ctx.prisma.patient.findUnique({
         where: {
           email: input.email,
         },
       });
-      if (userAlreadyExists) {
+      if (patientAlreadyExist) {
         throw new TRPCError({
           code: "FORBIDDEN",
           cause: "User already exists",
           message: "User already exists",
         });
       }
-      const newUser = ctx.prisma.person.create({
+      const newUser = ctx.prisma.patient.create({
         data: {
           id: input.id,
           email: input.email,
-          userName: input.userName,
+          firstName: input.userName,
         },
       });
       return newUser;
@@ -62,13 +62,13 @@ export const personRouter = createTRPCRouter({
   update: protectedProcedure
     .input(updatePersonSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.person.update({
+      return ctx.prisma.patient.update({
         where: {
           id: input.id,
         },
         data: {
           email: input.email,
-          userName: input.userName,
+          firstName: input.userName,
         },
       });
     }),
@@ -80,7 +80,7 @@ export const personRouter = createTRPCRouter({
       })
     )
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.person.delete({
+      return ctx.prisma.patient.delete({
         where: {
           id: input.id,
         },
@@ -88,7 +88,7 @@ export const personRouter = createTRPCRouter({
     }),
 
   getById: protectedProcedure.input(getByIdSchema).query(({ ctx, input }) => {
-    return ctx.prisma.person.findUnique({
+    return ctx.prisma.patient.findUnique({
       where: {
         id: input.id,
       },

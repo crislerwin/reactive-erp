@@ -1,2 +1,2 @@
 export * from "./person-schema";
-export * from "./person-router";
+export * from "./person-routes";

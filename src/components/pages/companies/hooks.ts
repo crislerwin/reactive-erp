@@ -1,4 +1,4 @@
-import { type createCompanySchema } from "@/server/api/routers/company";
+import { type createCompanySchema } from "@/server/api/routes/company";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
@@ -25,13 +25,13 @@ export const useCompanyForm = (close: () => void) => {
     values: formValues,
   } = useForm<CreateCompanyInput>({
     initialValues: {
-      cnpj: "",
+      registrationId: "",
       socialReason: "",
       fantasyName: "",
       email: "",
     },
     validate: {
-      cnpj: (value) => {
+      registrationId: (value) => {
         const validCnpj = z.string().min(14).max(14).safeParse(value);
         if (!validCnpj.success) return "CNPJ inválido";
         return null;
@@ -68,7 +68,7 @@ export const useCompanyForm = (close: () => void) => {
         const formatedData: CreateCompanyInput = {
           fantasyName: data.fantasyName,
           socialReason: data.socialReason,
-          cnpj: data.cnpj,
+          registrationId: data.cnpj,
           email: data.email,
         };
         fieldValues.forEach((field) => {
@@ -122,7 +122,7 @@ export const useCompanyForm = (close: () => void) => {
     });
   });
 
-  const handleSearch = () => setCnpj(formValues.cnpj);
+  const handleSearch = () => setCnpj(formValues.registrationId);
 
   const handleDeleteCompany = () =>
     handleDelete(

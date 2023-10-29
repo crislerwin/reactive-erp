@@ -4,14 +4,14 @@ import {
   createCompanySchema,
   idSchema,
   updateCompanySchema,
-} from "./company-schema";
+} from "./office-schema";
 
-export const companiesRouter = createTRPCRouter({
+export const companyRoutes = createTRPCRouter({
   save: protectedProcedure
     .input(createCompanySchema)
     .mutation(async ({ ctx, input }) => {
-      const existentCompany = await ctx.prisma.company.findUnique({
-        where: { cnpj: input.cnpj },
+      const existentCompany = await ctx.prisma.office.findUnique({
+        where: { registrationId: input.registrationId },
       });
 
       if (existentCompany) {
@@ -20,37 +20,38 @@ export const companiesRouter = createTRPCRouter({
           message: "Company already exists",
         });
       }
-      return await ctx.prisma.company.create({
+      return await ctx.prisma.office.create({
         data: {
-          cnpj: input.cnpj,
+          registrationId: input.registrationId,
           socialReason: input.socialReason,
           fantasyName: input.fantasyName,
           email: input.email,
+          phoneNumber: input.phoneNumber,
         },
       });
     }),
   findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {
-    const company = await ctx.prisma.company.findUnique({
+    const office = await ctx.prisma.office.findUnique({
       where: { id: input.id },
     });
-    if (!company) {
+    if (!office) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "Company not found",
+        message: "Office not found",
       });
     }
-    return company;
+    return office;
   }),
 
   findAll: protectedProcedure.query(async ({ ctx }) => {
-    const companies = await ctx.prisma.company.findMany();
+    const companies = await ctx.prisma.office.findMany();
     return companies;
   }),
 
   delete: protectedProcedure
     .input(idSchema)
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.company.delete({
+      await ctx.prisma.office.delete({
         where: { id: input.id },
       });
       return true;
@@ -58,15 +59,15 @@ export const companiesRouter = createTRPCRouter({
   update: protectedProcedure
     .input(updateCompanySchema)
     .mutation(async ({ ctx, input }) => {
-      const company = await ctx.prisma.company.update({
+      const office = await ctx.prisma.office.update({
         where: { id: input.id },
         data: {
-          cnpj: input.cnpj,
+          registrationId: input.registrationId,
           socialReason: input.socialReason,
           fantasyName: input.fantasyName,
           email: input.email,
         },
       });
-      return company;
+      return office;
     }),
 });

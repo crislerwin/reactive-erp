@@ -23,11 +23,9 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
 };
 
 export const createTRPCContext = async (ctx: CreateNextContextOptions) => {
-  const { user } = await getServerAuthSession(ctx);
+  const user = await getServerAuthSession(ctx);
   return createInnerTRPCContext({
-    session: {
-      user,
-    },
+    session: { user },
   });
 };
 
