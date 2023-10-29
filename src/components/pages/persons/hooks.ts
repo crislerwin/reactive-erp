@@ -1,10 +1,10 @@
-import { type createPersonInputValidation } from "@/server/api/routers/person";
+import { type createPersonSchema } from "@/server/api/routers/person";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";
 import { z } from "zod";
 
-type CreatePersonInput = z.infer<typeof createPersonInputValidation>;
+type CreatePersonInput = z.infer<typeof createPersonSchema>;
 
 export const usePersonForm = (close: () => void) => {
   const { mutate: savePerson } = trpc.person.save.useMutation();

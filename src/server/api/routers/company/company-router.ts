@@ -1,14 +1,14 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import {
-  createCompanyInputValidation,
-  findByIdInputValidation,
-  updateCompanyInputValidation,
-} from "./company-validation";
+  createCompanySchema,
+  idSchema,
+  updateCompanySchema,
+} from "./company-schema";
 
 export const companiesRouter = createTRPCRouter({
   save: protectedProcedure
-    .input(createCompanyInputValidation)
+    .input(createCompanySchema)
     .mutation(async ({ ctx, input }) => {
       const existentCompany = await ctx.prisma.company.findUnique({
         where: { cnpj: input.cnpj },
@@ -29,26 +29,26 @@ export const companiesRouter = createTRPCRouter({
         },
       });
     }),
-  findById: protectedProcedure
-    .input(findByIdInputValidation)
-    .query(async ({ ctx, input }) => {
-      const company = await ctx.prisma.company.findUnique({
-        where: { id: input.id },
+  findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {
+    const company = await ctx.prisma.company.findUnique({
+      where: { id: input.id },
+    });
+    if (!company) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Company not found",
       });
-      if (!company) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Company not found",
-        });
-      }
-      return company;
-    }),
+    }
+    return company;
+  }),
+
   findAll: protectedProcedure.query(async ({ ctx }) => {
     const companies = await ctx.prisma.company.findMany();
     return companies;
   }),
+
   delete: protectedProcedure
-    .input(findByIdInputValidation)
+    .input(idSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.company.delete({
         where: { id: input.id },
@@ -56,7 +56,7 @@ export const companiesRouter = createTRPCRouter({
       return true;
     }),
   update: protectedProcedure
-    .input(updateCompanyInputValidation)
+    .input(updateCompanySchema)
     .mutation(async ({ ctx, input }) => {
       const company = await ctx.prisma.company.update({
         where: { id: input.id },

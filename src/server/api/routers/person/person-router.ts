@@ -2,10 +2,10 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
-  getByIdInputValidation,
-  createPersonInputValidation,
-  updatePersonInputValidation,
-} from "./person-validation";
+  getByIdSchema,
+  createPersonSchema,
+  updatePersonSchema,
+} from "./person-schema";
 
 export const personRouter = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {
@@ -36,7 +36,7 @@ export const personRouter = createTRPCRouter({
     return loggedUser;
   }),
   save: protectedProcedure
-    .input(createPersonInputValidation)
+    .input(createPersonSchema)
     .mutation(async ({ ctx, input }) => {
       const userAlreadyExists = await ctx.prisma.person.findUnique({
         where: {
@@ -60,7 +60,7 @@ export const personRouter = createTRPCRouter({
       return newUser;
     }),
   update: protectedProcedure
-    .input(updatePersonInputValidation)
+    .input(updatePersonSchema)
     .mutation(({ ctx, input }) => {
       return ctx.prisma.person.update({
         where: {
@@ -87,13 +87,11 @@ export const personRouter = createTRPCRouter({
       });
     }),
 
-  getById: protectedProcedure
-    .input(getByIdInputValidation)
-    .query(({ ctx, input }) => {
-      return ctx.prisma.person.findUnique({
-        where: {
-          id: input.id,
-        },
-      });
-    }),
+  getById: protectedProcedure.input(getByIdSchema).query(({ ctx, input }) => {
+    return ctx.prisma.person.findUnique({
+      where: {
+        id: input.id,
+      },
+    });
+  }),
 });

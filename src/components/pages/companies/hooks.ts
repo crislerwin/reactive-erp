@@ -1,4 +1,4 @@
-import { type createCompanyInputValidation } from "@/server/api/routers/company";
+import { type createCompanySchema } from "@/server/api/routers/company";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { z } from "zod";
 
-export type CreateCompanyInput = z.infer<typeof createCompanyInputValidation>;
+export type CreateCompanyInput = z.infer<typeof createCompanySchema>;
 export const useCompanyForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();
   const { mutate: handleUpdate } = trpc.company.update.useMutation();
