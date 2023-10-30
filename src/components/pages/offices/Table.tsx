@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import { trpc } from "@/utils/api";
 import { Table } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
-import { type Company } from "@prisma/client";
+import { type Office } from "@prisma/client";
 import { CompanyForm } from "./Forms";
 import { EditModalFormWrapper } from "@/components/EditModalFormWrapper";
 
 export const CompanyTable: React.FC = () => {
-  const { data, isFetching } = trpc.company.findAll.useQuery(undefined, {
+  const { data, isFetching } = trpc.office.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
 
@@ -17,14 +17,14 @@ export const CompanyTable: React.FC = () => {
   }, [data, isFetching]);
 
   const columns = useMemo(
-    (): MRT_ColumnDef<Company>[] => [
+    (): MRT_ColumnDef<Office>[] => [
       {
         accessorKey: "fantasyName",
         header: "Nome Fantasia",
         size: 150,
       },
       {
-        accessorKey: "cnpj",
+        accessorKey: "registrationId",
         header: "CNPJ",
         size: 150,
       },

@@ -1,13 +1,12 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import {
   getByIdSchema,
   createPersonSchema,
   updatePersonSchema,
-} from "./person-schema";
+} from "./patient-schema";
 
-export const personRoutes = createTRPCRouter({
+export const patientRouter = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {
     if (!ctx.session.user)
       throw new TRPCError({
@@ -38,23 +37,11 @@ export const personRoutes = createTRPCRouter({
   save: protectedProcedure
     .input(createPersonSchema)
     .mutation(async ({ ctx, input }) => {
-      const patientAlreadyExist = await ctx.prisma.patient.findUnique({
-        where: {
-          email: input.email,
-        },
-      });
-      if (patientAlreadyExist) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          cause: "User already exists",
-          message: "User already exists",
-        });
-      }
       const newUser = ctx.prisma.patient.create({
         data: {
           id: input.id,
           email: input.email,
-          firstName: input.userName,
+          firstName: input.firstName,
         },
       });
       return newUser;
@@ -68,24 +55,18 @@ export const personRoutes = createTRPCRouter({
         },
         data: {
           email: input.email,
-          firstName: input.userName,
+          firstName: input.firstName,
         },
       });
     }),
 
-  delete: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.patient.delete({
-        where: {
-          id: input.id,
-        },
-      });
-    }),
+  delete: protectedProcedure.input(getByIdSchema).mutation(({ ctx, input }) => {
+    return ctx.prisma.patient.delete({
+      where: {
+        id: input.id,
+      },
+    });
+  }),
 
   getById: protectedProcedure.input(getByIdSchema).query(({ ctx, input }) => {
     return ctx.prisma.patient.findUnique({

@@ -1,4 +1,4 @@
-import { type createCompanySchema } from "@/server/api/routes/company";
+import { type createCompanySchema } from "@/server/api/router/office";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
@@ -10,17 +10,16 @@ import { z } from "zod";
 export type CreateCompanyInput = z.infer<typeof createCompanySchema>;
 export const useCompanyForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();
-  const { mutate: handleUpdate } = trpc.company.update.useMutation();
+  const { mutate: handleUpdate } = trpc.office.update.useMutation();
   const context = trpc.useContext();
   const router = useRouter();
   const { companyId } = router.query;
-  const { mutate: handleSave } = trpc.company.save.useMutation();
-  const { mutate: handleDelete } = trpc.company.delete.useMutation();
+  const { mutate: handleSave } = trpc.office.save.useMutation();
+  const { mutate: handleDelete } = trpc.office.delete.useMutation();
 
   const {
     onSubmit,
     getInputProps,
-    setFieldValue,
     reset,
     values: formValues,
   } = useForm<CreateCompanyInput>({
@@ -29,6 +28,7 @@ export const useCompanyForm = (close: () => void) => {
       socialReason: "",
       fantasyName: "",
       email: "",
+      phoneNumber: "",
     },
     validate: {
       registrationId: (value) => {
@@ -54,56 +54,13 @@ export const useCompanyForm = (close: () => void) => {
     },
   });
 
-  trpc.company.findById.useQuery(
-    { id: String(companyId) },
-    {
-      enabled: !!companyId,
-      onSuccess: (data) => {
-        const fieldValues: (keyof CreateCompanyInput)[] = [
-          "fantasyName",
-          "socialReason",
-          "cnpj",
-          "email",
-        ];
-        const formatedData: CreateCompanyInput = {
-          fantasyName: data.fantasyName,
-          socialReason: data.socialReason,
-          registrationId: data.cnpj,
-          email: data.email,
-        };
-        fieldValues.forEach((field) => {
-          setFieldValue(field, formatedData[field]);
-        });
-      },
-    }
-  );
-
-  useQuery(["brasil-api-company", cnpj], () => getEnterpriseByCnpj(cnpj), {
-    enabled: !!cnpj,
-    retry: false,
-    onError: () => {
-      reset();
-      setCnpj(undefined);
-    },
-    onSuccess: (data) => {
-      const fieldValues: (keyof Omit<CreateCompanyInput, "cnpj" | "email">)[] =
-        ["fantasyName", "socialReason"];
-      const formatedData: Omit<CreateCompanyInput, "cnpj" | "email"> = {
-        fantasyName: data.nome_fantasia,
-        socialReason: data.razao_social,
-      };
-      fieldValues.forEach((field) => {
-        setFieldValue(field, formatedData[field]);
-      });
-    },
-  });
   const handleSubmit = onSubmit((values) => {
     if (companyId) {
       handleUpdate(
         { id: String(companyId), ...values },
         {
-          onSuccess: () => {
-            context.company.findAll
+          onSuccess: async () => {
+            await context.office.findAll
               .invalidate()
               .catch((err) => console.log(err));
             close();
@@ -115,7 +72,7 @@ export const useCompanyForm = (close: () => void) => {
 
     handleSave(values, {
       onSuccess: () => {
-        context.company.findAll.invalidate().catch((err) => console.log(err));
+        context.office.findAll.invalidate().catch((err) => console.log(err));
         reset();
         close();
       },
@@ -129,7 +86,7 @@ export const useCompanyForm = (close: () => void) => {
       { id: String(companyId) },
       {
         onSuccess: () => {
-          context.company.findAll.invalidate().catch((err) => console.log(err));
+          context.office.findAll.invalidate().catch((err) => console.log(err));
           close();
         },
       }

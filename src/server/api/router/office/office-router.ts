@@ -6,7 +6,7 @@ import {
   updateCompanySchema,
 } from "./office-schema";
 
-export const companyRoutes = createTRPCRouter({
+export const officeRouter = createTRPCRouter({
   save: protectedProcedure
     .input(createCompanySchema)
     .mutation(async ({ ctx, input }) => {

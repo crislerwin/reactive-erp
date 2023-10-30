@@ -1,13 +1,13 @@
+import { type NextPage } from "next";
 import { SideBar } from "@/components/SideBar";
-import { CompanyForm } from "@/components/pages/companies/Forms";
-import { CompanyTable } from "@/components/pages/companies/Table";
-import { getAuth } from "@clerk/nextjs/server";
-import { Button, Modal } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { IconUserPlus } from "@tabler/icons-react";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { getAuth } from "@clerk/nextjs/server";
+import { useDisclosure } from "@mantine/hooks";
+import { Button, Modal } from "@mantine/core";
+import { PersonForm, PersonTable } from "@/components/pages/patient";
+import { IconUserPlus } from "@tabler/icons-react";
 
-const Companies = () => {
+const Persons: NextPage = () => {
   const [opened, { open, close }] = useDisclosure(false);
 
   return (
@@ -28,30 +28,32 @@ const Companies = () => {
               title: "dark:text-gray-200 text-gray-600 font-bold",
               content: "dark:bg-gray-800 dark:text-gray-200 bg-slate-200",
             }}
-            title="Adicionar Empresa"
+            title="Adicionar Membro"
           >
-            <CompanyForm close={close} />
+            <PersonForm close={close} />
           </Modal>
           <Button
             onClick={open}
             rightIcon={<IconUserPlus className="h-4 w-4" />}
             className="add-button bg-slate-200 text-gray-600 hover:bg-slate-100 dark:bg-gray-700 dark:text-gray-200 "
           >
-            Adicionar Empresa
+            Adicionar
           </Button>
         </div>
         <div className="mt-4 rounded-sm">
-          <CompanyTable />
+          <PersonTable />
         </div>
       </div>
     </SideBar>
   );
 };
-export default Companies;
+
+export default Persons;
 
 export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   const { userId } = getAuth(ctx.req);
   if (userId) {
+    debugger;
     return {
       props: {},
     };

@@ -1,15 +1,16 @@
-import { type createPersonSchema } from "@/server/api/routes/person";
+import { type createPersonSchema } from "@/server/api/router/patient";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";
+import React from "react";
 import { z } from "zod";
 
 type CreatePersonInput = z.infer<typeof createPersonSchema>;
 
 export const usePersonForm = (close: () => void) => {
-  const { mutate: savePerson } = trpc.person.save.useMutation();
-  const { mutate: updatePerson } = trpc.person.update.useMutation();
-  const { mutate: deletePerson } = trpc.person.delete.useMutation();
+  const { mutate: savePerson } = trpc.patient.save.useMutation();
+  const { mutate: updatePerson } = trpc.patient.update.useMutation();
+  const { mutate: deletePerson } = trpc.patient.delete.useMutation();
   const router = useRouter();
   const { personId } = router.query;
   const {
@@ -21,7 +22,7 @@ export const usePersonForm = (close: () => void) => {
   } = useForm<CreatePersonInput>({
     initialValues: {
       email: "",
-      userName: "",
+      firstName: "",
     },
     validate: {
       email: (value) => {
@@ -30,7 +31,7 @@ export const usePersonForm = (close: () => void) => {
         return null;
       },
 
-      userName: (value) => {
+      firstName: (value) => {
         const validUserName = z.string().min(3).safeParse(value);
         if (!validUserName.success) return "Nome inválido";
         return null;
@@ -38,23 +39,24 @@ export const usePersonForm = (close: () => void) => {
     },
   });
 
-  trpc.person.getById.useQuery(
-    { id: String(personId) },
-    {
-      enabled: !!personId,
-      onSuccess: (data) => {
-        if (!data) return;
-        const valuesToLoad: (keyof CreatePersonInput)[] = ["email", "userName"];
-        valuesToLoad.forEach((field) => {
-          const loadFormData: CreatePersonInput = {
-            email: data.email,
-            userName: data.userName || "",
-          };
-          setFieldValue(field, loadFormData[field]);
-        });
-      },
+  const { data: person, isFetching: isFetchingPerson } =
+    trpc.patient.getById.useQuery(
+      { id: String(personId || "") },
+      {
+        enabled: !!personId,
+      }
+    );
+
+  const handleLoadFields = (): void => {
+    if (!person || isFetchingPerson) return;
+    const fieldValueKeys: (keyof CreatePersonInput)[] = ["email", "firstName"];
+    for (const key of fieldValueKeys) {
+      setFieldValue(key, person[key]);
     }
-  );
+  };
+
+  React.useEffect(handleLoadFields, [person, isFetchingPerson]);
+
   const context = trpc.useContext();
 
   const isEdit = !!personId;
@@ -63,10 +65,8 @@ export const usePersonForm = (close: () => void) => {
       updatePerson(
         { ...values, id: String(personId) },
         {
-          onSuccess: () => {
-            context.person.findAll
-              .invalidate()
-              .catch((err) => console.log(err));
+          onSuccess: async () => {
+            await context.patient.findAll.invalidate();
             reset();
             close();
           },
@@ -75,8 +75,8 @@ export const usePersonForm = (close: () => void) => {
       return;
     }
     savePerson(values, {
-      onSuccess: () => {
-        context.person.findAll.invalidate().catch((err) => console.log(err));
+      onSuccess: async () => {
+        await context.patient.findAll.invalidate();
         reset();
         close();
       },
@@ -87,8 +87,8 @@ export const usePersonForm = (close: () => void) => {
     deletePerson(
       { id: String(personId) },
       {
-        onSuccess: () => {
-          context.person.findAll.invalidate().catch((err) => console.log(err));
+        onSuccess: async () => {
+          await context.patient.findAll.invalidate();
           close();
         },
       }

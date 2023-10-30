@@ -28,15 +28,15 @@ export const makeFilterItems = (search: string) => {
         ],
       },
       {
-        heading: "Equipe",
-        id: "persons",
+        heading: "Agendamentos",
+        id: "schedule",
 
         items: [
           {
-            id: "persons",
-            children: "Equipe",
+            id: "patients",
+            children: "Pacientes",
             icon: "IconUsers",
-            href: "/persons",
+            href: "/patients",
           },
         ],
       },

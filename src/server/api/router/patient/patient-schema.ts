@@ -5,7 +5,7 @@ export const getByIdSchema = z.object({
 });
 export const createPersonSchema = z.object({
   email: z.string(),
-  userName: z.string(),
+  firstName: z.string(),
   id: z.string().optional(),
 });
 

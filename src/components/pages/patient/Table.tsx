@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import { trpc } from "@/utils/api";
 import { Table } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
-import { type Person } from "@prisma/client";
+import { type Patient } from "@prisma/client";
 import { PersonForm } from "./Forms";
 import { EditModalFormWrapper } from "@/components/EditModalFormWrapper";
 
 export const PersonTable: React.FC = () => {
-  const { data, isFetching } = trpc.person.findAll.useQuery(undefined, {
+  const { data, isFetching } = trpc.patient.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
 
@@ -16,11 +16,21 @@ export const PersonTable: React.FC = () => {
     return data;
   }, [data, isFetching]);
 
-  const columns: MRT_ColumnDef<Person>[] = useMemo(
+  const columns: MRT_ColumnDef<Patient>[] = useMemo(
     () => [
       {
-        accessorKey: "userName",
+        accessorKey: "firstName",
         header: "Nome",
+        size: 150,
+      },
+      {
+        accessorKey: "lastName",
+        header: "Sobrenome",
+        size: 150,
+      },
+      {
+        accessorKey: "phoneNumber",
+        header: "Telefone",
         size: 150,
       },
       {

@@ -1,10 +1,10 @@
 import { createTRPCRouter } from "@/server/api/trpc";
-import { personRoutes } from "./routes/person";
-import { companyRoutes } from "./routes/company";
+import { patientRouter } from "./router/patient";
+import { officeRouter } from "./router/office";
 
 export const appRouter = createTRPCRouter({
-  person: personRoutes,
-  company: companyRoutes,
+  patient: patientRouter,
+  office: officeRouter,
 });
 
 export type AppRouter = typeof appRouter;

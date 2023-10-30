@@ -14,14 +14,14 @@ export const useMenuItems = () => {
     },
     {
       icon: <IconBuilding className="h-4 w-4" />,
-      label: "Empresas",
-      href: "/companies",
+      label: "Consultorios",
+      href: "/offices",
       selected: pathname === "/companies",
     },
     {
       icon: <IconUsersGroup className="h-4 w-4" />,
-      label: "Equipe",
-      href: "/persons",
+      label: "Pacientes",
+      href: "/schedules",
       selected: pathname === "/persons",
     },
   ];
