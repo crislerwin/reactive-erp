@@ -16,20 +16,20 @@ export const makeFilterItems = (search: string) => {
         ],
       },
       {
-        heading: "Empresas",
-        id: "companies",
+        heading: "Consultorios",
+        id: "offices",
         items: [
           {
-            id: "companies",
-            children: "Empresas",
+            id: "offices",
+            children: "Consultorios",
             icon: "IconBuilding",
-            href: "/companies",
+            href: "/offices",
           },
         ],
       },
       {
-        heading: "Agendamentos",
-        id: "schedule",
+        heading: "Pacientes",
+        id: "patients",
 
         items: [
           {

@@ -16,13 +16,13 @@ export const useMenuItems = () => {
       icon: <IconBuilding className="h-4 w-4" />,
       label: "Consultorios",
       href: "/offices",
-      selected: pathname === "/companies",
+      selected: pathname === "/offices",
     },
     {
       icon: <IconUsersGroup className="h-4 w-4" />,
       label: "Pacientes",
-      href: "/schedules",
-      selected: pathname === "/persons",
+      href: "/patients",
+      selected: pathname === "/patients",
     },
   ];
   return menuItems;
