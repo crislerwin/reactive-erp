@@ -1,2 +1,2 @@
 export * from "./ThemeProvider";
-export * from "./SideBarProvider";
+export * from "../components/SideBar/hooks/SideBarProvider";
