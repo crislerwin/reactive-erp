@@ -11,7 +11,7 @@ import { type User } from "@clerk/nextjs/dist/api";
 type CreateContextOptions = {
   prisma?: PrismaClient;
   session: {
-    user: User | null;
+    user: User;
   };
 };
 
@@ -24,6 +24,8 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
 
 export const createTRPCContext = async (ctx: CreateNextContextOptions) => {
   const { user } = await getServerAuthSession(ctx);
+  if (!user) throw new TRPCError({ code: "UNAUTHORIZED" });
+
   return createInnerTRPCContext({
     session: {
       user,
