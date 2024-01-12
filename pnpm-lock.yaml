@@ -7029,12 +7029,12 @@ packages:
     peerDependencies:
       webpack: ^5.0.0
     dependencies:
-      icss-utils: 5.1.0(postcss@8.4.21)
-      postcss: 8.4.21
-      postcss-modules-extract-imports: 3.0.0(postcss@8.4.21)
-      postcss-modules-local-by-default: 4.0.3(postcss@8.4.21)
-      postcss-modules-scope: 3.0.0(postcss@8.4.21)
-      postcss-modules-values: 4.0.0(postcss@8.4.21)
+      icss-utils: 5.1.0(postcss@8.4.27)
+      postcss: 8.4.27
+      postcss-modules-extract-imports: 3.0.0(postcss@8.4.27)
+      postcss-modules-local-by-default: 4.0.3(postcss@8.4.27)
+      postcss-modules-scope: 3.0.0(postcss@8.4.27)
+      postcss-modules-values: 4.0.0(postcss@8.4.27)
       postcss-value-parser: 4.2.0
       semver: 7.5.4
       webpack: 5.88.2(esbuild@0.17.19)
@@ -8798,17 +8798,18 @@ packages:
   /iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
     engines: {node: '>=0.10.0'}
+    requiresBuild: true
     dependencies:
       safer-buffer: 2.1.2
     optional: true
 
-  /icss-utils@5.1.0(postcss@8.4.21):
+  /icss-utils@5.1.0(postcss@8.4.27):
     resolution: {integrity: sha512-soFhflCVWLfRNOPU3iv5Z9VUdT44xFRbzjLsEzSr5AQmgqPMTHdU3PMT1Cf1ssx8fLNJDA1juftYl+PUcv3MqA==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      postcss: 8.4.21
+      postcss: 8.4.27
 
   /ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -10846,42 +10847,42 @@ packages:
       semver: 7.5.4
       webpack: 5.88.2(esbuild@0.17.19)
 
-  /postcss-modules-extract-imports@3.0.0(postcss@8.4.21):
+  /postcss-modules-extract-imports@3.0.0(postcss@8.4.27):
     resolution: {integrity: sha512-bdHleFnP3kZ4NYDhuGlVK+CMrQ/pqUm8bx/oGL93K6gVwiclvX5x0n76fYMKuIGKzlABOy13zsvqjb0f92TEXw==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      postcss: 8.4.21
+      postcss: 8.4.27
 
-  /postcss-modules-local-by-default@4.0.3(postcss@8.4.21):
+  /postcss-modules-local-by-default@4.0.3(postcss@8.4.27):
     resolution: {integrity: sha512-2/u2zraspoACtrbFRnTijMiQtb4GW4BvatjaG/bCjYQo8kLTdevCUlwuBHx2sCnSyrI3x3qj4ZK1j5LQBgzmwA==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      icss-utils: 5.1.0(postcss@8.4.21)
-      postcss: 8.4.21
+      icss-utils: 5.1.0(postcss@8.4.27)
+      postcss: 8.4.27
       postcss-selector-parser: 6.0.13
       postcss-value-parser: 4.2.0
 
-  /postcss-modules-scope@3.0.0(postcss@8.4.21):
+  /postcss-modules-scope@3.0.0(postcss@8.4.27):
     resolution: {integrity: sha512-hncihwFA2yPath8oZ15PZqvWGkWf+XUfQgUGamS4LqoP1anQLOsOJw0vr7J7IwLpoY9fatA2qiGUGmuZL0Iqlg==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      postcss: 8.4.21
+      postcss: 8.4.27
       postcss-selector-parser: 6.0.13
 
-  /postcss-modules-values@4.0.0(postcss@8.4.21):
+  /postcss-modules-values@4.0.0(postcss@8.4.27):
     resolution: {integrity: sha512-RDxHkAiEGI78gS2ofyvCsu7iycRv7oqw5xMWn9iMoR0N/7mf9D50ecQqUo5BZ9Zh2vH4bCUR/ktCqbB9m8vJjQ==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      icss-utils: 5.1.0(postcss@8.4.21)
-      postcss: 8.4.21
+      icss-utils: 5.1.0(postcss@8.4.27)
+      postcss: 8.4.27
 
   /postcss-nested@6.0.0(postcss@8.4.21):
     resolution: {integrity: sha512-0DkamqrPcmkBDsLn+vQDIrtkSbNkv5AD/M322ySo9kqFkCIYklym2xEmWkwo+Y3/qZo34tzEPNUw4y7yMCdv5w==}
@@ -11063,6 +11064,7 @@ packages:
 
   /prr@1.0.1:
     resolution: {integrity: sha512-yPw4Sng1gWghHQWj0B3ZggWUm4qVbPwPFcRG8KyxiU7J2OHFSoEHKS+EZ3fv5l1t9CyCiop6l/ZYeWbrgoQejw==}
+    requiresBuild: true
     optional: true
 
   /pump@2.0.1:
@@ -11574,7 +11576,7 @@ packages:
       adjust-sourcemap-loader: 4.0.0
       convert-source-map: 1.9.0
       loader-utils: 2.0.4
-      postcss: 8.4.21
+      postcss: 8.4.27
       source-map: 0.6.1
 
   /resolve@1.22.2:
@@ -11619,8 +11621,8 @@ packages:
       glob: 7.2.3
     dev: true
 
-  /rollup@3.26.3:
-    resolution: {integrity: sha512-7Tin0C8l86TkpcMtXvQu6saWH93nhG3dGQ1/+l5V2TDMceTxO7kDiK6GzbfLWNNxqJXm591PcEZUozZm51ogwQ==}
+  /rollup@3.29.4:
+    resolution: {integrity: sha512-oWzmBZwvYrU0iJHtDmhsm662rC15FRXmcjCk1xD771dFDx5jJ02ufAQQTn0etB2emNk4J9EZg/yWKpsn9BWGRw==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
@@ -11725,6 +11727,7 @@ packages:
 
   /sax@1.2.4:
     resolution: {integrity: sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==}
+    requiresBuild: true
     optional: true
 
   /scheduler@0.23.0:
@@ -12968,7 +12971,7 @@ packages:
       mlly: 1.4.0
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 4.4.7(@types/node@18.15.5)(less@4.1.3)
+      vite: 4.5.1(@types/node@18.15.5)(less@4.1.3)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -12979,8 +12982,8 @@ packages:
       - supports-color
       - terser
 
-  /vite@4.4.7(@types/node@18.15.5)(less@4.1.3):
-    resolution: {integrity: sha512-6pYf9QJ1mHylfVh39HpuSfMPojPSKVxZvnclX1K1FyZ1PXDOcLBibdq5t1qxJSnL63ca8Wf4zts6mD8u8oc9Fw==}
+  /vite@4.5.1(@types/node@18.15.5)(less@4.1.3):
+    resolution: {integrity: sha512-AXXFaAJ8yebyqzoNB9fu2pHoo/nWX+xZlaRwoeYUxEqBO+Zj4msE5G+BhGBll9lYEKv9Hfks52PAF2X7qDYXQA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
@@ -13011,7 +13014,7 @@ packages:
       esbuild: 0.18.16
       less: 4.1.3
       postcss: 8.4.27
-      rollup: 3.26.3
+      rollup: 3.29.4
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -13080,7 +13083,7 @@ packages:
       strip-literal: 1.0.1
       tinybench: 2.5.0
       tinypool: 0.4.0
-      vite: 4.4.7(@types/node@18.15.5)(less@4.1.3)
+      vite: 4.5.1(@types/node@18.15.5)(less@4.1.3)
       vite-node: 0.30.1(@types/node@18.15.5)(less@4.1.3)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
