@@ -31,6 +31,12 @@ const config = {
         checksVoidReturn: false,
       },
     ],
+    "@typescript-eslint/no-floating-promises": [
+      "error",
+      {
+        ignoreVoid: true,
+      },
+    ],
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {

@@ -1,25 +1,30 @@
 import React, { useState } from "react";
-import { useClerk, useUser } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useMenuItems, useSideBar } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
-import { LotusIcon } from "../Icons";
 import { Avatar, Button, Menu } from "@mantine/core";
-import { IconSettings, IconLogout, IconSearch } from "@tabler/icons-react";
+import {
+  IconSettings,
+  IconLogout,
+  IconSearch,
+  IconApiApp,
+} from "@tabler/icons-react";
 
 import CommandPalette, {
   getItemIndex,
   useHandleOpenCommandPalette,
 } from "../SearchBar";
 import { makeFilterItems } from "./utils";
+import { trpc } from "@/utils/api";
 
 export type SideBarProps = {
   children?: React.ReactNode;
 };
 
 export const SideBar: React.FC<SideBarProps> = ({ children }) => {
-  const { user } = useUser();
+  const { data: user } = trpc.person.getLoggedUser.useQuery();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();
   const [openSearch, setOpenSearch] = useState<boolean>(false);
@@ -32,7 +37,17 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
 
   const filterItems = makeFilterItems(search);
 
-  if (!user) return <></>;
+  const handleRedirect = () => {
+    if (!user) return;
+    router
+      .push({
+        pathname: "/account",
+        query: { userId: user.id },
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   return (
     <>
@@ -62,7 +77,7 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
             open ? "" : "ml-12"
           } flex  h-full flex-none transform items-center justify-center duration-500 ease-in-out dark:text-slate-300`}
         >
-          {user.fullName}
+          {user?.username}
         </div>
         <div className="flex h-full grow items-center justify-center"></div>
         <div className="flex h-full flex-none items-center justify-center text-center">
@@ -82,24 +97,17 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
                 <div className="flex flex-none cursor-pointer justify-center">
                   <Avatar
                     className="rounded-full"
-                    alt={`${user.fullName ?? "user"}'s profile picture`}
-                    src={user.profileImageUrl}
+                    alt={`${user?.username ?? "user"}'s profile picture`}
+                    src={user?.profileImageUrl}
                   />
                 </div>
               </Menu.Target>
               <Menu.Dropdown className="dark:bg-[#0F172A]  dark:hover:text-orange-400">
                 <Menu.Label className="text-md  dark:text-slate-300">
-                  {user.primaryEmailAddress?.emailAddress}
+                  {user?.emailAddresses?.[0]?.emailAddress ?? ""}
                 </Menu.Label>
                 <Menu.Item
-                  onClick={() => {
-                    router
-                      .push({
-                        pathname: "/account",
-                        query: { userId: user.id },
-                      })
-                      .catch((err) => console.error(err));
-                  }}
+                  onClick={handleRedirect}
                   className={`bg-slate-100  hover:bg-slate-200  ${
                     route.includes("account")
                       ? "bg-slate-200 dark:bg-gray-800"
@@ -144,7 +152,7 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
           onClick={() => setOpen(!open)}
           className="absolute -right-6 top-2 flex transform rounded-full  border-4 border-white bg-slate-200 p-3 text-slate-700 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-blue-500"
         >
-          <LotusIcon />
+          <IconApiApp width={24} height={24} />
         </div>
         <MenuItems items={menuItems} open={open} />
       </aside>

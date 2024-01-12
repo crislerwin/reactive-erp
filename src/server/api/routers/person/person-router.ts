@@ -19,6 +19,29 @@ export const personRouter = createTRPCRouter({
     return ctx.prisma.person.findMany();
   }),
 
+  getLoggedUser: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.session.user)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "User Not found",
+        cause: "No user",
+      });
+    const loggedUserEmail = ctx.session.user?.emailAddresses?.[0]?.emailAddress;
+    const existentUser = await ctx.prisma.person.findUnique({
+      where: {
+        email: loggedUserEmail,
+      },
+    });
+    if (!existentUser) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        cause: "User not found",
+        message: "User not found",
+      });
+    }
+
+    return ctx.session.user;
+  }),
   getByEmail: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
     if (!user.id) throw new TRPCError({ code: "UNAUTHORIZED" });
