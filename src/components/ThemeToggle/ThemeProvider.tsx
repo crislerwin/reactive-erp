@@ -1,7 +1,7 @@
 import { type ColorScheme, MantineProvider } from "@mantine/core";
 import { parseCookies, setCookie } from "nookies";
 import React from "react";
-import { makeTheme } from "./utils";
+import { ThemeKind, makeTheme } from "./utils";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ type ThemeContextProps = {
 
 export const ThemeContext = React.createContext<ThemeContextProps>({
   theme: "light",
-  setTheme(_theme: "light" | "dark") {
+  setTheme(_theme: ColorScheme) {
     console.warn(
       "if you see this, likely you forgot to add the ThemeProvider on top of your app"
     );
@@ -22,7 +22,7 @@ export const ThemeContext = React.createContext<ThemeContextProps>({
 });
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setUserTheme] = React.useState<ColorScheme>("light");
+  const [theme, setUserTheme] = React.useState<ColorScheme>(ThemeKind.light);
   React.useEffect(() => {
     const { themePrefs } = parseCookies();
     if (themePrefs) {
