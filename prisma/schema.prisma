@@ -10,10 +10,10 @@ datasource db {
 
 model Patient {
   id           String        @id() @default(uuid())
-  email        String?       @unique
-  firstName    String?       @default("")
-  lastName     String?       @default("")
-  phoneNumber  String?       @default("")
+  email        String?
+  firstName    String?
+  lastName     String?
+  phoneNumber  String?
   appointments Appointment[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
