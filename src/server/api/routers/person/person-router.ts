@@ -19,22 +19,6 @@ export const personRouter = createTRPCRouter({
     return ctx.prisma.person.findMany();
   }),
 
-  getByEmail: protectedProcedure.query(async ({ ctx }) => {
-    const user = ctx.session.user;
-    if (!user.id) throw new TRPCError({ code: "UNAUTHORIZED" });
-    const loggedUser = await ctx.prisma.person.findUnique({
-      where: {
-        email: user?.emailAddresses?.[0]?.emailAddress,
-      },
-    });
-    if (!loggedUser)
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        cause: "User not found",
-        message: "User not found",
-      });
-    return loggedUser;
-  }),
   save: protectedProcedure
     .input(createPersonSchema)
     .mutation(async ({ ctx, input }) => {
