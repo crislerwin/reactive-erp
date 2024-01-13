@@ -4,7 +4,7 @@ import { trpc } from "@/utils/api";
 import { ClerkProvider } from "@clerk/nextjs";
 import "@/styles/globals.css";
 import { SideBarProvider } from "@/components/SideBar";
-import { ThemeProvider } from "@/Providers";
+import { ThemeProvider } from "@/components/ThemeToggle";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {

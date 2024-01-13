@@ -1,8 +1,13 @@
 import type { ColorScheme, MantineThemeOverride } from "@mantine/core";
 
+export enum ThemeKind {
+  light = "light",
+  dark = "dark",
+}
+
 export const makeTheme: Record<ColorScheme, MantineThemeOverride> = {
   light: {
-    colorScheme: "light",
+    colorScheme: ThemeKind.light,
     components: {
       Tooltip: {
         classNames: {
@@ -37,7 +42,7 @@ export const makeTheme: Record<ColorScheme, MantineThemeOverride> = {
     },
   },
   dark: {
-    colorScheme: "dark",
+    colorScheme: ThemeKind.dark,
     components: {
       Tooltip: {
         classNames: {

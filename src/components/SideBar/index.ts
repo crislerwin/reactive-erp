@@ -1,3 +1,3 @@
 export * from "./SideBar";
-export * from "../../Providers/SideBarProvider";
+export * from "./hooks/SideBarProvider";
 export * from "./hooks/useSideBar";
