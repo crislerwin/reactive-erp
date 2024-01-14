@@ -1,67 +1,46 @@
-import { type createPersonSchema } from "@/server/api/routers/providers";
+import { type providerSchema } from "@/server/api/schemas";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";
-import { z } from "zod";
+import { type z } from "zod";
 
-type CreatePersonInput = z.infer<typeof createPersonSchema>;
+type CreatePersonInput = z.infer<typeof providerSchema>;
 
 export const usePersonForm = (close: () => void) => {
   const { mutate: savePerson } = trpc.provider.save.useMutation();
   const { mutate: updatePerson } = trpc.provider.update.useMutation();
   const { mutate: deletePerson } = trpc.provider.delete.useMutation();
-  const router = useRouter();
-  const { personId } = router.query;
+  const {
+    query: { providerId },
+  } = useRouter();
+  const { data: provider } = trpc.provider.getById.useQuery(
+    { id: Number(providerId) },
+    {
+      enabled: !!providerId,
+    }
+  );
+
   const {
     onSubmit,
     getInputProps,
     reset,
-    setFieldValue,
     values: formValues,
   } = useForm<CreatePersonInput>({
     initialValues: {
-      email: "",
-      userName: "",
+      email: provider?.email ?? "",
+      name: provider?.name ?? "",
     },
-    validate: {
-      email: (value) => {
-        const validEmail = z.string().email().safeParse(value);
-        if (!validEmail.success) return "Email inválido";
-        return null;
-      },
 
-      userName: (value) => {
-        const validUserName = z.string().min(3).safeParse(value);
-        if (!validUserName.success) return "Nome inválido";
-        return null;
-      },
-    },
+    validate: {},
   });
 
-  trpc.provider.getById.useQuery(
-    { id: String(personId) },
-    {
-      enabled: !!personId,
-      onSuccess: (data) => {
-        if (!data) return;
-        const valuesToLoad: (keyof CreatePersonInput)[] = ["email", "userName"];
-        valuesToLoad.forEach((field) => {
-          const loadFormData: CreatePersonInput = {
-            email: data.email,
-            userName: data.userName || "",
-          };
-          setFieldValue(field, loadFormData[field]);
-        });
-      },
-    }
-  );
   const context = trpc.useContext();
 
-  const isEdit = !!personId;
+  const isEdit = !!providerId;
   const handleSubmit = onSubmit((values) => {
     if (isEdit) {
       updatePerson(
-        { ...values, id: String(personId) },
+        { ...values, id: Number(providerId) },
         {
           onSuccess: () => {
             context.provider.findAll
@@ -85,7 +64,7 @@ export const usePersonForm = (close: () => void) => {
 
   const handleDeletePerson = () => {
     deletePerson(
-      { id: String(personId) },
+      { id: Number(providerId) },
       {
         onSuccess: () => {
           context.provider.findAll
@@ -101,6 +80,7 @@ export const usePersonForm = (close: () => void) => {
     getInputProps,
     handleSubmit,
     isEdit,
+    provider,
     formValues,
     handleDeletePerson,
   };
