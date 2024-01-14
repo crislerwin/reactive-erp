@@ -9,33 +9,42 @@ datasource db {
 }
 
 model Provider {
-  id             Int          @unique @default(autoincrement())
-  email          String       @unique
-  first_name     String?
-  middle_name    String?
-  last_name      String?
-  name           String
-  bio            Json?
-  created_at     DateTime     @default(now())
-  updated_at     DateTime?    @updatedAt
-  institution_id Int
-  institution    Institution? @relation(fields: [institution_id], references: [id])
+  id              Int       @unique @default(autoincrement())
+  email           String    @unique
+  first_name      String
+  middle_name     String?
+  last_name       String?
+  name            String?
+  bio             Json?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime? @updatedAt
+  institution_ids Json?
 
   @@index([email])
-  @@index([institution_id])
 }
 
 model Institution {
-  id              Int        @unique @default(autoincrement())
-  company_code    String     @unique @default("")
+  id              Int       @unique @default(autoincrement())
+  company_code    String    @unique
   email           String
   name            String
   description     String?
   attributes      Json?
   static_logo_url String?
-  created_at      DateTime   @default(now())
-  updated_at      DateTime?  @updatedAt
-  providers       Provider[]
+  created_at      DateTime  @default(now())
+  updated_at      DateTime? @updatedAt
 
   @@index([company_code])
+}
+
+model User {
+  id         Int      @unique @default(autoincrement())
+  email      String   @unique
+  name       String
+  avatar_url String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  role       String?  @default("user")
+
+  @@index([email])
 }

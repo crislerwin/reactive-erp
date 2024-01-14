@@ -7,7 +7,7 @@ import {
 } from "@/server/api/schemas";
 
 export const institutionRouter = createTRPCRouter({
-  save: protectedProcedure
+  createOne: protectedProcedure
     .input(institutionSchema)
     .mutation(async ({ ctx, input }) => {
       const existentCompany = await ctx.prisma.institution.findUnique({

@@ -16,7 +16,7 @@ export const useInstitutionForm = (close: () => void) => {
   const router = useRouter();
   const { institutionId } = router.query;
   const parsedInstutionId = institutionId ? Number(institutionId) : undefined;
-  const { mutate: handleSave } = trpc.institution.save.useMutation();
+  const { mutate: handleSave } = trpc.institution.createOne.useMutation();
   const { mutate: handleDelete } = trpc.institution.delete.useMutation();
   const { data: institutionData } = trpc.institution.findById.useQuery(
     { id: parsedInstutionId },

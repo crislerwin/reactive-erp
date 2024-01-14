@@ -18,19 +18,19 @@ export const providerRoute = createTRPCRouter({
     return ctx.prisma.provider.findMany();
   }),
 
-  save: protectedProcedure
+  createOne: protectedProcedure
     .input(providerSchema)
     .mutation(async ({ ctx, input }) => {
-      const userAlreadyExists = await ctx.prisma.provider.findUnique({
+      const providerAlreadyExists = await ctx.prisma.provider.findUnique({
         where: {
           email: input.email,
         },
       });
-      if (userAlreadyExists) {
+      if (providerAlreadyExists) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          cause: "User already exists",
-          message: "User already exists",
+          cause: "Provider already exists",
+          message: "Provider already exists",
         });
       }
       const newUser = ctx.prisma.provider.create({
@@ -41,6 +41,7 @@ export const providerRoute = createTRPCRouter({
           last_name: input.last_name,
           middle_name: input.middle_name,
           name: input.name,
+          institution_ids: input.institution_ids,
         },
       });
       return newUser;

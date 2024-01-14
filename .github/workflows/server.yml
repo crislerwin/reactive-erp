@@ -5,6 +5,17 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: k2j3k4l5m
+          MYSQL_DATABASE: health_ops
+          MYSQL_USER: health_ops_user
+          MYSQL_PASSWORD: 1k2j3k4l5m
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout
@@ -24,3 +35,9 @@ jobs:
 
       - name: Install
         run: pnpm install
+
+      - name: Wait for MySQL to be ready
+        run: dockerize -wait tcp://localhost:3306 -timeout 1m
+
+      - name: Run tests
+        run: pnpm test:ci

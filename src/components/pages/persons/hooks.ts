@@ -7,7 +7,7 @@ import { type z } from "zod";
 type CreatePersonInput = z.infer<typeof providerSchema>;
 
 export const usePersonForm = (close: () => void) => {
-  const { mutate: savePerson } = trpc.provider.save.useMutation();
+  const { mutate: savePerson } = trpc.provider.createOne.useMutation();
   const { mutate: updatePerson } = trpc.provider.update.useMutation();
   const { mutate: deletePerson } = trpc.provider.delete.useMutation();
   const {
