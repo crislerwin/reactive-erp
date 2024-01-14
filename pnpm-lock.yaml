@@ -25,7 +25,7 @@ dependencies:
     version: 6.0.9(@emotion/react@11.10.8)(@mantine/hooks@6.0.9)(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0)
   '@mantine/dates':
     specifier: ^6.0.9
-    version: 6.0.9(@mantine/core@6.0.9)(@mantine/hooks@6.0.9)(dayjs@1.11.7)(react@18.2.0)
+    version: 6.0.9(@mantine/core@6.0.9)(@mantine/hooks@6.0.9)(dayjs@1.11.10)(react@18.2.0)
   '@mantine/form':
     specifier: ^6.0.9
     version: 6.0.9(react@18.2.0)
@@ -63,8 +63,8 @@ dependencies:
     specifier: ^10.18.0
     version: 10.18.0
   dayjs:
-    specifier: ^1.11.7
-    version: 1.11.7
+    specifier: ^1.11.10
+    version: 1.11.10
   mantine-react-table:
     specifier: 1.0.0-beta.5
     version: 1.0.0-beta.5(@emotion/react@11.10.8)(@mantine/core@6.0.9)(@mantine/dates@6.0.9)(@mantine/hooks@6.0.9)(@tabler/icons-react@2.17.0)(react-dom@18.2.0)(react@18.2.0)
@@ -3393,7 +3393,7 @@ packages:
       - '@types/react'
     dev: false
 
-  /@mantine/dates@6.0.9(@mantine/core@6.0.9)(@mantine/hooks@6.0.9)(dayjs@1.11.7)(react@18.2.0):
+  /@mantine/dates@6.0.9(@mantine/core@6.0.9)(@mantine/hooks@6.0.9)(dayjs@1.11.10)(react@18.2.0):
     resolution: {integrity: sha512-sV/2MByRxjfGCw1iJzoeZRPXuvnJ9Qk95TNSC3ieUrQjIhf/fme/oWiraeo2WRUtIK2MPr2cOCEgQdok1/X8tA==}
     peerDependencies:
       '@mantine/core': 6.0.9
@@ -3404,7 +3404,7 @@ packages:
       '@mantine/core': 6.0.9(@emotion/react@11.10.8)(@mantine/hooks@6.0.9)(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0)
       '@mantine/hooks': 6.0.9(react@18.2.0)
       '@mantine/utils': 6.0.9(react@18.2.0)
-      dayjs: 1.11.7
+      dayjs: 1.11.10
       react: 18.2.0
     dev: false
 
@@ -7057,8 +7057,8 @@ packages:
     dependencies:
       time-zone: 1.0.0
 
-  /dayjs@1.11.7:
-    resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
+  /dayjs@1.11.10:
+    resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
     dev: false
 
   /debug@2.6.9:
@@ -9632,7 +9632,7 @@ packages:
     dependencies:
       '@emotion/react': 11.10.8(@types/react@18.2.47)(react@18.2.0)
       '@mantine/core': 6.0.9(@emotion/react@11.10.8)(@mantine/hooks@6.0.9)(@types/react@18.2.47)(react-dom@18.2.0)(react@18.2.0)
-      '@mantine/dates': 6.0.9(@mantine/core@6.0.9)(@mantine/hooks@6.0.9)(dayjs@1.11.7)(react@18.2.0)
+      '@mantine/dates': 6.0.9(@mantine/core@6.0.9)(@mantine/hooks@6.0.9)(dayjs@1.11.10)(react@18.2.0)
       '@mantine/hooks': 6.0.9(react@18.2.0)
       '@tabler/icons-react': 2.17.0(react@18.2.0)
       '@tanstack/match-sorter-utils': 8.8.4
