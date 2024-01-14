@@ -36,11 +36,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install dockerize
-        run: wget https://github.com/jwilder/dockerize/releases/download/v0.7.0/dockerize-linux-amd64-v0.7.0.tar.gz tar -xzvf dockerize-linux-amd64-v0.7.0.tar.gz mv dockerize /usr/local/bin/dockerize rm dockerize-linux-amd64-v0.7.0.tar.gz
-
-      - name: Wait for MySQL to be ready
-        run: dockerize -wait tcp://localhost:3306 -timeout 1m
-
       - name: Run tests
         run: pnpm test:ci
