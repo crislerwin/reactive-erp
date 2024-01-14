@@ -1,12 +1,12 @@
 import { prisma } from "@/server/db";
-
 import { TRPCError, initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { getServerAuthSession } from "./auth";
+
 import { type PrismaClient } from "@prisma/client";
-import { type User } from "@clerk/nextjs/dist/api";
+import { type User } from "@clerk/nextjs/server";
+import { getServerAuthSession } from "./auth";
 
 type CreateContextOptions = {
   prisma?: PrismaClient;
@@ -23,13 +23,10 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
 };
 
 export const createTRPCContext = async (ctx: CreateNextContextOptions) => {
-  const { user } = await getServerAuthSession(ctx);
-  if (!user) throw new TRPCError({ code: "UNAUTHORIZED" });
+  const user = await getServerAuthSession(ctx);
 
   return createInnerTRPCContext({
-    session: {
-      user,
-    },
+    session: { user },
   });
 };
 

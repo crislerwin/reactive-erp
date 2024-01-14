@@ -17,14 +17,13 @@ import CommandPalette, {
   useHandleOpenCommandPalette,
 } from "../SearchBar";
 import { makeFilterItems } from "./utils";
-import { trpc } from "@/utils/api";
 
 export type SideBarProps = {
   children?: React.ReactNode;
 };
 
 export const SideBar: React.FC<SideBarProps> = ({ children }) => {
-  const { data: user } = trpc.person.getLoggedUser.useQuery();
+  const { user } = useClerk();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();
   const [openSearch, setOpenSearch] = useState<boolean>(false);
