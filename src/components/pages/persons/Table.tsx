@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import { trpc } from "@/utils/api";
 import { Table } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
-import { type Person } from "@prisma/client";
+import { type Provider } from "@prisma/client";
 import { PersonForm } from "./Forms";
 import { EditModalFormWrapper } from "@/components/EditModalFormWrapper";
 
-export const PersonTable: React.FC = () => {
-  const { data, isFetching } = trpc.person.findAll.useQuery(undefined, {
+export const ProviderTable: React.FC = () => {
+  const { data, isFetching } = trpc.provider.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
 
@@ -16,10 +16,10 @@ export const PersonTable: React.FC = () => {
     return data;
   }, [data, isFetching]);
 
-  const columns: MRT_ColumnDef<Person>[] = useMemo(
+  const columns: MRT_ColumnDef<Provider>[] = useMemo(
     () => [
       {
-        accessorKey: "userName",
+        accessorKey: "name",
         header: "Nome",
         size: 150,
       },
@@ -37,7 +37,7 @@ export const PersonTable: React.FC = () => {
           return (
             <EditModalFormWrapper
               label="Editar Pessoa"
-              redirectTo={`/persons?personId=${String(renderedCellValue)}`}
+              redirectTo={`/teams?providerId=${String(renderedCellValue)}`}
             >
               {(close) => <PersonForm close={close} />}
             </EditModalFormWrapper>

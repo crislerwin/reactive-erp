@@ -1,13 +1,12 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import {
-  getByIdSchema,
-  createPersonSchema,
+  idSchema,
+  providerSchema,
   updatePersonSchema,
-} from "./person-schema";
+} from "@/server/api/schemas";
 
-export const personRouter = createTRPCRouter({
+export const providerRoute = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {
     if (!ctx.session.user)
       throw new TRPCError({
@@ -16,13 +15,13 @@ export const personRouter = createTRPCRouter({
         cause: "No user",
       });
 
-    return ctx.prisma.person.findMany();
+    return ctx.prisma.provider.findMany();
   }),
 
   save: protectedProcedure
-    .input(createPersonSchema)
+    .input(providerSchema)
     .mutation(async ({ ctx, input }) => {
-      const userAlreadyExists = await ctx.prisma.person.findUnique({
+      const userAlreadyExists = await ctx.prisma.provider.findUnique({
         where: {
           email: input.email,
         },
@@ -34,11 +33,14 @@ export const personRouter = createTRPCRouter({
           message: "User already exists",
         });
       }
-      const newUser = ctx.prisma.person.create({
+      const newUser = ctx.prisma.provider.create({
         data: {
-          id: input.id,
           email: input.email,
-          userName: input.userName,
+          bio: input.bio,
+          first_name: input.first_name,
+          last_name: input.last_name,
+          middle_name: input.middle_name,
+          name: input.name,
         },
       });
       return newUser;
@@ -46,33 +48,27 @@ export const personRouter = createTRPCRouter({
   update: protectedProcedure
     .input(updatePersonSchema)
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.person.update({
+      return ctx.prisma.provider.update({
         where: {
           id: input.id,
         },
         data: {
           email: input.email,
-          userName: input.userName,
+          name: input.name,
         },
       });
     }),
 
-  delete: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.person.delete({
-        where: {
-          id: input.id,
-        },
-      });
-    }),
+  delete: protectedProcedure.input(idSchema).mutation(({ ctx, input }) => {
+    return ctx.prisma.provider.delete({
+      where: {
+        id: input.id,
+      },
+    });
+  }),
 
-  getById: protectedProcedure.input(getByIdSchema).query(({ ctx, input }) => {
-    return ctx.prisma.person.findUnique({
+  getById: protectedProcedure.input(idSchema).query(({ ctx, input }) => {
+    return ctx.prisma.provider.findUnique({
       where: {
         id: input.id,
       },

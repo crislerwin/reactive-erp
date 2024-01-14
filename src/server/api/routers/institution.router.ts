@@ -1,36 +1,37 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import {
-  createCompanySchema,
+  institutionSchema,
   idSchema,
   updateCompanySchema,
-} from "./company-schema";
+} from "@/server/api/schemas";
 
-export const companiesRouter = createTRPCRouter({
+export const institutionRouter = createTRPCRouter({
   save: protectedProcedure
-    .input(createCompanySchema)
+    .input(institutionSchema)
     .mutation(async ({ ctx, input }) => {
-      const existentCompany = await ctx.prisma.company.findUnique({
-        where: { cnpj: input.cnpj },
+      const existentCompany = await ctx.prisma.institution.findUnique({
+        where: { company_code: input.company_code },
       });
 
       if (existentCompany) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: "Company already exists",
+          message: `Institution ${existentCompany.name} already exists`,
         });
       }
-      return await ctx.prisma.company.create({
+      return await ctx.prisma.institution.create({
         data: {
-          cnpj: input.cnpj,
-          socialReason: input.socialReason,
-          fantasyName: input.fantasyName,
+          company_code: input.company_code,
+          name: input.name,
           email: input.email,
+          attributes: input.attributes,
+          description: input.description,
         },
       });
     }),
   findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {
-    const company = await ctx.prisma.company.findUnique({
+    const company = await ctx.prisma.institution.findUnique({
       where: { id: input.id },
     });
     if (!company) {
@@ -43,14 +44,14 @@ export const companiesRouter = createTRPCRouter({
   }),
 
   findAll: protectedProcedure.query(async ({ ctx }) => {
-    const companies = await ctx.prisma.company.findMany();
+    const companies = await ctx.prisma.institution.findMany();
     return companies;
   }),
 
   delete: protectedProcedure
     .input(idSchema)
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.company.delete({
+      await ctx.prisma.institution.delete({
         where: { id: input.id },
       });
       return true;
@@ -58,12 +59,12 @@ export const companiesRouter = createTRPCRouter({
   update: protectedProcedure
     .input(updateCompanySchema)
     .mutation(async ({ ctx, input }) => {
-      const company = await ctx.prisma.company.update({
+      const company = await ctx.prisma.institution.update({
         where: { id: input.id },
         data: {
-          cnpj: input.cnpj,
-          socialReason: input.socialReason,
-          fantasyName: input.fantasyName,
+          company_code: input.company_code,
+          name: input.name,
+          description: input.description,
           email: input.email,
         },
       });

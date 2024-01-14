@@ -9,7 +9,7 @@ import {
 import React from "react";
 import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 import { useDisclosure } from "@mantine/hooks";
-import { useCompanyForm } from "./hooks";
+import { useInstitutionForm } from "./hooks";
 
 export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
   const {
@@ -19,7 +19,7 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
     formValues,
     handleDeleteCompany,
     isEdit,
-  } = useCompanyForm(close);
+  } = useInstitutionForm(close);
   const [deleteModalOpened, { close: closeDelete, open: openDelete }] =
     useDisclosure(false);
   return (
@@ -28,7 +28,7 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
         <TextInput
           label="CNPJ"
           withAsterisk
-          {...getInputProps("cnpj")}
+          {...getInputProps("company_code")}
           rightSection={
             <IconSearch
               onClick={handleSearch}
@@ -40,14 +40,14 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
 
         <TextInput
           withAsterisk
-          label="Nome Fantasia"
-          placeholder="Nome Fantasia"
+          label="Nome da Instituição"
+          placeholder="Nome da Instituição"
           {...getInputProps("fantasyName")}
         />
         <TextInput
-          label="Razão Social"
-          placeholder="Razão Social"
-          {...getInputProps("socialReason")}
+          label="Logo da instituição"
+          placeholder="Logo da instituição"
+          {...getInputProps("static_logo_url")}
         />
         <TextInput
           withAsterisk
@@ -64,7 +64,7 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
                 className: "bg-red-500 text-white hover:bg-red-600",
                 icon: <IconTrash className="h-4 w-4" />,
               }}
-              title={`Deseja mesmo excluir a empresa ${formValues.fantasyName}?`}
+              title={`Deseja mesmo excluir a instituição ${formValues.name}?`}
               handleConfirm={handleDeleteCompany}
               opened={deleteModalOpened}
               close={closeDelete}

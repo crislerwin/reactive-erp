@@ -1,4 +1,4 @@
-import { type createPersonSchema } from "@/server/api/routers/person";
+import { type createPersonSchema } from "@/server/api/routers/providers";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";
@@ -7,9 +7,9 @@ import { z } from "zod";
 type CreatePersonInput = z.infer<typeof createPersonSchema>;
 
 export const usePersonForm = (close: () => void) => {
-  const { mutate: savePerson } = trpc.person.save.useMutation();
-  const { mutate: updatePerson } = trpc.person.update.useMutation();
-  const { mutate: deletePerson } = trpc.person.delete.useMutation();
+  const { mutate: savePerson } = trpc.provider.save.useMutation();
+  const { mutate: updatePerson } = trpc.provider.update.useMutation();
+  const { mutate: deletePerson } = trpc.provider.delete.useMutation();
   const router = useRouter();
   const { personId } = router.query;
   const {
@@ -38,7 +38,7 @@ export const usePersonForm = (close: () => void) => {
     },
   });
 
-  trpc.person.getById.useQuery(
+  trpc.provider.getById.useQuery(
     { id: String(personId) },
     {
       enabled: !!personId,
@@ -64,7 +64,7 @@ export const usePersonForm = (close: () => void) => {
         { ...values, id: String(personId) },
         {
           onSuccess: () => {
-            context.person.findAll
+            context.provider.findAll
               .invalidate()
               .catch((err) => console.log(err));
             reset();
@@ -76,7 +76,7 @@ export const usePersonForm = (close: () => void) => {
     }
     savePerson(values, {
       onSuccess: () => {
-        context.person.findAll.invalidate().catch((err) => console.log(err));
+        context.provider.findAll.invalidate().catch((err) => console.log(err));
         reset();
         close();
       },
@@ -88,7 +88,9 @@ export const usePersonForm = (close: () => void) => {
       { id: String(personId) },
       {
         onSuccess: () => {
-          context.person.findAll.invalidate().catch((err) => console.log(err));
+          context.provider.findAll
+            .invalidate()
+            .catch((err) => console.log(err));
           close();
         },
       }

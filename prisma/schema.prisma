@@ -8,32 +8,34 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Person {
-  id        String   @unique @default(uuid())
-  userId    String?  @unique
-  email     String   @unique
-  userName  String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Provider {
+  id             Int          @unique @default(autoincrement())
+  email          String       @unique
+  first_name     String?
+  middle_name    String?
+  last_name      String?
+  name           String
+  bio            Json?
+  created_at     DateTime     @default(now())
+  updated_at     DateTime?    @updatedAt
+  institution_id Int
+  institution    Institution? @relation(fields: [institution_id], references: [id])
 
   @@index([email])
+  @@index([institution_id])
 }
 
-model Company {
-  id           String   @unique @default(uuid())
-  cnpj         String   @unique @default("")
-  socialReason String
-  fantasyName  String
-  email        String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model Institution {
+  id              Int        @unique @default(autoincrement())
+  company_code    String     @unique @default("")
+  email           String
+  name            String
+  description     String?
+  attributes      Json?
+  static_logo_url String?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime?  @updatedAt
+  providers       Provider[]
 
-  @@index([cnpj])
-}
-
-model Permission {
-  id       Int    @id @default(autoincrement())
-  name     String @default("")
-  value    String @default("")
-  personId Int?
+  @@index([company_code])
 }
