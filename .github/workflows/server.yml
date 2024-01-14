@@ -2,6 +2,8 @@ on:
   - push
   - pull_request
 
+env:
+  DATABASE_URL: mysql://health_ops_user:1k2j3k4l5m@127.0.0.1:3306/health_ops?synchronize=true&logging=false&ssl=false
 jobs:
   test:
     runs-on: ubuntu-latest
