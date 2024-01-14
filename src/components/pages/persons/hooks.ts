@@ -42,10 +42,9 @@ export const usePersonForm = (close: () => void) => {
       updatePerson(
         { ...values, id: Number(providerId) },
         {
-          onSuccess: () => {
-            context.provider.findAll
-              .invalidate()
-              .catch((err) => console.log(err));
+          onSuccess: async () => {
+            await context.provider.findAll.invalidate();
+
             reset();
             close();
           },
