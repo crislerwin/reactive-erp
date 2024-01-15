@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, vi } from "vitest";
 import { createInnerTRPCContext } from "../trpc";
 import { appRouter } from "../root";
 import { faker } from "@faker-js/faker";
+import { TRPCError } from "@trpc/server";
 
 const makeFakeProviderParams = () => ({
   email: faker.internet.email(),
@@ -55,7 +56,7 @@ describe("Provider router", () => {
     const createdProvider = await sut.provider.createOne(
       makeFakeProviderParams()
     );
-    const updatedProvider = await sut.provider.update({
+    const updatedProvider = await sut.provider.updateOne({
       ...makeFakeProviderParams(),
       id: createdProvider.id,
       name: newName,
@@ -87,5 +88,14 @@ describe("Provider router", () => {
     expect(foundProvider).toBeDefined();
     expect(foundProvider?.id).toBe(newProvider.id);
     expect(foundProvider?.name).toBe(newProvider.name);
+  });
+  test("Should throw if find soft deleted provider", async () => {
+    const { sut } = makeSut();
+    const newProvider = await sut.provider.createOne(makeFakeProviderParams());
+    await sut.provider.softDelete({ id: newProvider.id });
+    const deletedProviderPromises = sut.provider.findById({
+      id: newProvider.id,
+    });
+    await expect(deletedProviderPromises).rejects.toThrow();
   });
 });

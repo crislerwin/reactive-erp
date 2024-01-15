@@ -15,7 +15,11 @@ export const providerRoute = createTRPCRouter({
         cause: "No user",
       });
 
-    return ctx.prisma.provider.findMany();
+    return ctx.prisma.provider.findMany({
+      where: {
+        active: true,
+      },
+    });
   }),
 
   createOne: protectedProcedure
@@ -67,7 +71,7 @@ export const providerRoute = createTRPCRouter({
 
       return newUser;
     }),
-  update: protectedProcedure
+  updateOne: protectedProcedure
     .input(updatePersonSchema)
     .mutation(({ ctx, input }) => {
       return ctx.prisma.provider.update({
@@ -81,10 +85,14 @@ export const providerRoute = createTRPCRouter({
       });
     }),
 
-  delete: protectedProcedure.input(idSchema).mutation(({ ctx, input }) => {
-    return ctx.prisma.provider.delete({
+  softDelete: protectedProcedure.input(idSchema).mutation(({ ctx, input }) => {
+    return ctx.prisma.provider.update({
       where: {
         id: input.id,
+      },
+      data: {
+        active: false,
+        deleted_at: new Date(),
       },
     });
   }),
@@ -93,6 +101,7 @@ export const providerRoute = createTRPCRouter({
     const selectedProvider = await ctx.prisma.provider.findUnique({
       where: {
         id: input.id,
+        active: true,
       },
     });
     if (!selectedProvider) {
