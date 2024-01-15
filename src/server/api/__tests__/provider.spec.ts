@@ -2,7 +2,6 @@ import { describe, test, expect, beforeEach, vi } from "vitest";
 import { createInnerTRPCContext } from "../trpc";
 import { appRouter } from "../root";
 import { faker } from "@faker-js/faker";
-import { TRPCError } from "@trpc/server";
 
 const makeFakeProviderParams = () => ({
   email: faker.internet.email(),
@@ -81,6 +80,18 @@ describe("Provider router", () => {
     expect(createdProvider.institution_ids).toContain(newInstitution.id);
   });
 
+  test("Should throw if add invalid institution id", async () => {
+    const { sut } = makeSut();
+    const invalidId = faker.datatype.number();
+    const createdProviderPromises = sut.provider.createOne({
+      ...makeFakeProviderParams(),
+      institution_ids: [invalidId],
+    });
+    await expect(createdProviderPromises).rejects.toThrowError(
+      "Invalid institution ids"
+    );
+  });
+
   test("Should find createdProvider", async () => {
     const { sut } = makeSut();
     const newProvider = await sut.provider.createOne(makeFakeProviderParams());
@@ -96,6 +107,8 @@ describe("Provider router", () => {
     const deletedProviderPromises = sut.provider.findById({
       id: newProvider.id,
     });
-    await expect(deletedProviderPromises).rejects.toThrow();
+    await expect(deletedProviderPromises).rejects.toThrowError(
+      "Provider not found"
+    );
   });
 });
