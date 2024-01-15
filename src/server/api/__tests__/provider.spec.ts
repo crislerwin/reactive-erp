@@ -30,11 +30,8 @@ const makeSession = () => ({
 });
 const makeSut = () => {
   const ctx = createInnerTRPCContext(makeSession());
-  const sut = appRouter.createCaller(ctx);
-  return {
-    sut,
-    ctx,
-  };
+
+  return appRouter.createCaller(ctx);
 };
 
 describe("Provider router", () => {
@@ -43,14 +40,14 @@ describe("Provider router", () => {
   });
 
   test("Should create a provider", async () => {
-    const { sut } = makeSut();
+    const sut = makeSut();
     const createdProvider = await sut.provider.createOne(
       makeFakeProviderParams()
     );
     expect(createdProvider).toBeDefined();
   });
   test("Should update a provider name", async () => {
-    const { sut } = makeSut();
+    const sut = makeSut();
     const newName = faker.name.firstName();
     const createdProvider = await sut.provider.createOne(
       makeFakeProviderParams()
@@ -64,7 +61,7 @@ describe("Provider router", () => {
   });
 
   test("Should add institution ids", async () => {
-    const { sut } = makeSut();
+    const sut = makeSut();
 
     const newInstitution = await sut.institution.createOne({
       company_code: faker.datatype.number().toString(),
@@ -81,7 +78,7 @@ describe("Provider router", () => {
   });
 
   test("Should throw if add invalid institution id", async () => {
-    const { sut } = makeSut();
+    const sut = makeSut();
     const invalidId = faker.datatype.number();
     const createdProviderPromises = sut.provider.createOne({
       ...makeFakeProviderParams(),
@@ -93,7 +90,7 @@ describe("Provider router", () => {
   });
 
   test("Should find createdProvider", async () => {
-    const { sut } = makeSut();
+    const sut = makeSut();
     const newProvider = await sut.provider.createOne(makeFakeProviderParams());
     const foundProvider = await sut.provider.findById({ id: newProvider.id });
     expect(foundProvider).toBeDefined();
@@ -101,7 +98,7 @@ describe("Provider router", () => {
     expect(foundProvider?.name).toBe(newProvider.name);
   });
   test("Should throw if find soft deleted provider", async () => {
-    const { sut } = makeSut();
+    const sut = makeSut();
     const newProvider = await sut.provider.createOne(makeFakeProviderParams());
     await sut.provider.softDelete({ id: newProvider.id });
     const deletedProviderPromises = sut.provider.findById({
