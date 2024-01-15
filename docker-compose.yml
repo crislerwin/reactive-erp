@@ -1,12 +1,11 @@
-version: "3.1"
-
+version: "3"
 services:
-  db:
-    image: mysql:8.0
-    restart: "always"
-    expose:
-      - "3306"
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: k2j3k4l5m
+      MYSQL_DATABASE: health_ops
+      MYSQL_USER: health_ops_user
+      MYSQL_PASSWORD: 1k2j3k4l5m
     ports:
       - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: "root"

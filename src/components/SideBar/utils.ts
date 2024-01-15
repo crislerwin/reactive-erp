@@ -16,27 +16,27 @@ export const makeFilterItems = (search: string) => {
         ],
       },
       {
-        heading: "Empresas",
-        id: "companies",
+        heading: "Instituições",
+        id: "institutions",
         items: [
           {
-            id: "companies",
-            children: "Empresas",
+            id: "institutions",
+            children: "Instituições",
             icon: "IconBuilding",
-            href: "/companies",
+            href: "/institutions",
           },
         ],
       },
       {
         heading: "Equipe",
-        id: "persons",
+        id: "team",
 
         items: [
           {
-            id: "persons",
+            id: "team",
             children: "Equipe",
             icon: "IconUsers",
-            href: "/persons",
+            href: "/team",
           },
         ],
       },

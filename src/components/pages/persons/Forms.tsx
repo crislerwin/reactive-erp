@@ -20,7 +20,7 @@ export const PersonForm: React.FC<{ close: () => void }> = ({ close }) => {
         <TextInput
           label="Nome"
           withAsterisk
-          {...getInputProps("userName")}
+          {...getInputProps("name")}
           placeholder="Nome"
         />
         <TextInput
@@ -39,7 +39,9 @@ export const PersonForm: React.FC<{ close: () => void }> = ({ close }) => {
                 icon: <IconTrash className="h-4 w-4" />,
               }}
               close={closeDelete}
-              title={`Deseja mesmo excluir a pessoa ${formValues.userName}?`}
+              title={`Deseja mesmo excluir a pessoa ${
+                formValues.name ?? formValues.first_name
+              }?`}
               handleConfirm={handleDeletePerson}
               opened={deleteModalOpened}
             />

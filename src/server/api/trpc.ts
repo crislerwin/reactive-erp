@@ -3,9 +3,7 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-
-import { type PrismaClient } from "@prisma/client";
-import { type User } from "@clerk/nextjs/server";
+import { type User, type PrismaClient } from "@prisma/client";
 import { getServerAuthSession } from "./auth";
 
 type CreateContextOptions = {
@@ -48,6 +46,8 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+  if (ctx.session.user.role !== "admin")
+    throw new TRPCError({ code: "FORBIDDEN" });
   return next({
     ctx: {
       session: { ...ctx.session, user: ctx.session.user },

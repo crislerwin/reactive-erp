@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [
     alias({
       entries: [{ find: "@", replacement: path.resolve(__dirname, "./src") }],
-    }),
+    }) as Plugin,
   ],
 });
