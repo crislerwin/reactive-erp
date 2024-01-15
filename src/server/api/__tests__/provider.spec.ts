@@ -1,7 +1,7 @@
-import { describe, test, expect, beforeEach, vi } from "vitest";
-import { createInnerTRPCContext } from "../trpc";
-import { appRouter } from "../root";
+import { describe, test, expect } from "vitest";
+
 import { faker } from "@faker-js/faker";
+import { app } from "./helpers";
 
 const makeFakeProviderParams = () => ({
   email: faker.internet.email(),
@@ -15,39 +15,21 @@ const makeFakeProviderParams = () => ({
   },
 });
 
-const makeSession = () => ({
-  session: {
-    user: {
-      id: faker.datatype.number(),
-      name: faker.name.firstName(),
-      avatar_url: faker.internet.avatar(),
-      email: faker.internet.email(),
-      updatedAt: faker.date.recent(),
-      createdAt: faker.date.recent(),
-      role: "admin",
-    },
-  },
-});
-const makeSut = () => {
-  const ctx = createInnerTRPCContext(makeSession());
-
-  return appRouter.createCaller(ctx);
-};
-
 describe("Provider router", () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
+  test("Should throw if try to create with invalid route", async () => {
+    const sut = app("user");
+    const createdProvider = sut.provider.createOne(makeFakeProviderParams());
+    await expect(createdProvider).rejects.toThrowError("FORBIDDEN");
   });
-
   test("Should create a provider", async () => {
-    const sut = makeSut();
+    const sut = app();
     const createdProvider = await sut.provider.createOne(
       makeFakeProviderParams()
     );
     expect(createdProvider).toBeDefined();
   });
   test("Should update a provider name", async () => {
-    const sut = makeSut();
+    const sut = app();
     const newName = faker.name.firstName();
     const createdProvider = await sut.provider.createOne(
       makeFakeProviderParams()
@@ -61,7 +43,7 @@ describe("Provider router", () => {
   });
 
   test("Should add institution ids", async () => {
-    const sut = makeSut();
+    const sut = app();
 
     const newInstitution = await sut.institution.createOne({
       company_code: faker.datatype.number().toString(),
@@ -78,7 +60,7 @@ describe("Provider router", () => {
   });
 
   test("Should throw if add invalid institution id", async () => {
-    const sut = makeSut();
+    const sut = app();
     const invalidId = faker.datatype.number();
     const createdProviderPromises = sut.provider.createOne({
       ...makeFakeProviderParams(),
@@ -90,7 +72,7 @@ describe("Provider router", () => {
   });
 
   test("Should find createdProvider", async () => {
-    const sut = makeSut();
+    const sut = app();
     const newProvider = await sut.provider.createOne(makeFakeProviderParams());
     const foundProvider = await sut.provider.findById({ id: newProvider.id });
     expect(foundProvider).toBeDefined();
@@ -98,7 +80,7 @@ describe("Provider router", () => {
     expect(foundProvider?.name).toBe(newProvider.name);
   });
   test("Should throw if find soft deleted provider", async () => {
-    const sut = makeSut();
+    const sut = app();
     const newProvider = await sut.provider.createOne(makeFakeProviderParams());
     await sut.provider.softDelete({ id: newProvider.id });
     const deletedProviderPromises = sut.provider.findById({
