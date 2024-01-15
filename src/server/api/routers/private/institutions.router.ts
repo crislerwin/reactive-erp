@@ -27,7 +27,6 @@ export const institutionRouter = createTRPCRouter({
           email: input.email,
           attributes: input.attributes,
           additional_info: input.additional_info,
-          provider_ids: input.provider_ids,
           static_logo_url: input.static_logo_url,
         },
       });
@@ -68,7 +67,6 @@ export const institutionRouter = createTRPCRouter({
           name: input.name,
           additional_info: input.additional_info,
           email: input.email,
-          provider_ids: input.provider_ids,
           attributes: input.attributes,
           static_logo_url: input.static_logo_url,
         },

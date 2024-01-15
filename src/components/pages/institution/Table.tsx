@@ -35,7 +35,7 @@ export const CompanyTable: React.FC = () => {
       },
 
       {
-        accessorKey: "description",
+        accessorKey: "additional_info.description",
         header: "Descrição",
         size: 150,
       },

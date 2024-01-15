@@ -35,7 +35,6 @@ export const useInstitutionForm = (close: () => void) => {
       company_code: institutionData?.company_code ?? "",
       name: institutionData?.name ?? "",
       email: institutionData?.email ?? "",
-      description: institutionData?.description ?? "",
       static_logo_url: institutionData?.static_logo_url ?? "",
     },
 
