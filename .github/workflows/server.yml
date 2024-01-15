@@ -36,11 +36,11 @@ jobs:
           version: 7.23.0
           run_install: false
 
-      - name: Install dependencies
+      - name: Run pnpm install
         run: pnpm install
 
-      - name: DB setup
+      - name: Prisma Push
         run: pnpm db:push
 
-      - name: Run tests
+      - name: Run API tests
         run: pnpm test:ci
