@@ -29,6 +29,9 @@ export const usePersonForm = (close: () => void) => {
     initialValues: {
       email: provider?.email ?? "",
       name: provider?.name ?? "",
+      first_name: provider?.first_name ?? "",
+      last_name: provider?.last_name ?? "",
+      middle_name: provider?.middle_name ?? "",
     },
 
     validate: {},
