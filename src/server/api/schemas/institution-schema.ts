@@ -1,15 +1,22 @@
 import { z } from "zod";
-import { providerSchema } from "./provider-schema";
 import { idSchema } from "./common.schema";
 
 export const institutionSchema = z.object({
-  company_code: z.string().min(14).max(14).regex(/^\d+$/),
+  company_code: z.string(),
   name: z.string(),
-  description: z.string().optional(),
+  additional_info: z
+    .object({
+      description: z.string(),
+      phone_number: z.string(),
+    })
+    .optional(),
   email: z.string().email(),
   attributes: z.record(z.string()).optional(),
   static_logo_url: z.string().url(),
-  providers: z.array(providerSchema).optional(),
+  provider_ids: z.array(z.number()).optional(),
 });
 
-export const updateCompanySchema = z.intersection(institutionSchema, idSchema);
+export const updateInstitutionSchema = z.intersection(
+  institutionSchema,
+  idSchema
+);

@@ -62,4 +62,21 @@ describe("Provider router", () => {
     });
     expect(updatedProvider.name).toBe(newName);
   });
+
+  test("Should add institution ids", async () => {
+    const { sut } = makeSut();
+
+    const newInstitution = await sut.institution.createOne({
+      company_code: faker.datatype.number().toString(),
+      email: faker.internet.email(),
+      name: faker.company.name(),
+      static_logo_url: faker.image.imageUrl(),
+    });
+
+    const createdProvider = await sut.provider.createOne({
+      ...makeFakeProvider(),
+      institution_ids: [newInstitution.id],
+    });
+    expect(createdProvider.institution_ids).toContain(newInstitution.id);
+  });
 });

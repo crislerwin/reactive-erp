@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import {
   institutionSchema,
   idSchema,
-  updateCompanySchema,
+  updateInstitutionSchema,
 } from "@/server/api/schemas";
 
 export const institutionRouter = createTRPCRouter({
@@ -26,21 +26,23 @@ export const institutionRouter = createTRPCRouter({
           name: input.name,
           email: input.email,
           attributes: input.attributes,
-          description: input.description,
+          additional_info: input.additional_info,
+          provider_ids: input.provider_ids,
+          static_logo_url: input.static_logo_url,
         },
       });
     }),
   findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {
-    const company = await ctx.prisma.institution.findUnique({
+    const institution = await ctx.prisma.institution.findUnique({
       where: { id: input.id },
     });
-    if (!company) {
+    if (!institution) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Company not found",
       });
     }
-    return company;
+    return institution;
   }),
 
   findAll: protectedProcedure.query(async ({ ctx }) => {
@@ -57,17 +59,20 @@ export const institutionRouter = createTRPCRouter({
       return true;
     }),
   update: protectedProcedure
-    .input(updateCompanySchema)
+    .input(updateInstitutionSchema)
     .mutation(async ({ ctx, input }) => {
-      const company = await ctx.prisma.institution.update({
+      const institution = await ctx.prisma.institution.update({
         where: { id: input.id },
         data: {
           company_code: input.company_code,
           name: input.name,
-          description: input.description,
+          additional_info: input.additional_info,
           email: input.email,
+          provider_ids: input.provider_ids,
+          attributes: input.attributes,
+          static_logo_url: input.static_logo_url,
         },
       });
-      return company;
+      return institution;
     }),
 });

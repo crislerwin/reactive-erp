@@ -33,6 +33,26 @@ export const providerRoute = createTRPCRouter({
           message: "Provider already exists",
         });
       }
+
+      let institutionIds: number[] = [];
+      if (input.institution_ids) {
+        const institutions = await ctx.prisma.institution.findMany({
+          where: {
+            id: {
+              in: input.institution_ids,
+            },
+          },
+        });
+        if (institutions.length !== input.institution_ids.length) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            cause: "Invalid institution ids",
+            message: "Invalid institution ids",
+          });
+        }
+
+        institutionIds = institutions.map((institution) => institution.id);
+      }
       const newUser = ctx.prisma.provider.create({
         data: {
           email: input.email,
@@ -41,9 +61,10 @@ export const providerRoute = createTRPCRouter({
           last_name: input.last_name,
           middle_name: input.middle_name,
           name: input.name,
-          institution_ids: input.institution_ids,
+          institution_ids: institutionIds,
         },
       });
+
       return newUser;
     }),
   update: protectedProcedure
