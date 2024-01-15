@@ -89,11 +89,18 @@ export const providerRoute = createTRPCRouter({
     });
   }),
 
-  getById: protectedProcedure.input(idSchema).query(({ ctx, input }) => {
-    return ctx.prisma.provider.findUnique({
+  findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {
+    const selectedProvider = await ctx.prisma.provider.findUnique({
       where: {
         id: input.id,
       },
     });
+    if (!selectedProvider) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Provider not found",
+      });
+    }
+    return selectedProvider;
   }),
 });

@@ -1,10 +1,9 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { createInnerTRPCContext } from "../trpc";
 import { appRouter } from "../root";
-import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 
-const makeFakeProvider = () => ({
+const makeFakeProviderParams = () => ({
   email: faker.internet.email(),
   name: faker.name.fullName(),
   first_name: faker.name.firstName(),
@@ -16,25 +15,22 @@ const makeFakeProvider = () => ({
   },
 });
 
-const makeSut = () => {
-  const ctx = createInnerTRPCContext({
-    session: {
-      user: {
-        id: faker.datatype.number(),
-        name: faker.name.firstName(),
-        avatar_url: faker.internet.avatar(),
-        email: faker.internet.email(),
-        updatedAt: faker.date.recent(),
-        createdAt: faker.date.recent(),
-        role: "admin",
-      },
+const makeSession = () => ({
+  session: {
+    user: {
+      id: faker.datatype.number(),
+      name: faker.name.firstName(),
+      avatar_url: faker.internet.avatar(),
+      email: faker.internet.email(),
+      updatedAt: faker.date.recent(),
+      createdAt: faker.date.recent(),
+      role: "admin",
     },
-    prisma: prisma,
-  });
-  const sut = appRouter.createCaller({
-    ...ctx,
-    prisma: prisma,
-  });
+  },
+});
+const makeSut = () => {
+  const ctx = createInnerTRPCContext(makeSession());
+  const sut = appRouter.createCaller(ctx);
   return {
     sut,
     ctx,
@@ -48,15 +44,19 @@ describe("Provider router", () => {
 
   test("Should create a provider", async () => {
     const { sut } = makeSut();
-    const createdProvider = await sut.provider.createOne(makeFakeProvider());
+    const createdProvider = await sut.provider.createOne(
+      makeFakeProviderParams()
+    );
     expect(createdProvider).toBeDefined();
   });
   test("Should update a provider name", async () => {
     const { sut } = makeSut();
     const newName = faker.name.firstName();
-    const createdProvider = await sut.provider.createOne(makeFakeProvider());
+    const createdProvider = await sut.provider.createOne(
+      makeFakeProviderParams()
+    );
     const updatedProvider = await sut.provider.update({
-      ...makeFakeProvider(),
+      ...makeFakeProviderParams(),
       id: createdProvider.id,
       name: newName,
     });
@@ -74,9 +74,18 @@ describe("Provider router", () => {
     });
 
     const createdProvider = await sut.provider.createOne({
-      ...makeFakeProvider(),
+      ...makeFakeProviderParams(),
       institution_ids: [newInstitution.id],
     });
     expect(createdProvider.institution_ids).toContain(newInstitution.id);
+  });
+
+  test("Should find createdProvider", async () => {
+    const { sut } = makeSut();
+    const newProvider = await sut.provider.createOne(makeFakeProviderParams());
+    const foundProvider = await sut.provider.findById({ id: newProvider.id });
+    expect(foundProvider).toBeDefined();
+    expect(foundProvider?.id).toBe(newProvider.id);
+    expect(foundProvider?.name).toBe(newProvider.name);
   });
 });

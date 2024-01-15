@@ -13,7 +13,7 @@ export const usePersonForm = (close: () => void) => {
   const {
     query: { providerId },
   } = useRouter();
-  const { data: provider } = trpc.provider.getById.useQuery(
+  const { data: provider } = trpc.provider.findById.useQuery(
     { id: Number(providerId) },
     {
       enabled: !!providerId,
