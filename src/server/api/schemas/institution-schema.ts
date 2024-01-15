@@ -13,7 +13,6 @@ export const institutionSchema = z.object({
   email: z.string().email(),
   attributes: z.record(z.string()).optional(),
   static_logo_url: z.string().url(),
-  provider_ids: z.array(z.number()).optional(),
 });
 
 export const updateInstitutionSchema = z.intersection(

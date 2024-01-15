@@ -31,7 +31,6 @@ model Institution {
   additional_info Json?
   attributes      Json?
   static_logo_url String?
-  provider_ids    Json?
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
 
