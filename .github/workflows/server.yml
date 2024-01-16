@@ -42,5 +42,8 @@ jobs:
       - name: Prisma Push
         run: pnpm db:push
 
+      - name: Seed Database
+        run: pnpm prisma db seed
+
       - name: Run API tests
         run: pnpm test:ci
