@@ -52,7 +52,7 @@
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.40.1",
-    "@prisma/client": "^5.8.0",
+    "@prisma/client": "^5.8.1",
     "@storybook/addon-essentials": "^7.0.12",
     "@storybook/addon-interactions": "^7.0.12",
     "@storybook/addon-links": "^7.0.12",
@@ -75,7 +75,7 @@
     "postcss": "^8.4.33",
     "prettier": "^2.8.6",
     "prettier-plugin-tailwindcss": "^0.2.6",
-    "prisma": "^5.0.0",
+    "prisma": "^5.8.1",
     "storybook": "^7.0.12",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
