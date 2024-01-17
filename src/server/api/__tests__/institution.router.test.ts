@@ -43,4 +43,18 @@ describe("Institutions Test", () => {
     expect(updatedInstitution).toBeTruthy();
     expect(updatedInstitution.name).toBe(newInstitutionParams.name);
   });
+  test("Should delete instution", async () => {
+    const sut = app();
+
+    const institutionParams = makeInstitutionParams();
+    const institution = await sut.institution.upsert(institutionParams);
+    expect(institution).toBeTruthy();
+    await sut.institution.delete({ id: institution.id });
+    const deletedInstitution = sut.institution.findById({
+      id: institution.id,
+    });
+    await expect(deletedInstitution).rejects.to.toThrowError(
+      "Institution not found"
+    );
+  });
 });

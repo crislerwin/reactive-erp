@@ -5,13 +5,23 @@ import { PermissionTypes, findAndValidatePermission } from "../../auth";
 
 export const institutionRouter = createTRPCRouter({
   findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {
+    const institutionManagementPermission = findAndValidatePermission(
+      PermissionTypes.INSTITUTION_MANAGEMENT,
+      ctx.session.user.permissions
+    );
+    if (
+      !institutionManagementPermission ||
+      !institutionManagementPermission.value
+    )
+      throw new TRPCError({ code: "UNAUTHORIZED" });
     const institution = await ctx.prisma.institution.findUnique({
       where: { id: input.id },
     });
+
     if (!institution) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "Company not found",
+        message: "Institution not found",
       });
     }
     return institution;
@@ -25,6 +35,15 @@ export const institutionRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(idSchema)
     .mutation(async ({ ctx, input }) => {
+      const institutionManagementPermission = findAndValidatePermission(
+        PermissionTypes.INSTITUTION_MANAGEMENT,
+        ctx.session.user.permissions
+      );
+      if (
+        !institutionManagementPermission ||
+        !institutionManagementPermission.value
+      )
+        throw new TRPCError({ code: "UNAUTHORIZED" });
       await ctx.prisma.institution.delete({
         where: { id: input.id },
       });
@@ -33,11 +52,14 @@ export const institutionRouter = createTRPCRouter({
   upsert: protectedProcedure
     .input(updateInstitutionSchema)
     .mutation(async ({ ctx, input }) => {
-      const isAllowedToUpsert = findAndValidatePermission(
+      const institutionManagementPermission = findAndValidatePermission(
         PermissionTypes.INSTITUTION_MANAGEMENT,
         ctx.session.user.permissions
       );
-      if (!isAllowedToUpsert || !isAllowedToUpsert.value)
+      if (
+        !institutionManagementPermission ||
+        !institutionManagementPermission.value
+      )
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
       const institution = await ctx.prisma.institution.upsert({
