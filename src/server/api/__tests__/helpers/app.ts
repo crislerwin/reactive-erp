@@ -8,6 +8,14 @@ export const backofficePermissions = JSON.stringify([
     name: PermissionTypes.BACKOFFICE,
     value: true,
   },
+  {
+    name: PermissionTypes.PROVIDER_MANAGEMENT,
+    value: true,
+  },
+  {
+    name: PermissionTypes.INSTITUTION_MANAGEMENT,
+    value: true,
+  },
 ]);
 
 export const app = (permissions = backofficePermissions) => {
