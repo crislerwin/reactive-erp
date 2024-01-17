@@ -9,10 +9,6 @@ async function main() {
     create: {
       email: "admin@example.com",
       name: "admin",
-      avatar_url: null,
-      createdAt: new Date(),
-      role: "admin",
-      updatedAt: new Date(),
     },
   });
   console.log({ admin });

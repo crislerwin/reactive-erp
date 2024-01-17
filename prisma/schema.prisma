@@ -16,11 +16,11 @@ model Provider {
   last_name       String?
   name            String?
   bio             Json?
-  active          Boolean?  @default(true)
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
-  deleted_at      DateTime?
   institution_ids Json?
+  active          Boolean?  @default(true)
+  deleted_at      DateTime?
 
   @@index([email])
 }
@@ -30,23 +30,24 @@ model Institution {
   company_code    String    @unique
   email           String
   name            String
-  additional_info Json?
   attributes      Json?
   static_logo_url String?
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
+  additional_info Json?
 
   @@index([company_code])
 }
 
 model User {
-  id         Int      @unique @default(autoincrement())
-  email      String   @unique
-  name       String
-  avatar_url String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  role       String?  @default("user")
+  id          Int      @unique @default(autoincrement())
+  email       String   @unique
+  name        String
+  avatar_url  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  permissions Json?
+  provider_id Int?
 
   @@index([email])
 }
