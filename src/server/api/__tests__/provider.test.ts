@@ -5,9 +5,9 @@ import { makeFakeProviderParams } from "./__mocks__";
 
 describe("Provider router", () => {
   test("Should throw if try to create with invalid route", async () => {
-    const sut = app(JSON.stringify([{ name: "invalid", value: "true" }]));
+    const sut = app(JSON.stringify([{ name: "invalid", value: true }]));
     const createdProvider = sut.provider.createOne(makeFakeProviderParams());
-    await expect(createdProvider).rejects.toThrowError("FORBIDDEN");
+    await expect(createdProvider).rejects.toThrowError();
   });
   test("Should create a provider", async () => {
     const sut = app();

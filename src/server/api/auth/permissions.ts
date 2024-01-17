@@ -1,57 +1,32 @@
 import { type Prisma } from "@prisma/client";
-import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { ZodError, z } from "zod";
 
 export enum PermissionTypes {
-  backoffice = "backoffice",
-  providers_management = "providers.management",
-  institutions_management = "institutions.management",
+  BACKOFFICE = "backoffice",
+  PROVIDER_MANAGEMENT = "providers.management",
+  INSTITUTION_MANAGEMENT = "institutions.management",
 }
 
-const sanitizeValue = (value: string): string =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-
-const boolDict: Record<string, boolean> = {
-  true: true,
-  false: false,
-  yes: true,
-  no: false,
-  1: true,
-  0: false,
-};
-
-const parseBoolean = (value: string): boolean | undefined => {
-  const sanitizedValue = sanitizeValue(value);
-  return boolDict[sanitizedValue];
-};
-
-const customBoolSchema = z
-  .string()
-  .refine((value) => boolDict[sanitizeValue(value)] !== undefined)
-  .transform((value) => parseBoolean(sanitizeValue(value)) !== undefined);
-
 const permissionMap = {
-  [PermissionTypes.backoffice]: z.object({
+  [PermissionTypes.BACKOFFICE]: z.object({
     name: z.nativeEnum(PermissionTypes),
-    value: customBoolSchema,
+    value: z.boolean(),
   }),
-  [PermissionTypes.providers_management]: z.object({
+  [PermissionTypes.PROVIDER_MANAGEMENT]: z.object({
     name: z.nativeEnum(PermissionTypes),
-    value: customBoolSchema,
+    value: z.boolean(),
   }),
-  [PermissionTypes.institutions_management]: z.object({
+  [PermissionTypes.INSTITUTION_MANAGEMENT]: z.object({
     name: z.nativeEnum(PermissionTypes),
-    value: customBoolSchema,
+    value: z.boolean(),
   }),
 };
 
 export type UserPermissions<T extends PermissionTypes = PermissionTypes> =
   z.infer<(typeof permissionMap)[T]>;
 
-export function findUserPermission<T extends PermissionTypes>(
+export function findAndValidatePermission<T extends PermissionTypes>(
   permission: T,
   allPermissions: Prisma.JsonValue
 ): UserPermissions<T> | undefined {
@@ -62,7 +37,11 @@ export function findUserPermission<T extends PermissionTypes>(
   const selectedPermission = parsedPermissions.find(
     (p) => p.name === permission
   );
+
   const parsedPermission =
     permissionMap[permission].safeParse(selectedPermission);
-  return parsedPermission.success ? parsedPermission.data : selectedPermission;
+
+  if (!parsedPermission.success) return undefined;
+
+  return parsedPermission.data;
 }

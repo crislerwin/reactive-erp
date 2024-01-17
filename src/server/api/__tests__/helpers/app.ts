@@ -5,8 +5,8 @@ import { PermissionTypes } from "../../auth/permissions";
 
 export const backofficePermissions = JSON.stringify([
   {
-    name: PermissionTypes.backoffice,
-    value: "true",
+    name: PermissionTypes.BACKOFFICE,
+    value: true,
   },
 ]);
 

@@ -5,7 +5,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import { type User, type PrismaClient } from "@prisma/client";
 import { getServerAuthSession } from "./auth";
-import { PermissionTypes, findUserPermission } from "./auth/permissions";
+import { PermissionTypes, findAndValidatePermission } from "./auth/permissions";
 
 type CreateContextOptions = {
   prisma?: PrismaClient;
@@ -47,8 +47,8 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  const backofficePermissions = findUserPermission(
-    PermissionTypes.backoffice,
+  const backofficePermissions = findAndValidatePermission(
+    PermissionTypes.BACKOFFICE,
     ctx.session.user.permissions
   );
   if (!backofficePermissions || !backofficePermissions.value) {
