@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { idSchema, updateInstitutionSchema } from "@/server/api/schemas";
+import { PermissionTypes, findAndValidatePermission } from "../../auth";
 
 export const institutionRouter = createTRPCRouter({
   findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {
@@ -32,6 +33,13 @@ export const institutionRouter = createTRPCRouter({
   upsert: protectedProcedure
     .input(updateInstitutionSchema)
     .mutation(async ({ ctx, input }) => {
+      const isAllowedToUpsert = findAndValidatePermission(
+        PermissionTypes.INSTITUTION_MANAGEMENT,
+        ctx.session.user.permissions
+      );
+      if (!isAllowedToUpsert || !isAllowedToUpsert.value)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       const institution = await ctx.prisma.institution.upsert({
         where: { company_code: input.company_code, id: input.id },
         create: {
