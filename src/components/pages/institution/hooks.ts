@@ -1,4 +1,4 @@
-import { type institutionSchema } from "@/server/api/schemas";
+import { type createInstitutionSchema } from "@/server/api/schemas";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { type z } from "zod";
 
-export type CreateCompanyInput = z.infer<typeof institutionSchema>;
+export type CreateCompanyInput = z.infer<typeof createInstitutionSchema>;
 
 export const useInstitutionForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();

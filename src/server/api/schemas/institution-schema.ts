@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { idSchema } from "./common.schema";
 
-export const institutionSchema = z.object({
+export const createInstitutionSchema = z.object({
   company_code: z.string(),
   name: z.string(),
   additional_info: z
@@ -16,6 +16,6 @@ export const institutionSchema = z.object({
 });
 
 export const updateInstitutionSchema = z.intersection(
-  institutionSchema,
+  createInstitutionSchema,
   idSchema
 );
