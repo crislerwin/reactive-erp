@@ -9,15 +9,6 @@ async function main() {
     create: {
       email: "admin@example.com",
       name: "admin",
-      avatar_url: null,
-      createdAt: new Date(),
-      permissions: JSON.stringify([
-        {
-          name: "backoffice",
-          value: true,
-        },
-      ]),
-      updatedAt: new Date(),
     },
   });
   console.log({ admin });
