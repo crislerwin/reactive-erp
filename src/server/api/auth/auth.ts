@@ -1,7 +1,7 @@
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 import { TRPCError } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { prisma } from "../db";
+import { prisma } from "../../db";
 import { type User } from "@prisma/client";
 
 export const getServerAuthSession = async (

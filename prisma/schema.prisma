@@ -40,13 +40,14 @@ model Institution {
 }
 
 model User {
-  id         Int      @unique @default(autoincrement())
-  email      String   @unique
-  name       String
-  avatar_url String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  role       String?  @default("user")
+  id          Int      @unique @default(autoincrement())
+  email       String   @unique
+  name        String
+  avatar_url  String?
+  provider_id Int?
+  permissions Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([email])
 }
