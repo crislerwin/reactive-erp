@@ -11,7 +11,12 @@ async function main() {
       name: "admin",
       avatar_url: null,
       createdAt: new Date(),
-      role: "admin",
+      permissions: JSON.stringify([
+        {
+          name: "backoffice",
+          value: true,
+        },
+      ]),
       updatedAt: new Date(),
     },
   });
