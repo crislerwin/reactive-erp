@@ -11,7 +11,7 @@ export type CreateCompanyInput = z.infer<typeof institutionSchema>;
 
 export const useInstitutionForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();
-  const { mutate: handleUpdate } = trpc.institution.update.useMutation();
+  const { mutate: handleUpdate } = trpc.institution.upsert.useMutation();
   const context = trpc.useContext();
   const router = useRouter();
   const { institutionId } = router.query;

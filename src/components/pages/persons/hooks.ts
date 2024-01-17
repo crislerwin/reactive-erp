@@ -8,7 +8,7 @@ type CreatePersonInput = z.infer<typeof providerSchema>;
 
 export const usePersonForm = (close: () => void) => {
   const { mutate: savePerson } = trpc.provider.createOne.useMutation();
-  const { mutate: updatePerson } = trpc.provider.updateOne.useMutation();
+  const { mutate: updatePerson } = trpc.provider.upsert.useMutation();
   const { mutate: deletePerson } = trpc.provider.softDelete.useMutation();
   const {
     query: { providerId },

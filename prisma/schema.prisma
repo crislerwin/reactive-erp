@@ -42,7 +42,7 @@ model Institution {
 model User {
   id          Int      @unique @default(autoincrement())
   email       String   @unique
-  name        String
+  name        String?  @default("")
   avatar_url  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
