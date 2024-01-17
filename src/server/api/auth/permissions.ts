@@ -23,16 +23,19 @@ const permissionMap = {
   }),
 };
 
-export type UserPermissions<T extends PermissionTypes = PermissionTypes> =
-  z.infer<(typeof permissionMap)[T]>;
+export type UserPermissions<T extends PermissionTypes> = z.infer<
+  (typeof permissionMap)[T]
+>;
 
-export function findAndValidatePermission<T extends PermissionTypes>(
+export function findAndValidatePermission<
+  T extends PermissionTypes = PermissionTypes
+>(
   permission: T,
   allPermissions: Prisma.JsonValue
 ): UserPermissions<T> | undefined {
   const parsedPermissions = JSON.parse(
     allPermissions?.toString() ?? JSON.stringify([])
-  ) as unknown as UserPermissions<T>[];
+  ) as UserPermissions<T>[];
 
   const selectedPermission = parsedPermissions.find(
     (p) => p.name === permission
