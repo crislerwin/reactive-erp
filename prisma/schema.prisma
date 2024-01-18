@@ -11,16 +11,15 @@ datasource db {
 model Provider {
   id              Int       @unique @default(autoincrement())
   email           String    @unique
-  first_name      String
-  middle_name     String?
-  last_name       String?
-  name            String?
+  first_name      String    @default("")
+  last_name       String    @default("")
   bio             Json?
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
   institution_ids Json?
   active          Boolean?  @default(true)
   deleted_at      DateTime?
+  full_name       String?
 
   @@index([email])
 }

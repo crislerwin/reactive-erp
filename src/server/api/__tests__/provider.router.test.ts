@@ -20,9 +20,9 @@ describe("Provider router", () => {
 
     const updatedProvider = await sut.provider.upsert({
       ...makeFakeProviderParams(),
-      name: newName,
+      full_name: newName,
     });
-    expect(updatedProvider.name).toBe(newName);
+    expect(updatedProvider.full_name).toBe(newName);
   });
 
   test("Should add institution ids", async () => {
@@ -60,7 +60,7 @@ describe("Provider router", () => {
     const foundProvider = await sut.provider.findById({ id: newProvider.id });
     expect(foundProvider).toBeDefined();
     expect(foundProvider?.id).toBe(newProvider.id);
-    expect(foundProvider?.name).toBe(newProvider.name);
+    expect(foundProvider?.full_name).toBe(newProvider.full_name);
   });
   test("Should throw if find soft deleted provider", async () => {
     const sut = app();

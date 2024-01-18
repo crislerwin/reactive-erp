@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { idSchema, updatePersonSchema } from "@/server/api/schemas";
+import { idSchema, updateProviderSchema } from "@/server/api/schemas";
 import {
   PermissionTypes,
   findAndValidatePermission,
@@ -23,7 +23,7 @@ export const providerRoute = createTRPCRouter({
   }),
 
   upsert: protectedProcedure
-    .input(updatePersonSchema)
+    .input(updateProviderSchema)
     .mutation(async ({ ctx, input }) => {
       const providerManagementPermission = findAndValidatePermission(
         PermissionTypes.PROVIDER_MANAGEMENT,
@@ -68,8 +68,7 @@ export const providerRoute = createTRPCRouter({
           bio: input.bio,
           first_name: input.first_name,
           last_name: input.last_name,
-          middle_name: input.middle_name,
-          name: input.name,
+          full_name: input.full_name,
           institution_ids: institutionIds,
         },
         update: {
@@ -77,8 +76,7 @@ export const providerRoute = createTRPCRouter({
           bio: input.bio,
           first_name: input.first_name,
           last_name: input.last_name,
-          middle_name: input.middle_name,
-          name: input.name,
+          full_name: input.full_name,
           institution_ids: institutionIds,
         },
       });
