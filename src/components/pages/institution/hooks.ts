@@ -1,4 +1,4 @@
-import { type institutionSchema } from "@/server/api/schemas";
+import { type createInstitutionSchema } from "@/server/api/schemas";
 import { getEnterpriseByCnpj } from "@/services/brasilapi.service";
 import { trpc } from "@/utils/api";
 import { useForm } from "@mantine/form";
@@ -7,16 +7,16 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { type z } from "zod";
 
-export type CreateCompanyInput = z.infer<typeof institutionSchema>;
+export type CreateCompanyInput = z.infer<typeof createInstitutionSchema>;
 
 export const useInstitutionForm = (close: () => void) => {
   const [cnpj, setCnpj] = useState<string | undefined>();
-  const { mutate: handleUpdate } = trpc.institution.update.useMutation();
+  const { mutate: handleUpdate } = trpc.institution.upsert.useMutation();
   const context = trpc.useContext();
   const router = useRouter();
   const { institutionId } = router.query;
   const parsedInstutionId = institutionId ? Number(institutionId) : undefined;
-  const { mutate: handleSave } = trpc.institution.createOne.useMutation();
+  const { mutate: handleSave } = trpc.institution.upsert.useMutation();
   const { mutate: handleDelete } = trpc.institution.delete.useMutation();
   const { data: institutionData } = trpc.institution.findById.useQuery(
     { id: parsedInstutionId },

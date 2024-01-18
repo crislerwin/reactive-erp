@@ -1,10 +1,10 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { idSchema, updateProviderSchema } from "@/server/api/schemas";
 import {
-  idSchema,
-  providerSchema,
-  updatePersonSchema,
-} from "@/server/api/schemas";
+  PermissionTypes,
+  findAndValidatePermission,
+} from "../../auth/permissions";
 
 export const providerRoute = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {
@@ -22,22 +22,23 @@ export const providerRoute = createTRPCRouter({
     });
   }),
 
-  createOne: protectedProcedure
-    .input(providerSchema)
+  upsert: protectedProcedure
+    .input(updateProviderSchema)
     .mutation(async ({ ctx, input }) => {
-      const providerAlreadyExists = await ctx.prisma.provider.findUnique({
-        where: {
-          email: input.email,
-        },
-      });
-      if (providerAlreadyExists) {
+      const providerManagementPermission = findAndValidatePermission(
+        PermissionTypes.PROVIDER_MANAGEMENT,
+        ctx.session.user.permissions
+      );
+      if (
+        !providerManagementPermission ||
+        !providerManagementPermission.value
+      ) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          cause: "Provider already exists",
-          message: "Provider already exists",
+          message: "You do not have permission to perform this action",
+          cause: "No permission",
         });
       }
-
       let institutionIds: number[] = [];
       if (input.institution_ids) {
         const institutions = await ctx.prisma.institution.findMany({
@@ -57,30 +58,26 @@ export const providerRoute = createTRPCRouter({
 
         institutionIds = institutions.map((institution) => institution.id);
       }
-      const newUser = ctx.prisma.provider.create({
-        data: {
+      return ctx.prisma.provider.upsert({
+        where: {
+          id: input.id,
+          email: input.email,
+        },
+        create: {
           email: input.email,
           bio: input.bio,
           first_name: input.first_name,
           last_name: input.last_name,
-          middle_name: input.middle_name,
-          name: input.name,
+          full_name: input.full_name,
           institution_ids: institutionIds,
         },
-      });
-
-      return newUser;
-    }),
-  updateOne: protectedProcedure
-    .input(updatePersonSchema)
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.provider.update({
-        where: {
-          id: input.id,
-        },
-        data: {
+        update: {
           email: input.email,
-          name: input.name,
+          bio: input.bio,
+          first_name: input.first_name,
+          last_name: input.last_name,
+          full_name: input.full_name,
+          institution_ids: institutionIds,
         },
       });
     }),

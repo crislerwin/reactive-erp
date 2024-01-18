@@ -1,17 +1,29 @@
+import { faker } from "@faker-js/faker";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const admin = await prisma.user.upsert({
+  const admin_user = await prisma.user.upsert({
     where: { email: "admin@example.com" },
     update: {},
     create: {
       email: "admin@example.com",
       name: "admin",
+      permissions: [],
     },
   });
-  console.log({ admin });
+
+  const provider = await prisma.provider.upsert({
+    where: { email: faker.internet.email() },
+    update: {},
+    create: {
+      email: faker.internet.email(),
+      first_name: faker.name.firstName(),
+      last_name: faker.name.lastName(),
+    },
+  });
+  console.log({ admin_user, provider });
 }
 
 main()
