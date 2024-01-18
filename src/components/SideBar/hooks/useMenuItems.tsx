@@ -9,8 +9,8 @@ export const useMenuItems = () => {
     {
       icon: <IconHome className="h-4 w-4" />,
       label: "Home",
-      href: "/",
-      selected: pathname === "/",
+      href: "/home",
+      selected: pathname === "/home",
     },
     {
       icon: <IconBuilding className="h-4 w-4" />,

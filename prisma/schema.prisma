@@ -16,10 +16,10 @@ model Provider {
   bio             Json?
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
-  institution_ids Json?
   active          Boolean?  @default(true)
   deleted_at      DateTime?
   full_name       String?
+  institution_ids Json?
 
   @@index([email])
 }

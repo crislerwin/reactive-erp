@@ -11,7 +11,7 @@ export const makeFilterItems = (search: string) => {
             id: "home",
             children: "Home",
             icon: "IconHome",
-            href: "/",
+            href: "/home",
           },
         ],
       },
