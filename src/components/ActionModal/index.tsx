@@ -1,7 +1,7 @@
 import { Button, Modal } from "@mantine/core";
 import React from "react";
 
-type ConfirmationModalProps = {
+type Props = {
   title: string;
   close: () => void;
   handleConfirm: () => void;
@@ -13,7 +13,7 @@ type ConfirmationModalProps = {
   };
 };
 
-export const ConfirmActionModal: React.FC<ConfirmationModalProps> = ({
+export const ActionModal: React.FC<Props> = ({
   title,
   handleConfirm,
   actionButton,

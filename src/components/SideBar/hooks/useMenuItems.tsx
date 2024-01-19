@@ -21,8 +21,8 @@ export const useMenuItems = () => {
     {
       icon: <IconUsersGroup className="h-4 w-4" />,
       label: "Equipe",
-      href: "/team",
-      selected: pathname === "/team",
+      href: "/providers",
+      selected: pathname === "/providers",
     },
   ];
   return menuItems;
