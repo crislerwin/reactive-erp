@@ -78,7 +78,7 @@ export const providerRoute = createTRPCRouter({
   softDelete: protectedProcedure
     .input(idSchema)
     .mutation(async ({ ctx, input }) => {
-      const removed = await ctx.prisma.provider.update({
+      return await ctx.prisma.provider.update({
         where: {
           id: input.id,
         },
