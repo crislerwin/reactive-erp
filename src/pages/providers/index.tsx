@@ -4,7 +4,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
 
 import React, { useMemo } from "react";
-import { Table } from "@/components/Table";
+import { MantineTable } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
 
 export default function Provider() {
@@ -41,9 +41,9 @@ export default function Provider() {
     <SideBar>
       <div className="flex flex-col">
         <div className="mt-4 rounded-sm">
-          <Table
+          <MantineTable
             enableGrouping
-            isLoading={isFetchingProviders}
+            state={{ isLoading: isFetchingProviders }}
             columns={columns}
             data={providers ?? []}
           />

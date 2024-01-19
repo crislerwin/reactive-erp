@@ -1,23 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { type MRT_Localization, MantineReactTable } from "mantine-react-table";
-import type { MRT_SortingState, MRT_Virtualizer } from "mantine-react-table";
-import type { MantineReactTableProps } from "mantine-react-table";
+import type { MRT_Virtualizer } from "mantine-react-table";
+import type { MRT_TableOptions } from "mantine-react-table";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
 
-export const Table: React.FC<
-  MantineReactTableProps & { isLoading: boolean }
-> = (props) => {
+export function MantineTable(props: MRT_TableOptions) {
   const rowVirtualizerInstanceRef =
     useRef<MRT_Virtualizer<HTMLDivElement, HTMLTableRowElement>>(null);
-  const [sorting, setSorting] = useState<MRT_SortingState>([]);
-
-  useEffect(() => {
-    rowVirtualizerInstanceRef.current?.scrollToIndex(0);
-  }, [sorting]);
 
   return (
     <MantineReactTable
-      onSortingChange={setSorting}
       mantinePaperProps={{
         className:
           "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
@@ -50,7 +42,6 @@ export const Table: React.FC<
           "dark:bg-gray-800 dark:text-white text-gray-800 bg-slate-100",
       }}
       enableDensityToggle={false}
-      state={{ isLoading: props.isLoading, sorting, density: "xs" }}
       enableFullScreenToggle={false}
       rowVirtualizerInstanceRef={rowVirtualizerInstanceRef}
       rowVirtualizerProps={{ overscan: 5 }}
@@ -59,4 +50,4 @@ export const Table: React.FC<
       {...props}
     />
   );
-};
+}

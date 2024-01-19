@@ -2,7 +2,7 @@ import { SideBar } from "@/components/SideBar";
 import { getAuth } from "@clerk/nextjs/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { useMemo } from "react";
-import { Table } from "@/components/Table";
+import { MantineTable } from "@/components/Table";
 import { type MRT_ColumnDef } from "mantine-react-table";
 import { trpc } from "@/utils/api";
 const Companies = () => {
@@ -42,7 +42,7 @@ const Companies = () => {
     <SideBar>
       <div className="flex flex-col">
         <div className="mt-4 rounded-sm">
-          <Table
+          <MantineTable
             isLoading={isFetching}
             columns={columns}
             data={tableData ?? []}

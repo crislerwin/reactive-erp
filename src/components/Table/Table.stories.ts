@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Table } from ".";
+import { MantineTable } from ".";
 import { faker } from "@faker-js/faker";
 
-const meta: Meta<typeof Table> = {
+const meta: Meta<typeof MantineTable> = {
   title: "Components/Table",
-  component: Table,
+  component: MantineTable,
   tags: ["autodocs"],
   argTypes: {},
 };
 
 export default meta;
-type Story = StoryObj<typeof Table>;
+type Story = StoryObj<typeof MantineTable>;
 
 export const Primary: Story = {
   args: {
