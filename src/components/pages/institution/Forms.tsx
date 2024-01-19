@@ -7,7 +7,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import React from "react";
-import { ConfirmActionModal } from "@/components/ConfirmActionModal";
+import { ActionModal } from "@/components/ActionModal";
 import { useDisclosure } from "@mantine/hooks";
 import { useInstitutionForm } from "./hooks";
 
@@ -58,7 +58,7 @@ export const CompanyForm: React.FC<{ close: () => void }> = ({ close }) => {
         />
         <div className="flex justify-end">
           <div className="mt-4 flex items-center justify-between">
-            <ConfirmActionModal
+            <ActionModal
               actionButton={{
                 name: "Excluir",
                 className: "bg-red-500 text-white hover:bg-red-600",

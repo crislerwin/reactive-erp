@@ -1,6 +1,7 @@
 import { Modal, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPencil } from "@tabler/icons-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 
 type EditModalProps = {
@@ -15,26 +16,19 @@ export const EditModalFormWrapper: React.FC<EditModalProps> = ({
   children,
 }) => {
   const router = useRouter();
-  const [editOpen, { open: openEdit, close: closeEdit }] = useDisclosure(
-    false,
-    {
-      onClose: () => router.back(),
-    }
-  );
+  const [isOpen, { open, close }] = useDisclosure(false, {
+    onClose: () => router.back(),
+  });
 
   return (
     <>
-      <UnstyledButton
+      <Link
+        href={redirectTo}
+        onClick={open}
         className="flex w-12 cursor-pointer justify-center hover:text-orange-400 dark:hover:text-blue-500"
-        onClick={() => {
-          router
-            .push(redirectTo)
-            .then(() => openEdit())
-            .catch((err) => console.log(err));
-        }}
       >
         <IconPencil className="h-4 w-4" />
-      </UnstyledButton>
+      </Link>
       <Modal
         transitionProps={{
           transition: "fade",
@@ -42,13 +36,13 @@ export const EditModalFormWrapper: React.FC<EditModalProps> = ({
           timingFunction: "linear",
         }}
         centered
-        opened={editOpen}
-        onClose={closeEdit}
+        opened={isOpen}
+        onClose={close}
         size="md"
         shadow="sm"
         title={label}
       >
-        {children(closeEdit)}
+        {children(close)}
       </Modal>
     </>
   );

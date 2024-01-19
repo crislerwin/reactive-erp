@@ -5,13 +5,13 @@ export const makeFilterItems = (search: string) => {
     [
       {
         heading: "Home",
-        id: "home",
+        id: "",
         items: [
           {
             id: "home",
             children: "Home",
             icon: "IconHome",
-            href: "/home",
+            href: "/",
           },
         ],
       },
@@ -29,14 +29,14 @@ export const makeFilterItems = (search: string) => {
       },
       {
         heading: "Equipe",
-        id: "team",
+        id: "providers",
 
         items: [
           {
-            id: "team",
+            id: "providers",
             children: "Equipe",
             icon: "IconUsers",
-            href: "/team",
+            href: "/providers",
           },
         ],
       },
