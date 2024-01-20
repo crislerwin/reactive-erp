@@ -43,7 +43,7 @@ const Companies = () => {
       <div className="flex flex-col">
         <div className="mt-4 rounded-sm">
           <MantineTable
-            isLoading={isFetching}
+            state={{ isLoading: isFetching }}
             columns={columns}
             data={tableData ?? []}
           />
