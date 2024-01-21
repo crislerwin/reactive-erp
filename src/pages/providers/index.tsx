@@ -5,14 +5,36 @@ import { getAuth } from "@clerk/nextjs/server";
 import React, { useMemo, useState } from "react";
 import { MantineTable } from "@/components/Table";
 import { MRT_EditActionButtons, type MRT_ColumnDef } from "mantine-react-table";
-import { type Provider } from "@prisma/client";
 import { ActionIcon, Button, Flex, Stack, Title, Tooltip } from "@mantine/core";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
+import { type Provider } from "@prisma/client";
+
+const validateRequired = (value: string | undefined) => !!value?.length;
+const validateEmail = (email: string | undefined) =>
+  !!email?.length &&
+  email
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+
+function validateProvider(provider: Record<string, string>) {
+  return {
+    firstName: !validateRequired(provider.first_name)
+      ? "First Name is Required"
+      : "",
+    lastName: !validateRequired(provider.last_name)
+      ? "Last Name is Required"
+      : "",
+    email: !validateEmail(provider.email) ? "Incorrect Email Format" : "",
+  };
+}
+
 const useProviderColumns = () => {
-  const [validationErrors, setValidationErrors] = useState<Partial<Provider>>(
-    {}
-  );
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string | undefined>
+  >({});
   const [
     isOpen,
     { close: closeDeleteConfirmModal, open: openDeleteConfirmModal },
@@ -72,6 +94,10 @@ const useProviderColumns = () => {
 
   return {
     columns: useMemo(makeColumns, [validationErrors]),
+    setValidationErrors,
+    openDeleteConfirmModal,
+    isOpen,
+    closeDeleteConfirmModal,
   };
 };
 export default function Provider() {
@@ -82,7 +108,7 @@ export default function Provider() {
   } = trpc.provider.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
-  const { columns } = useProviderColumns();
+  const { columns, setValidationErrors } = useProviderColumns();
   const isLoading = isLoadingProviders || isFetchingProviders;
 
   return (
@@ -100,7 +126,16 @@ export default function Provider() {
                 Criar Novo
               </Button>
             )}
-            onCreatingRowSave={() => console.log("Create")}
+            onCreatingRowSave={({ values, table }) => {
+              const newValidationErrors = validateProvider(values);
+              if (Object.values(newValidationErrors).some((error) => error)) {
+                setValidationErrors(newValidationErrors);
+                return;
+              }
+              setValidationErrors({});
+              console.log(values);
+              table.setEditingRow(null);
+            }}
             renderRowActions={({ row, table }) => (
               <Flex gap="md">
                 <Tooltip label="Editar">
