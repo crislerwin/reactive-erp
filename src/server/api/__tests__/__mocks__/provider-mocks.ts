@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker";
-import { type updateProviderSchema } from "../../schemas";
+import { type updateProviderValidation } from "../../validations";
 import { type z } from "zod";
 
 export const makeFakeProviderParams = (): z.infer<
-  typeof updateProviderSchema
+  typeof updateProviderValidation
 > => ({
   email: faker.internet.email(),
   full_name: faker.name.fullName(),

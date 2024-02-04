@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { idSchema } from "./common.schema";
+import { idSchema } from "./common.validations";
 
-export const createProviderSchema = z.object({
+export const createProviderValidation = z.object({
   email: z.string(),
   full_name: z.string().optional(),
   first_name: z.string(),
-  last_name: z.string().optional(),
+  last_name: z.string(),
   institution_ids: z.array(z.number()).optional(),
   bio: z
     .object({
@@ -15,7 +15,7 @@ export const createProviderSchema = z.object({
     .optional(),
 });
 
-export const updateProviderSchema = z.intersection(
-  createProviderSchema,
+export const updateProviderValidation = z.intersection(
+  createProviderValidation,
   idSchema
 );

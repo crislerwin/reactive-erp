@@ -7,9 +7,9 @@
     "dev": "NODE_OPTIONS='--inspect' next dev",
     "test": "vitest",
     "test:ci": "vitest --run",
-    "db:push": "prisma db push",
     "postinstall": "prisma generate",
     "lint": "next lint",
+    "db:push": "prisma db push",
     "start": "next start",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

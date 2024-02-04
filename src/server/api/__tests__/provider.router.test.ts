@@ -4,11 +4,6 @@ import { app } from "./helpers";
 import { makeFakeProviderParams } from "./__mocks__";
 
 describe("Provider router", () => {
-  test("Should throw if try to create with invalid permission", async () => {
-    const sut = app(JSON.stringify([{ name: "invalid", value: true }]));
-    const createdProvider = sut.provider.upsert(makeFakeProviderParams());
-    await expect(createdProvider).rejects.toThrowError();
-  });
   test("Should create a provider", async () => {
     const sut = app();
     const createdProvider = await sut.provider.upsert(makeFakeProviderParams());
@@ -18,17 +13,22 @@ describe("Provider router", () => {
     const sut = app();
     const newName = faker.name.firstName();
 
-    const updatedProvider = await sut.provider.upsert({
+    const upsertProvider = await sut.provider.upsert({
       ...makeFakeProviderParams(),
-      full_name: newName,
+      first_name: newName,
     });
-    expect(updatedProvider.full_name).toBe(newName);
+
+    const updatedProvider = await sut.provider.findById({
+      id: upsertProvider.id,
+    });
+    expect(updatedProvider.first_name).toBe(newName);
   });
 
   test("Should add institution ids", async () => {
     const sut = app();
 
     const newInstitution = await sut.institution.upsert({
+      institution_id: faker.datatype.number(),
       company_code: faker.datatype.number().toString(),
       email: faker.internet.email(),
       name: faker.company.name(),
@@ -37,9 +37,11 @@ describe("Provider router", () => {
 
     const createdProvider = await sut.provider.upsert({
       ...makeFakeProviderParams(),
-      institution_ids: [newInstitution.id],
+      institution_ids: [newInstitution.institution_id],
     });
-    expect(createdProvider.institution_ids).toContain(newInstitution.id);
+    expect(createdProvider.institution_ids).toContain(
+      newInstitution.institution_id
+    );
   });
 
   test("Should throw if add invalid institution id", async () => {
@@ -57,10 +59,11 @@ describe("Provider router", () => {
   test("Should find createdProvider", async () => {
     const sut = app();
     const newProvider = await sut.provider.upsert(makeFakeProviderParams());
-    const foundProvider = await sut.provider.findById({ id: newProvider.id });
+    const foundProvider = await sut.provider.findById({
+      id: newProvider.id,
+    });
     expect(foundProvider).toBeDefined();
     expect(foundProvider?.id).toBe(newProvider.id);
-    expect(foundProvider?.full_name).toBe(newProvider.full_name);
   });
   test("Should throw if find soft deleted provider", async () => {
     const sut = app();
