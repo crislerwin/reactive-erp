@@ -21,7 +21,7 @@ model Provider {
   updated_at      DateTime? @updatedAt
   deleted_at      DateTime?
 
-  @@index([id])
+  @@index([email])
 }
 
 model Institution {
@@ -44,6 +44,8 @@ model Patient {
   first_name  String
   last_name   String
   bio         Json
+  is_guardian Boolean?
+  ward        Json?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at  DateTime?
@@ -51,5 +53,5 @@ model Patient {
   provider    Provider  @relation(fields: [provider_id], references: [id])
 
   @@index([provider_id])
-  @@index([id])
+  @@index([email])
 }

@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { idSchema, updateInstitutionSchema } from "@/server/api/validations";
+import { idSchema, updateInstitutionSchema } from "@/server/api/validators";
 
 export const institutionRouter = createTRPCRouter({
   findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {

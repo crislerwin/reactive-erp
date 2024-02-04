@@ -1,7 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { app } from "./helpers";
 import { type z } from "zod";
-import { type updateInstitutionSchema } from "../validations";
+import { type updateInstitutionSchema } from "../validators";
 import { faker } from "@faker-js/faker";
 
 type InstitutionParams = z.infer<typeof updateInstitutionSchema>;
