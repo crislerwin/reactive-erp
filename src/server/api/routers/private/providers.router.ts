@@ -1,10 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { idSchema, updateProviderSchema } from "@/server/api/schemas";
-import {
-  PermissionTypes,
-  findAndValidatePermission,
-} from "../../auth/permissions";
+import { idSchema, updateProviderValidation } from "@/server/api/validators";
 
 export const providerRoute = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {
@@ -16,27 +12,13 @@ export const providerRoute = createTRPCRouter({
   }),
 
   upsert: protectedProcedure
-    .input(updateProviderSchema)
+    .input(updateProviderValidation)
     .mutation(async ({ ctx, input }) => {
-      const providerManagementPermission = findAndValidatePermission(
-        PermissionTypes.PROVIDER_MANAGEMENT,
-        ctx.session.user.permissions
-      );
-      if (
-        !providerManagementPermission ||
-        !providerManagementPermission.value
-      ) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to perform this action",
-          cause: "No permission",
-        });
-      }
       let institutionIds: number[] = [];
       if (input.institution_ids) {
         const institutions = await ctx.prisma.institution.findMany({
           where: {
-            id: {
+            institution_id: {
               in: input.institution_ids,
             },
           },
@@ -49,7 +31,9 @@ export const providerRoute = createTRPCRouter({
           });
         }
 
-        institutionIds = institutions.map((institution) => institution.id);
+        institutionIds = institutions.map(
+          (institution) => institution.institution_id
+        );
       }
       return ctx.prisma.provider.upsert({
         where: {
@@ -61,7 +45,6 @@ export const providerRoute = createTRPCRouter({
           bio: input.bio,
           first_name: input.first_name,
           last_name: input.last_name,
-          full_name: input.full_name,
           institution_ids: institutionIds,
         },
         update: {
@@ -69,7 +52,6 @@ export const providerRoute = createTRPCRouter({
           bio: input.bio,
           first_name: input.first_name,
           last_name: input.last_name,
-          full_name: input.full_name,
           institution_ids: institutionIds,
         },
       });

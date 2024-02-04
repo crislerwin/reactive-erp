@@ -11,22 +11,21 @@ datasource db {
 model Provider {
   id              Int       @unique @default(autoincrement())
   email           String    @unique
-  first_name      String    @default("")
-  last_name       String    @default("")
+  first_name      String
+  last_name       String
+  institution_ids Json?
   bio             Json?
+  active          Boolean?  @default(true)
+  patients        Patient[]
   created_at      DateTime  @default(now())
   updated_at      DateTime? @updatedAt
-  active          Boolean?  @default(true)
   deleted_at      DateTime?
-  full_name       String?
-  institution_ids Json?
 
   @@index([email])
 }
 
 model Institution {
-  id              Int       @unique @default(autoincrement())
-  company_code    String    @unique
+  institution_id  Int       @unique @default(autoincrement())
   email           String
   name            String
   attributes      Json?
@@ -35,18 +34,24 @@ model Institution {
   updated_at      DateTime? @updatedAt
   additional_info Json?
 
-  @@index([company_code])
+  @@index([institution_id])
+  @@index([email])
 }
 
-model User {
-  id          Int      @unique @default(autoincrement())
-  email       String   @unique
-  name        String?  @default("")
-  avatar_url  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  permissions Json?
-  provider_id Int?
+model Patient {
+  id          Int       @unique @default(autoincrement())
+  email       String    @unique
+  first_name  String
+  last_name   String
+  bio         Json
+  is_guardian Boolean?
+  ward        Json?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
+  provider_id Int
+  provider    Provider  @relation(fields: [provider_id], references: [id])
 
+  @@index([provider_id])
   @@index([email])
 }

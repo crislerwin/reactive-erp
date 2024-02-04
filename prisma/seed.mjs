@@ -4,16 +4,6 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const admin_user = await prisma.user.upsert({
-    where: { email: "admin@example.com" },
-    update: {},
-    create: {
-      email: "admin@example.com",
-      name: "admin",
-      permissions: [],
-    },
-  });
-
   const provider = await prisma.provider.upsert({
     where: { email: faker.internet.email() },
     update: {},
@@ -23,7 +13,7 @@ async function main() {
       last_name: faker.name.lastName(),
     },
   });
-  console.log({ admin_user, provider });
+  console.log({ provider });
 }
 
 main()
