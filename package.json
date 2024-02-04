@@ -70,7 +70,7 @@
     "@typescript-eslint/parser": "^5.56.0",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.56.0",
-    "eslint-config-next": "^13.2.4",
+    "eslint-config-next": "^14.1.0",
     "eslint-plugin-storybook": "^0.6.15",
     "postcss": "^8.4.33",
     "prettier": "^2.8.6",
