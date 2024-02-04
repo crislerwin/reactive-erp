@@ -3,8 +3,9 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { type User, type PrismaClient } from "@prisma/client";
+import { type PrismaClient } from "@prisma/client";
 import { getServerAuthSession } from "./auth";
+import { type User } from "@clerk/nextjs/dist/types/server";
 
 type CreateContextOptions = {
   prisma?: PrismaClient;

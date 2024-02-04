@@ -1,21 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { idSchema, updateInstitutionSchema } from "@/server/api/schemas";
-import { PermissionTypes, findAndValidatePermission } from "../../auth";
+import { idSchema, updateInstitutionSchema } from "@/server/api/validators";
 
 export const institutionRouter = createTRPCRouter({
   findById: protectedProcedure.input(idSchema).query(async ({ ctx, input }) => {
-    const institutionManagementPermission = findAndValidatePermission(
-      PermissionTypes.INSTITUTION_MANAGEMENT,
-      ctx.session.user.permissions
-    );
-    if (
-      !institutionManagementPermission ||
-      !institutionManagementPermission.value
-    )
-      throw new TRPCError({ code: "UNAUTHORIZED" });
     const institution = await ctx.prisma.institution.findUnique({
-      where: { id: input.id },
+      where: { institution_id: input.id },
     });
 
     if (!institution) {
@@ -28,44 +18,22 @@ export const institutionRouter = createTRPCRouter({
   }),
 
   findAll: protectedProcedure.query(async ({ ctx }) => {
-    const companies = await ctx.prisma.institution.findMany();
-    return companies;
+    return ctx.prisma.institution.findMany();
   }),
 
   delete: protectedProcedure
     .input(idSchema)
     .mutation(async ({ ctx, input }) => {
-      const institutionManagementPermission = findAndValidatePermission(
-        PermissionTypes.INSTITUTION_MANAGEMENT,
-        ctx.session.user.permissions
-      );
-      if (
-        !institutionManagementPermission ||
-        !institutionManagementPermission.value
-      )
-        throw new TRPCError({ code: "UNAUTHORIZED" });
       await ctx.prisma.institution.delete({
-        where: { id: input.id },
+        where: { institution_id: input.id },
       });
-      return true;
     }),
   upsert: protectedProcedure
     .input(updateInstitutionSchema)
     .mutation(async ({ ctx, input }) => {
-      const institutionManagementPermission = findAndValidatePermission(
-        PermissionTypes.INSTITUTION_MANAGEMENT,
-        ctx.session.user.permissions
-      );
-      if (
-        !institutionManagementPermission ||
-        !institutionManagementPermission.value
-      )
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-
-      const institution = await ctx.prisma.institution.upsert({
-        where: { company_code: input.company_code, id: input.id },
+      return ctx.prisma.institution.upsert({
+        where: { institution_id: input.institution_id, email: input.email },
         create: {
-          company_code: input.company_code,
           name: input.name,
           email: input.email,
           attributes: input.attributes,
@@ -73,7 +41,6 @@ export const institutionRouter = createTRPCRouter({
           static_logo_url: input.static_logo_url,
         },
         update: {
-          company_code: input.company_code,
           name: input.name,
           additional_info: input.additional_info,
           email: input.email,
@@ -81,6 +48,5 @@ export const institutionRouter = createTRPCRouter({
           static_logo_url: input.static_logo_url,
         },
       });
-      return institution;
     }),
 });
