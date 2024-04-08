@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@clerk/localizations": "^1.11.3",
-    "@clerk/nextjs": "^4.29.3",
+    "@clerk/nextjs": "^4.29.12",
     "@emotion/react": "^11.10.8",
     "@emotion/server": "^11.10.0",
     "@headlessui/react": "^1.7.14",
