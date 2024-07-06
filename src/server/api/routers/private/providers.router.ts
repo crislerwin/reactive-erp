@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { idSchema, updateProviderValidation } from "@/server/api/validators";
+import { idSchema, updateProviderValidation } from "@/server/api/dto";
 
 export const providerRoute = createTRPCRouter({
   findAll: protectedProcedure.query(({ ctx }) => {

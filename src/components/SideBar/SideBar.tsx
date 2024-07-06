@@ -22,7 +22,7 @@ export type SideBarProps = {
   children?: React.ReactNode;
 };
 
-export const SideBar: React.FC<SideBarProps> = ({ children }) => {
+export const SideBar = ({ children }: SideBarProps) => {
   const { user } = useClerk();
   const { open, setOpen } = useSideBar();
   const { signOut } = useClerk();
@@ -36,16 +36,12 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
 
   const filterItems = makeFilterItems(search);
 
-  const handleRedirect = () => {
+  const handleRedirect = async () => {
     if (!user) return;
-    router
-      .push({
-        pathname: "/account",
-        query: { userId: user.id },
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    await router.push({
+      pathname: "/account",
+      query: { userId: user.id },
+    });
   };
 
   return (

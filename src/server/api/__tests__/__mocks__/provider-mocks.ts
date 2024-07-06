@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { type updateProviderValidation } from "../../validators";
+import { type updateProviderValidation } from "../../dto";
 import { type z } from "zod";
 
 export const makeFakeProviderParams = (): z.infer<

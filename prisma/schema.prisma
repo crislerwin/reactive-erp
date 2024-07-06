@@ -8,50 +8,91 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Provider {
-  id              Int       @unique @default(autoincrement())
-  email           String    @unique
-  first_name      String
-  last_name       String
-  institution_ids Json?
-  bio             Json?
-  active          Boolean?  @default(true)
-  patients        Patient[]
-  created_at      DateTime  @default(now())
-  updated_at      DateTime? @updatedAt
-  deleted_at      DateTime?
-
-  @@index([email])
+model Branch {
+  branch_id     Int       @unique @default(autoincrement())
+  name          String
+  email         String
+  company_code  String
+  staff_members Staff[]
+  attributes    Json?
+  logo_url      String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime? @updatedAt
+  deleted_at    DateTime?
 }
 
-model Institution {
-  institution_id  Int       @unique @default(autoincrement())
-  email           String
-  name            String
-  attributes      Json?
-  static_logo_url String?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime? @updatedAt
-  additional_info Json?
+model Staff {
+  id         Int       @unique @default(autoincrement())
+  branch_id  Int
+  account_id Int
+  account    Account   @relation(fields: [account_id], references: [account_id])
+  role       String
+  active     Boolean   @default(true)
+  branch     Branch    @relation(fields: [branch_id], references: [branch_id])
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
 
-  @@index([institution_id])
-  @@index([email])
+  @@index([branch_id])
+  @@index([account_id])
 }
 
-model Patient {
+model Account {
+  account_id    Int       @unique @default(autoincrement())
+  name          String
+  last_name     String?
+  email         String
+  password      String
+  staff_members Staff[]
+  created_at    DateTime  @default(now())
+  updated_at    DateTime? @updatedAt
+  deleted_at    DateTime?
+}
+
+model Product {
+  product_id          Int             @unique @default(autoincrement())
+  branch_id           Int
+  name                String
+  description         String?
+  price               Float
+  currency            String
+  available_quantity  Int
+  colors              Json?
+  product_category_id Int
+  product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
+  available           Boolean         @default(true)
+  created_at          DateTime        @default(now())
+  updated_at          DateTime?       @updatedAt
+  deleted_at          DateTime?
+
+  @@index([branch_id])
+  @@index([product_category_id])
+}
+
+model ProductCategory {
   id          Int       @unique @default(autoincrement())
-  email       String    @unique
-  first_name  String
-  last_name   String
-  bio         Json
-  is_guardian Boolean?
-  ward        Json?
+  branch_id   Int
+  name        String
+  description String?
+  active      Boolean   @default(true)
   created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  updated_at  DateTime? @updatedAt
   deleted_at  DateTime?
-  provider_id Int
-  provider    Provider  @relation(fields: [provider_id], references: [id])
+  products    Product[]
 
-  @@index([provider_id])
-  @@index([email])
+  @@index([branch_id])
+}
+
+model Currency {
+  id                 Int       @unique @default(autoincrement())
+  currency_name      String
+  currency_code      String
+  currency_symbol    String
+  currency_position  String
+  decimal_separator  String
+  thousand_separator String
+  cent_precision     Int
+  default            Boolean   @default(true)
+  created_at         DateTime  @default(now())
+  updated_at         DateTime? @updatedAt
 }

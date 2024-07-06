@@ -5,7 +5,7 @@ export enum AppointmentTypes {
   "Return" = 2,
 }
 
-export const createAppointmentValidation = z.object({
+export const createAppointmentDto = z.object({
   patient_id: z.number(),
   provider_id: z.number(),
   provider_name: z.string(),
