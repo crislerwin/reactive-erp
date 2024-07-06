@@ -41,12 +41,14 @@ model Account {
   account_id    Int       @unique @default(autoincrement())
   name          String
   last_name     String?
-  email         String
+  email         String    @unique
   password      String
   staff_members Staff[]
   created_at    DateTime  @default(now())
   updated_at    DateTime? @updatedAt
   deleted_at    DateTime?
+
+  @@index([email])
 }
 
 model Product {
