@@ -1,5 +1,6 @@
 import { prisma } from "@/server/db";
 import { TRPCError, initTRPC } from "@trpc/server";
+import { OpenApiMeta } from "trpc-openapi";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -29,19 +30,22 @@ export const createTRPCContext = async (ctx: CreateNextContextOptions) => {
   });
 };
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
-});
+const t = initTRPC
+  .meta<OpenApiMeta>()
+  .context<typeof createTRPCContext>()
+  .create({
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          zodError:
+            error.cause instanceof ZodError ? error.cause.flatten() : null,
+        },
+      };
+    },
+  });
 
 export const createCaller = (router: AppRouter) =>
   t.createCallerFactory(router);

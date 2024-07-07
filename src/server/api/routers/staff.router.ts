@@ -4,6 +4,7 @@ import { z } from "zod";
 
 export const staffRouter = createTRPCRouter({
   findAll: protectedProcedure
+    .meta({ method: "GET", path: "/staff" })
     .input(z.object({ branch_id: z.number() }))
     .query(async ({ ctx, input }) => {
       const branch = await ctx.prisma.branch.findUnique({
@@ -15,6 +16,7 @@ export const staffRouter = createTRPCRouter({
       return ctx.prisma.staff.findMany({ where: input });
     }),
   createStaffMember: protectedProcedure
+    .meta({ method: "POST", path: "/staff" })
     .input(
       z.object({
         branch_id: z.number(),

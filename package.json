@@ -46,6 +46,7 @@
     "react-dom": "18.2.0",
     "superjson": "2.2.1",
     "tailwind-variants": "^0.1.20",
+    "trpc-openapi": "^1.2.0",
     "vitest": "^1.2.2",
     "zod": "^3.22.4"
   },
