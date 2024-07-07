@@ -25,6 +25,8 @@ model Staff {
   id         Int       @unique @default(autoincrement())
   branch_id  Int
   account_id Int
+  first_name String
+  last_name  String?
   account    Account   @relation(fields: [account_id], references: [account_id])
   role       String
   active     Boolean   @default(true)
