@@ -9,6 +9,10 @@
       "request": "attach",
       "port": 9229,
       "preLaunchTask": "pnpm run dev",
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/.next/**/*.js"],
       "name": "Launch App",
       "skipFiles": ["<node_internals>/**"]
     },
@@ -21,6 +25,15 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/*", "/node_modules/*", "/.next"]
+    },
+    {
+      "name": "Attach to Node.js",
+      "type": "node",
+      "request": "attach",
+      "address": "127.0.0.1",
+      "port": 9229,
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "${workspaceFolder}"
     }
   ]
 }

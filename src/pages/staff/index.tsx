@@ -10,14 +10,8 @@ import {
 import { ActionIcon, Button, Flex, Stack, Title, Tooltip } from "@mantine/core";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { SideMenu } from "@/components/SideMenu";
-
-type User = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  state: string;
-};
+import { type Staff } from "@prisma/client";
+import { trpc } from "@/utils/api";
 
 const usStates = [
   "Alabama",
@@ -28,22 +22,14 @@ const usStates = [
   "Colorado",
 ];
 
-const fakeData: User[] = [
-  {
-    id: "1",
-    firstName: "John",
-    lastName: "Doe",
-    email: "bla@email.com",
-    state: "California",
-  },
-];
-
 const Example = () => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
 
-  const columns = useMemo<MRT_ColumnDef<User>[]>(
+  const { data: staffMembers = [], isLoading } = trpc.staff.findAll.useQuery();
+
+  const columns = useMemo<MRT_ColumnDef<Staff>[]>(
     () => [
       {
         accessorKey: "id",
@@ -52,29 +38,26 @@ const Example = () => {
         size: 80,
       },
       {
-        accessorKey: "firstName",
-        header: "First Name",
+        accessorKey: "first_name",
+        header: "Nome",
         mantineEditTextInputProps: {
           type: "email",
           required: true,
           error: validationErrors?.firstName,
-          //remove any previous validation errors when user focuses on the input
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
               firstName: undefined,
             }),
-          //optionally add validation checking for onBlur or onChange
         },
       },
       {
-        accessorKey: "lastName",
-        header: "Last Name",
+        accessorKey: "last_name",
+        header: "Sobrenome",
         mantineEditTextInputProps: {
           type: "email",
           required: true,
           error: validationErrors?.lastName,
-          //remove any previous validation errors when user focuses on the input
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
@@ -89,7 +72,6 @@ const Example = () => {
           type: "email",
           required: true,
           error: validationErrors?.email,
-          //remove any previous validation errors when user focuses on the input
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
@@ -98,8 +80,8 @@ const Example = () => {
         },
       },
       {
-        accessorKey: "state",
-        header: "State",
+        accessorKey: "role",
+        header: "Função",
         editVariant: "select",
         mantineEditSelectProps: {
           data: usStates,
@@ -110,7 +92,7 @@ const Example = () => {
     [validationErrors]
   );
 
-  const handleCreateUser: MRT_TableOptions<User>["onCreatingRowSave"] = ({
+  const handleCreateUser: MRT_TableOptions<Staff>["onCreatingRowSave"] = ({
     values,
     exitCreatingMode,
   }) => {
@@ -124,8 +106,7 @@ const Example = () => {
     exitCreatingMode();
   };
 
-  //UPDATE action
-  const handleSaveUser: MRT_TableOptions<User>["onEditingRowSave"] = ({
+  const handleSaveUser: MRT_TableOptions<Staff>["onEditingRowSave"] = ({
     values,
     table,
   }) => {
@@ -139,18 +120,17 @@ const Example = () => {
     table.setEditingRow(null); //exit editing mode
   };
 
-  //DELETE action
-  const openDeleteConfirmModal = (row: MRT_Row<User>) => {
+  const openDeleteConfirmModal = (row: MRT_Row<Staff>) => {
     console.log(row);
   };
 
   const table = useMantineReactTable({
     columns,
-    data: fakeData,
+    data: staffMembers,
     createDisplayMode: "modal", //default ('row', and 'custom' are also available)
     editDisplayMode: "modal", //default ('row', 'cell', 'table', and 'custom' are also available)
     enableEditing: true,
-    getRowId: (row) => row.id,
+    getRowId: ({ id }) => String(id),
     mantineToolbarAlertBannerProps: false // isLoadingUsersError
       ? {
           color: "red",
@@ -202,23 +182,17 @@ const Example = () => {
       <Button
         variant="outline"
         onClick={() => {
-          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
-          //or you can pass in a row object to set default values with the `createRow` helper function
-          // table.setCreatingRow(
-          //   createRow(table, {
-          //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
-          //   }),
-          // );
+          table.setCreatingRow(true);
         }}
       >
         Create New User
       </Button>
     ),
     state: {
-      isLoading: false, // isLoadingUsers,
-      isSaving: false, //  isCreatingUser || isUpdatingUser || isDeletingUser,
-      showAlertBanner: false, // isLoadingUsersError,
-      showProgressBars: false, //isFetchingUsers,
+      isLoading: isLoading,
+      isSaving: false,
+      showAlertBanner: false,
+      showProgressBars: false,
     },
   });
 
@@ -235,12 +209,11 @@ const validateEmail = (email: string) =>
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 
-function validateUser(user: User) {
+function validateUser(user: Staff) {
   return {
-    firstName: !validateRequired(user.firstName)
+    firstName: !validateRequired(user.first_name)
       ? "First Name is Required"
       : "",
-    lastName: !validateRequired(user.lastName) ? "Last Name is Required" : "",
     email: !validateEmail(user.email) ? "Incorrect Email Format" : "",
   };
 }

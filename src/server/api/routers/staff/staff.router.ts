@@ -1,10 +1,10 @@
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { TRPCError } from "@trpc/server";
 import {
-  commonSchema,
-  createStaffMemberSchema,
-  updateStaffMemberSchema,
-} from "./schemas";
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
+import { TRPCError } from "@trpc/server";
+import { createStaffMemberSchema, updateStaffMemberSchema } from "./schemas";
 import { z } from "zod";
 
 const allowedRoles = ["ADMIN", "MANAGER"];
@@ -12,8 +12,7 @@ const allowedRoles = ["ADMIN", "MANAGER"];
 export const staffRouter = createTRPCRouter({
   findAll: protectedProcedure
     .meta({ method: "GET", path: "/staff" })
-    .input(commonSchema)
-    .query(async ({ ctx, input }) => {
+    .query(async ({ ctx }) => {
       if (ctx.session.account.role === "OWNER")
         return ctx.prisma.staff.findMany();
 
@@ -24,14 +23,14 @@ export const staffRouter = createTRPCRouter({
         });
 
       const branch = await ctx.prisma.branch.findUnique({
-        where: { branch_id: input.branch_id },
+        where: { branch_id: ctx.session.account.branch_id },
       });
       if (!branch)
         throw new TRPCError({ code: "NOT_FOUND", cause: "Branch not found" });
 
       return ctx.prisma.staff.findMany({
         where: {
-          ...input,
+          branch_id: ctx.session.account.branch_id,
           active: true,
           role: { in: allowedRoles },
         },
@@ -118,8 +117,19 @@ export const staffRouter = createTRPCRouter({
     .meta({ openapi: { method: "GET", path: "/staff/:id" } })
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.staff.findUnique({
+      const staffMember = await ctx.prisma.staff.findUnique({
         where: { id: input.id, active: true },
       });
+      if (!staffMember)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          cause: "Staff member not found",
+        });
+      return staffMember;
+    }),
+  hello: publicProcedure
+    .meta({ openapi: { method: "GET", path: "/staff/hello" } })
+    .query(async () => {
+      return Promise.resolve("Hello World");
     }),
 });

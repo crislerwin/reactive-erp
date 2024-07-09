@@ -2,12 +2,12 @@ import { prisma } from "@/server/db";
 import { appRouter } from "../../root";
 import { createCaller } from "../../trpc";
 import { faker } from "@faker-js/faker";
-import { type Staff } from "@prisma/client";
+import { Branch, type Staff } from "@prisma/client";
 
-export const makeFakeAccount = (): Staff => ({
+export const makeFakeStaff = (branch_id: number): Staff => ({
   active: true,
   id: faker.datatype.number(),
-  branch_id: faker.datatype.number(),
+  branch_id,
   role: "ADMIN",
   email: faker.internet.email(),
   last_name: faker.name.lastName(),
@@ -23,12 +23,35 @@ export const makeBranchRequest = () => ({
   email: faker.internet.email(),
 });
 
-export const makeSut = (account = makeFakeAccount()) => {
+export const createBranch = async (): Promise<Branch> => {
+  return prisma.branch.create({
+    data: {
+      name: faker.company.name(),
+      company_code: faker.helpers.fake("###-###-###"),
+      email: faker.internet.email(),
+    },
+  });
+};
+
+export const makeApp = ({
+  branch_id,
+  staff = makeFakeStaff(branch_id),
+}: {
+  branch_id: number;
+  staff?: Staff;
+}) => {
   const app = createCaller(appRouter);
   return app({
     prisma,
     session: {
-      account,
+      account: staff,
     },
   });
 };
+
+export async function makeSut() {
+  const branch = await createBranch();
+  const staff = makeFakeStaff(branch.branch_id);
+  const app = makeApp({ branch_id: branch.branch_id, staff });
+  return { app, branch, staff };
+}
