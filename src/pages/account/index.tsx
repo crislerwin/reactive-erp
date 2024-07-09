@@ -1,14 +1,14 @@
 import { type NextPage } from "next";
-import { SideBar } from "@/components/SideBar";
+import { SideMenu } from "@/components/SideMenu";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { getAuth } from "@clerk/nextjs/server";
 import AccountPage from "./[userId]";
 
 const Profile: NextPage = () => {
   return (
-    <SideBar>
+    <SideMenu>
       <AccountPage />
-    </SideBar>
+    </SideMenu>
   );
 };
 
