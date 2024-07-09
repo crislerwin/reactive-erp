@@ -19,7 +19,6 @@ import CommandPalette, {
   useHandleOpenCommandPalette,
 } from "../SearchBar";
 import { makeFilterItems } from "./utils";
-import { ModalsProvider } from "@mantine/modals";
 
 export const SideMenu = ({ children }: React.PropsWithChildren) => {
   const { user } = useClerk();
@@ -43,7 +42,7 @@ export const SideMenu = ({ children }: React.PropsWithChildren) => {
   };
 
   return (
-    <ModalsProvider>
+    <>
       <CommandPalette
         onChangeSearch={setSearch}
         onChangeOpen={setOpenSearch}
@@ -172,6 +171,6 @@ export const SideMenu = ({ children }: React.PropsWithChildren) => {
       >
         {children}
       </div>
-    </ModalsProvider>
+    </>
   );
 };

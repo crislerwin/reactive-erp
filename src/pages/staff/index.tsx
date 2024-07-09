@@ -7,6 +7,7 @@ import {
   type MRT_TableOptions,
   useMantineReactTable,
 } from "mantine-react-table";
+import { useQueryClient } from "@tanstack/react-query";
 import { ActionIcon, Button, Flex, Stack, Title, Tooltip } from "@mantine/core";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { SideMenu } from "@/components/SideMenu";
@@ -16,12 +17,16 @@ import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
 import { createStaffMemberSchema } from "@/server/api/routers/staff/schemas";
 import { type ZodError } from "zod";
 import { modals } from "@mantine/modals";
+import { getQueryKey } from "@trpc/react-query";
 
 function validateStaffMember(user: StaffType) {
   const errors: Record<string, string | undefined> = {};
 
   try {
-    createStaffMemberSchema.parse(user);
+    createStaffMemberSchema.parse({
+      ...user,
+      branch_id: Number(user.branch_id),
+    });
   } catch (err) {
     const error = err as ZodError<StaffType>;
     if (error.errors) {
@@ -39,6 +44,7 @@ const Table = () => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
+  const queryClient = useQueryClient();
   const {
     data: staffMembers = [],
     isFetching: isFetchingStaff,
@@ -143,13 +149,47 @@ const Table = () => {
       },
       {
         accessorKey: "active",
-        accessorFn: (row) => (row.active ? "Sim" : "Não"),
-        header: "Ativo",
+        accessorFn: (row) => {
+          if (row.active === undefined) return "";
+          return row.active ? "Sim" : "Não";
+        },
+        editVariant: "select",
         enableEditing: false,
+        mantineEditSelectProps: {
+          data: [
+            { value: "true", label: "Sim" },
+            { value: "false", label: "Não" },
+          ],
+        },
+        header: "Ativo",
       },
     ],
     [branches, validationErrors]
   );
+  const updateStaffListData = (
+    newData: StaffType,
+    variables: Partial<StaffType>
+  ) =>
+    queryClient.setQueryData<StaffType[] | undefined>(
+      getQueryKey(trpc.staff.findAll, undefined, "query"),
+      (oldData) => {
+        if (!oldData) return;
+        if (variables.id) {
+          return oldData.map((data) =>
+            data.id === variables.id ? newData : data
+          );
+        }
+        return [...oldData, newData];
+      }
+    );
+
+  const handleErrors = (error: { message: string }) => {
+    modals.open({
+      title: `Ops! Ocorreu ao salver o usuário`,
+      children: error.message,
+      closeOnEscape: true,
+    });
+  };
 
   const handleCreateUser: MRT_TableOptions<StaffType>["onCreatingRowSave"] = ({
     values,
@@ -161,7 +201,13 @@ const Table = () => {
       return;
     }
     setValidationErrors({});
-    createStaffMember(values, { onSuccess: exitCreatingMode });
+    createStaffMember(
+      { ...values, branch_id: Number(values.branch_id) },
+      {
+        onSuccess: updateStaffListData,
+        onError: handleErrors,
+      }
+    );
     exitCreatingMode();
   };
 
@@ -176,7 +222,20 @@ const Table = () => {
     }
     setValidationErrors({});
 
-    updateStaffMember({ ...values, staff_id: Number(values.id) });
+    updateStaffMember(
+      {
+        ...values,
+        staff_id: Number(values.id),
+        branch_id: Number(values.branch_id),
+      },
+      {
+        onSuccess: (data) => {
+          updateStaffListData(data, { id: Number(data.id) });
+          table.setEditingRow(null);
+        },
+        onError: handleErrors,
+      }
+    );
     table.setEditingRow(null);
   };
 
@@ -187,8 +246,24 @@ const Table = () => {
         row.original.first_name
       } ${row.original.last_name ?? ""}`,
       labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: { color: "red" },
-      onConfirm: () => deleteStaffMember({ id: Number(row.original.id) }),
+      confirmProps: { variant: "filled", color: "red" },
+      cancelProps: { variant: "outline" },
+      onConfirm: () =>
+        deleteStaffMember(
+          { id: Number(row.original.id) },
+          {
+            onSuccess: () => {
+              queryClient.setQueryData<StaffType[] | undefined>(
+                getQueryKey(trpc.staff.findAll, undefined, "query"),
+                (oldData) => {
+                  if (!oldData) return;
+                  return oldData.filter((data) => data.id !== row.original.id);
+                }
+              );
+            },
+            onError: handleErrors,
+          }
+        ),
     });
   };
 
