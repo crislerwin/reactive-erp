@@ -2,7 +2,7 @@ import { prisma } from "@/server/db";
 import { appRouter } from "../../root";
 import { createCaller } from "../../trpc";
 import { faker } from "@faker-js/faker";
-import { Branch, type Staff } from "@prisma/client";
+import { type Branch, type Staff } from "@prisma/client";
 
 export const makeFakeStaff = (branch_id: number): Staff => ({
   active: true,

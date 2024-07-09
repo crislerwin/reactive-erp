@@ -10,26 +10,44 @@ import {
 import { ActionIcon, Button, Flex, Stack, Title, Tooltip } from "@mantine/core";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { SideMenu } from "@/components/SideMenu";
-import { type Staff } from "@prisma/client";
+import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
+import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
+import { createStaffMemberSchema } from "@/server/api/routers/staff/schemas";
+import { type ZodError } from "zod";
+import { ModalsProvider, modals } from "@mantine/modals";
+function validateStaffMember(user: StaffType) {
+  const errors: Record<string, string | undefined> = {};
 
-const usStates = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-];
+  try {
+    createStaffMemberSchema.parse(user);
+  } catch (err) {
+    const error = err as ZodError<StaffType>;
+    if (error.errors) {
+      error.errors.forEach((error) => {
+        if (error.path) {
+          errors[String(error.path)] = error.message;
+        }
+      });
+    }
+  }
+  return errors;
+}
 
-const Example = () => {
+const Table = () => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
+  const { data: staffMembers = [], isFetching: isFetchingStaff } =
+    trpc.staff.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
+  const { mutate: createStaffMember, isLoading: isCreating } =
+    trpc.staff.createStaffMember.useMutation();
+  const { mutate: updateStaffMember, isLoading: isUpdating } =
+    trpc.staff.updateStaffMember.useMutation();
+  const { mutate: deleteStaffMember, isLoading: isDeleting } =
+    trpc.staff.softDeletedStaffMember.useMutation();
 
-  const { data: staffMembers = [], isLoading } = trpc.staff.findAll.useQuery();
-
-  const columns = useMemo<MRT_ColumnDef<Staff>[]>(
+  const columns = useMemo<MRT_ColumnDef<StaffType>[]>(
     () => [
       {
         accessorKey: "id",
@@ -83,55 +101,84 @@ const Example = () => {
         accessorKey: "role",
         header: "Função",
         editVariant: "select",
+
         mantineEditSelectProps: {
-          data: usStates,
+          data: [
+            { value: "ADMIN", label: "Administrador" },
+            { value: "MANAGER", label: "Gerente" },
+            { value: "EMPLOYEE", label: "Funcionario" },
+          ],
           error: validationErrors?.state,
+        },
+      },
+      {
+        accessorKey: "branch_id",
+        header: "Filial",
+        enableEditing: false,
+      },
+      {
+        accessorKey: "active",
+        header: "Ativo",
+        enableEditing: false,
+        Cell(props) {
+          return <div>{String(props.row.original.active)}</div>;
         },
       },
     ],
     [validationErrors]
   );
 
-  const handleCreateUser: MRT_TableOptions<Staff>["onCreatingRowSave"] = ({
+  const handleCreateUser: MRT_TableOptions<StaffType>["onCreatingRowSave"] = ({
     values,
     exitCreatingMode,
   }) => {
-    const newValidationErrors = validateUser(values);
+    const newValidationErrors = validateStaffMember(values);
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationErrors(newValidationErrors);
       return;
     }
     setValidationErrors({});
-    console.log(values);
+    createStaffMember(values, { onSuccess: exitCreatingMode });
     exitCreatingMode();
   };
 
-  const handleSaveUser: MRT_TableOptions<Staff>["onEditingRowSave"] = ({
+  const handleSaveUser: MRT_TableOptions<StaffType>["onEditingRowSave"] = ({
     values,
     table,
   }) => {
-    const newValidationErrors = validateUser(values);
+    const newValidationErrors = validateStaffMember(values);
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationErrors(newValidationErrors);
       return;
     }
     setValidationErrors({});
-    console.log(values);
-    table.setEditingRow(null); //exit editing mode
+
+    updateStaffMember({ ...values, staff_id: Number(values.id) });
+    table.setEditingRow(null);
   };
 
-  const openDeleteConfirmModal = (row: MRT_Row<Staff>) => {
-    console.log(row);
+  const openDeleteConfirmModal = (row: MRT_Row<StaffType>) => {
+    modals.openConfirmModal({
+      title: "Deletar usuário",
+      children: `Vocé tem certeza que quer deletar o usuàrio ${
+        row.original.first_name
+      } ${row.original.last_name ?? ""}`,
+      labels: { confirm: "Deletar", cancel: "Cancelar" },
+      confirmProps: { color: "red" },
+      onConfirm: () => deleteStaffMember({ id: Number(row.original.id) }),
+    });
   };
 
   const table = useMantineReactTable({
     columns,
     data: staffMembers,
-    createDisplayMode: "modal", //default ('row', and 'custom' are also available)
-    editDisplayMode: "modal", //default ('row', 'cell', 'table', and 'custom' are also available)
+    localization: MRT_Localization_PT_BR,
+    createDisplayMode: "modal",
+
+    editDisplayMode: "modal",
     enableEditing: true,
     getRowId: ({ id }) => String(id),
-    mantineToolbarAlertBannerProps: false // isLoadingUsersError
+    mantineToolbarAlertBannerProps: isFetchingStaff
       ? {
           color: "red",
           children: "Error loading data",
@@ -148,7 +195,7 @@ const Example = () => {
     onEditingRowSave: handleSaveUser,
     renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
-        <Title order={3}>Create New User</Title>
+        <Title order={3}>Criar novo</Title>
         {internalEditComponents}
         <Flex justify="flex-end" mt="xl">
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -157,27 +204,40 @@ const Example = () => {
     ),
     renderEditRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
-        <Title order={3}>Edit User</Title>
+        <Title order={3}>Editar</Title>
         {internalEditComponents}
         <Flex justify="flex-end" mt="xl">
           <MRT_EditActionButtons variant="text" table={table} row={row} />
         </Flex>
       </Stack>
     ),
-    renderRowActions: ({ row, table }) => (
-      <Flex gap="md">
-        <Tooltip label="Edit">
-          <ActionIcon onClick={() => table.setEditingRow(row)}>
-            <IconEdit />
-          </ActionIcon>
-        </Tooltip>
-        <Tooltip label="Delete">
-          <ActionIcon color="red" onClick={() => openDeleteConfirmModal(row)}>
-            <IconTrash />
-          </ActionIcon>
-        </Tooltip>
-      </Flex>
-    ),
+
+    renderRowActions: ({ row, table }) => {
+      const isActionDisabled =
+        row.original.role === "OWNER" || !row.original.active;
+
+      return (
+        <>
+          {isActionDisabled ? null : (
+            <Flex gap="md">
+              <Tooltip label="Editar">
+                <ActionIcon onClick={() => table.setEditingRow(row)}>
+                  <IconEdit />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label="Excluir">
+                <ActionIcon
+                  color="red"
+                  onClick={() => openDeleteConfirmModal(row)}
+                >
+                  <IconTrash />
+                </ActionIcon>
+              </Tooltip>
+            </Flex>
+          )}
+        </>
+      );
+    },
     renderTopToolbarCustomActions: ({ table }) => (
       <Button
         variant="outline"
@@ -185,43 +245,26 @@ const Example = () => {
           table.setCreatingRow(true);
         }}
       >
-        Create New User
+        Criar novo
       </Button>
     ),
     state: {
-      isLoading: isLoading,
-      isSaving: false,
+      isLoading: isFetchingStaff,
+      isSaving: isCreating || isUpdating || isDeleting,
       showAlertBanner: false,
-      showProgressBars: false,
+      showProgressBars: isCreating,
     },
   });
 
   return <MantineReactTable table={table} />;
 };
 
-// replace to zod
-const validateRequired = (value: string) => !!value.length;
-const validateEmail = (email: string) =>
-  !!email.length &&
-  email
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-
-function validateUser(user: Staff) {
-  return {
-    firstName: !validateRequired(user.first_name)
-      ? "First Name is Required"
-      : "",
-    email: !validateEmail(user.email) ? "Incorrect Email Format" : "",
-  };
-}
-
 export default function Staff() {
   return (
     <SideMenu>
-      <Example />
+      <ModalsProvider>
+        <Table />
+      </ModalsProvider>
     </SideMenu>
   );
 }

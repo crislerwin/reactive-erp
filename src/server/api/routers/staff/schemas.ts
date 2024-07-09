@@ -6,11 +6,14 @@ export const commonSchema = z.object({
 
 export const createStaffMemberSchema = z.intersection(
   z.object({
-    first_name: z.string(),
+    first_name: z
+      .string()
+      .min(2, { message: "Nome deve ter no mínimo 2 caracteres" }),
     last_name: z.string().optional(),
-    email: z.string().email(),
-    password: z.string(),
-    role: z.enum(["ADMIN", "EMPLOYEE", "MANAGER", "OWNER"]),
+    email: z.string().email({ message: "Email inválido" }),
+    role: z.enum(["ADMIN", "EMPLOYEE", "MANAGER", "OWNER"], {
+      invalid_type_error: "Tipo de usuário inválido",
+    }),
   }),
   commonSchema
 );

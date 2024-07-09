@@ -50,6 +50,7 @@ const config = {
         argsIgnorePattern: "^_",
       },
     ],
+    "@typescript-eslint/no-unsafe-call": "off",
   },
 };
 module.exports = config;

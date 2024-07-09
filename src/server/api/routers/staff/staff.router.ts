@@ -1,8 +1,4 @@
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { createStaffMemberSchema, updateStaffMemberSchema } from "./schemas";
 import { z } from "zod";
@@ -47,7 +43,7 @@ export const staffRouter = createTRPCRouter({
       if (!branch)
         throw new TRPCError({ code: "NOT_FOUND", cause: "Branch not found" });
       const staffMember = await ctx.prisma.staff.findUnique({
-        where: { email: input.email, branch_id: input.branch_id, active: true },
+        where: { email: input.email, active: true },
       });
       if (staffMember)
         throw new TRPCError({
@@ -126,10 +122,5 @@ export const staffRouter = createTRPCRouter({
           cause: "Staff member not found",
         });
       return staffMember;
-    }),
-  hello: publicProcedure
-    .meta({ openapi: { method: "GET", path: "/staff/hello" } })
-    .query(async () => {
-      return Promise.resolve("Hello World");
     }),
 });

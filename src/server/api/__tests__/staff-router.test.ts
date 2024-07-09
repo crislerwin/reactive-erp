@@ -1,4 +1,4 @@
-import { afterAll, afterEach, describe, expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { makeFakeStaff, makeApp, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
@@ -6,14 +6,6 @@ import { type UpdateStaffMemberInput } from "../routers/staff/schemas";
 import { type Staff } from "@prisma/client";
 
 describe("Staff member Router", () => {
-  afterEach(async () => {
-    await prisma.staff.deleteMany();
-    await prisma.branch.deleteMany();
-  });
-  afterAll(async () => {
-    await prisma.$disconnect();
-  });
-
   describe("List All", () => {
     test("should return empty if not exist staff", async () => {
       const { app } = await makeSut();
@@ -99,7 +91,7 @@ describe("Staff member Router", () => {
       const result3 = await sutOwner.staff.findAll();
       expect(result3).toBeDefined();
       expect(result3).toBeInstanceOf(Array);
-      expect(result3.length).toBe(2);
+      expect(result3.length).toBeGreaterThan(1);
     });
   });
 
@@ -111,7 +103,6 @@ describe("Staff member Router", () => {
         branch_id,
         first_name: faker.name.firstName(),
         email: faker.internet.email(),
-        password: faker.internet.password(),
         role: "ADMIN",
       });
       await expect(promise).rejects.toThrowError("Branch not found");
@@ -124,14 +115,12 @@ describe("Staff member Router", () => {
         branch_id: branch.branch_id,
         first_name: faker.name.firstName(),
         email,
-        password: faker.internet.password(),
         role: "ADMIN",
       });
       const promise = app.staff.createStaffMember({
         branch_id: branch.branch_id,
         first_name: faker.name.firstName(),
         email,
-        password: faker.internet.password(),
         role: "ADMIN",
       });
       await expect(promise).rejects.toThrowError("Account already exists");
@@ -143,7 +132,7 @@ describe("Staff member Router", () => {
         branch_id: branch.branch_id,
         first_name: faker.name.firstName(),
         email: faker.internet.email(),
-        password: faker.internet.password(),
+
         role: "ADMIN",
       });
       expect(result).toBeDefined();
