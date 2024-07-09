@@ -1,17 +1,17 @@
 import { prisma } from "@/server/db";
 import { TRPCError, initTRPC } from "@trpc/server";
-import { OpenApiMeta } from "trpc-openapi";
+import { type OpenApiMeta } from "trpc-openapi";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { type Account, type PrismaClient } from "@prisma/client";
+import { type Staff, type PrismaClient } from "@prisma/client";
 import { getServerAuthSession } from "./auth";
 import { type AppRouter } from "./root";
 
 type CreateContextOptions = {
   prisma?: PrismaClient;
   session: {
-    account: Account;
+    account: Staff;
   };
 };
 
@@ -57,7 +57,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 
   return next({
     ctx: {
-      session: { ...ctx.session, user: ctx.session.account },
+      session: { ...ctx.session, account: ctx.session.account },
     },
   });
 });

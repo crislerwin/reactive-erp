@@ -19,15 +19,16 @@ model Branch {
   created_at    DateTime  @default(now())
   updated_at    DateTime? @updatedAt
   deleted_at    DateTime?
+
+  @@index([company_code])
 }
 
 model Staff {
   id         Int       @unique @default(autoincrement())
   branch_id  Int
-  account_id Int
   first_name String
   last_name  String?
-  account    Account   @relation(fields: [account_id], references: [account_id])
+  email      String    @unique
   role       String
   active     Boolean   @default(true)
   branch     Branch    @relation(fields: [branch_id], references: [branch_id])
@@ -36,20 +37,6 @@ model Staff {
   deleted_at DateTime?
 
   @@index([branch_id])
-  @@index([account_id])
-}
-
-model Account {
-  account_id    Int       @unique @default(autoincrement())
-  name          String
-  last_name     String?
-  email         String    @unique
-  password      String
-  staff_members Staff[]
-  created_at    DateTime  @default(now())
-  updated_at    DateTime? @updatedAt
-  deleted_at    DateTime?
-
   @@index([email])
 }
 

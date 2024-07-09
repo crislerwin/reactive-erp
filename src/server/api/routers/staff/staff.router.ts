@@ -5,6 +5,7 @@ import {
   createStaffMemberSchema,
   updateStaffMemberSchema,
 } from "./schemas";
+import { z } from "zod";
 
 export const staffRouter = createTRPCRouter({
   findAll: protectedProcedure
@@ -17,7 +18,12 @@ export const staffRouter = createTRPCRouter({
       if (!branch)
         throw new TRPCError({ code: "NOT_FOUND", cause: "Branch not found" });
 
-      return ctx.prisma.staff.findMany({ where: input });
+      return ctx.prisma.staff.findMany({
+        where: {
+          ...input,
+          active: true,
+        },
+      });
     }),
   createStaffMember: protectedProcedure
     .meta({ openapi: { method: "POST", path: "/staff" } })
@@ -29,27 +35,18 @@ export const staffRouter = createTRPCRouter({
 
       if (!branch)
         throw new TRPCError({ code: "NOT_FOUND", cause: "Branch not found" });
-      const existingAccount = await ctx.prisma.account.findUnique({
-        where: { email: input.email },
+      const staffMember = await ctx.prisma.staff.findUnique({
+        where: { email: input.email, branch_id: input.branch_id, active: true },
       });
-      if (existingAccount)
+      if (staffMember)
         throw new TRPCError({
           code: "BAD_REQUEST",
           cause: "Account already exists",
         });
 
-      const newAccount = await ctx.prisma.account.create({
-        data: {
-          email: input.email,
-          name: input.first_name,
-          last_name: input.last_name,
-          password: input.password,
-        },
-      });
-
       return ctx.prisma.staff.create({
         data: {
-          account_id: newAccount.account_id,
+          email: input.email,
           branch_id: input.branch_id,
           role: input.role,
           first_name: input.first_name,
@@ -70,6 +67,23 @@ export const staffRouter = createTRPCRouter({
           last_name: input.last_name,
           role: input.role,
         },
+      });
+    }),
+  softDeletedStaffMember: protectedProcedure
+    .meta({ openapi: { method: "DELETE", path: "/staff/:id" } })
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.staff.update({
+        where: { id: input.id },
+        data: { deleted_at: new Date(), active: false },
+      });
+    }),
+  getStaffMember: protectedProcedure
+    .meta({ openapi: { method: "GET", path: "/staff/:id" } })
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.staff.findUnique({
+        where: { id: input.id, active: true },
       });
     }),
 });

@@ -2,17 +2,19 @@ import { prisma } from "@/server/db";
 import { appRouter } from "../../root";
 import { createCaller } from "../../trpc";
 import { faker } from "@faker-js/faker";
-import { type Account } from "@prisma/client";
+import { type Staff } from "@prisma/client";
 
-export const makeFakeAccount = (): Account => ({
-  account_id: faker.datatype.number(),
+export const makeFakeAccount = (): Staff => ({
+  active: true,
+  id: faker.datatype.number(),
+  branch_id: faker.datatype.number(),
+  role: "ADMIN",
   email: faker.internet.email(),
-  created_at: new Date(),
-  updated_at: new Date(),
-  deleted_at: null,
   last_name: faker.name.lastName(),
-  name: faker.name.firstName(),
-  password: faker.internet.password(),
+  first_name: faker.name.firstName(),
+  created_at: faker.date.past(),
+  deleted_at: null,
+  updated_at: faker.date.recent(),
 });
 
 export const makeBranchRequest = () => ({
