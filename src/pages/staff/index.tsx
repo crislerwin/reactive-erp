@@ -15,7 +15,8 @@ import { trpc } from "@/utils/api";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
 import { createStaffMemberSchema } from "@/server/api/routers/staff/schemas";
 import { type ZodError } from "zod";
-import { ModalsProvider, modals } from "@mantine/modals";
+import { modals } from "@mantine/modals";
+
 function validateStaffMember(user: StaffType) {
   const errors: Record<string, string | undefined> = {};
 
@@ -38,14 +39,22 @@ const Table = () => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
-  const { data: staffMembers = [], isFetching: isFetchingStaff } =
-    trpc.staff.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
+  const {
+    data: staffMembers = [],
+    isFetching: isFetchingStaff,
+    isError: isGettingStaffError,
+  } = trpc.staff.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
   const { mutate: createStaffMember, isLoading: isCreating } =
     trpc.staff.createStaffMember.useMutation();
   const { mutate: updateStaffMember, isLoading: isUpdating } =
     trpc.staff.updateStaffMember.useMutation();
   const { mutate: deleteStaffMember, isLoading: isDeleting } =
     trpc.staff.softDeletedStaffMember.useMutation();
+
+  const { data: branches = [], isFetching: isFetchingBranches } =
+    trpc.branch.findAll.useQuery(undefined, {
+      refetchOnWindowFocus: false,
+    });
 
   const columns = useMemo<MRT_ColumnDef<StaffType>[]>(
     () => [
@@ -113,19 +122,33 @@ const Table = () => {
       },
       {
         accessorKey: "branch_id",
+        accessorFn: (originalRow) => String(originalRow.branch_id),
         header: "Filial",
-        enableEditing: false,
+        editVariant: "select",
+
+        Cell(props) {
+          const branch = branches.find(
+            (branch) =>
+              branch.branch_id === Number(props.row.original.branch_id)
+          );
+          return <div>{branch?.name}</div>;
+        },
+        mantineEditSelectProps: {
+          data: branches.map((branch) => ({
+            value: String(branch.branch_id),
+            label: branch.name,
+          })),
+          error: validationErrors?.branch_id,
+        },
       },
       {
         accessorKey: "active",
+        accessorFn: (row) => (row.active ? "Sim" : "Não"),
         header: "Ativo",
         enableEditing: false,
-        Cell(props) {
-          return <div>{String(props.row.original.active)}</div>;
-        },
       },
     ],
-    [validationErrors]
+    [branches, validationErrors]
   );
 
   const handleCreateUser: MRT_TableOptions<StaffType>["onCreatingRowSave"] = ({
@@ -174,14 +197,13 @@ const Table = () => {
     data: staffMembers,
     localization: MRT_Localization_PT_BR,
     createDisplayMode: "modal",
-
     editDisplayMode: "modal",
     enableEditing: true,
     getRowId: ({ id }) => String(id),
     mantineToolbarAlertBannerProps: isFetchingStaff
       ? {
           color: "red",
-          children: "Error loading data",
+          children: "Erro ao buscar usuários",
         }
       : undefined,
     mantineTableContainerProps: {
@@ -249,9 +271,9 @@ const Table = () => {
       </Button>
     ),
     state: {
-      isLoading: isFetchingStaff,
+      isLoading: isFetchingStaff || isFetchingBranches,
       isSaving: isCreating || isUpdating || isDeleting,
-      showAlertBanner: false,
+      showAlertBanner: isGettingStaffError,
       showProgressBars: isCreating,
     },
   });
@@ -262,9 +284,7 @@ const Table = () => {
 export default function Staff() {
   return (
     <SideMenu>
-      <ModalsProvider>
-        <Table />
-      </ModalsProvider>
+      <Table />
     </SideMenu>
   );
 }
