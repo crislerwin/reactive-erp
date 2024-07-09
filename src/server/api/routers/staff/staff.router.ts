@@ -27,7 +27,6 @@ export const staffRouter = createTRPCRouter({
       return ctx.prisma.staff.findMany({
         where: {
           branch_id: ctx.session.account.branch_id,
-          active: true,
           role: { in: allowedRoles },
         },
       });
@@ -43,7 +42,7 @@ export const staffRouter = createTRPCRouter({
       if (!branch)
         throw new TRPCError({ code: "NOT_FOUND", cause: "Branch not found" });
       const staffMember = await ctx.prisma.staff.findUnique({
-        where: { email: input.email, active: true },
+        where: { email: input.email },
       });
       if (staffMember)
         throw new TRPCError({
@@ -57,6 +56,8 @@ export const staffRouter = createTRPCRouter({
           branch_id: input.branch_id,
           role: input.role,
           first_name: input.first_name,
+          last_name: input.last_name,
+          active: input.active,
         },
       });
     }),
@@ -67,12 +68,13 @@ export const staffRouter = createTRPCRouter({
       return ctx.prisma.staff.update({
         where: {
           id: input.staff_id,
-          branch_id: input.branch_id,
         },
         data: {
           first_name: input.first_name,
           last_name: input.last_name,
+          active: input.active,
           role: input.role,
+          branch_id: input.branch_id,
         },
       });
     }),

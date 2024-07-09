@@ -14,6 +14,7 @@ export const createStaffMemberSchema = z.intersection(
     role: z.enum(["ADMIN", "EMPLOYEE", "MANAGER", "OWNER"], {
       invalid_type_error: "Tipo de usuário inválido",
     }),
+    active: z.boolean().default(true),
   }),
   commonSchema
 );
@@ -22,8 +23,8 @@ export const updateStaffMemberSchema = z.intersection(
     staff_id: z.number(),
     first_name: z.string().optional(),
     last_name: z.string().optional(),
-    password: z.string().optional(),
-    role: z.enum(["ADMIN", "EMPLOYEE", "MANAGER"]),
+    active: z.boolean().optional().default(true),
+    role: z.enum(["ADMIN", "EMPLOYEE", "MANAGER"]).optional(),
   }),
   commonSchema
 );

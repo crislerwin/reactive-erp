@@ -26,6 +26,8 @@ function validateStaffMember(user: StaffType) {
     createStaffMemberSchema.parse({
       ...user,
       branch_id: Number(user.branch_id),
+      active: Boolean(user.active),
+      last_name: user.last_name ?? "",
     });
   } catch (err) {
     const error = err as ZodError<StaffType>;
@@ -89,7 +91,6 @@ const Table = () => {
         header: "Sobrenome",
         mantineEditTextInputProps: {
           type: "email",
-          required: true,
           error: validationErrors?.lastName,
           onFocus: () =>
             setValidationErrors({
@@ -131,7 +132,6 @@ const Table = () => {
         accessorFn: (originalRow) => String(originalRow.branch_id),
         header: "Filial",
         editVariant: "select",
-
         Cell(props) {
           const branch = branches.find(
             (branch) =>
@@ -149,19 +149,20 @@ const Table = () => {
       },
       {
         accessorKey: "active",
-        accessorFn: (row) => {
-          if (row.active === undefined) return "";
-          return row.active ? "Sim" : "Não";
+        accessorFn: (row) => String(row.active),
+        Cell: ({ row }) => {
+          return row.original.active ? "Ativo" : "Inativo";
         },
         editVariant: "select",
-        enableEditing: false,
         mantineEditSelectProps: {
           data: [
-            { value: "true", label: "Sim" },
-            { value: "false", label: "Não" },
+            { value: "true", label: "Ativo" },
+            { value: "false", label: "Inativo" },
           ],
         },
+
         header: "Ativo",
+        error: validationErrors?.active,
       },
     ],
     [branches, validationErrors]
@@ -201,8 +202,14 @@ const Table = () => {
       return;
     }
     setValidationErrors({});
+
     createStaffMember(
-      { ...values, branch_id: Number(values.branch_id) },
+      {
+        ...values,
+        branch_id: Number(values.branch_id),
+        active: Boolean(values.active),
+        last_name: String(values.last_name ?? ""),
+      },
       {
         onSuccess: updateStaffListData,
         onError: handleErrors,
@@ -221,12 +228,14 @@ const Table = () => {
       return;
     }
     setValidationErrors({});
-
+    console.log(values);
     updateStaffMember(
       {
         ...values,
         staff_id: Number(values.id),
         branch_id: Number(values.branch_id),
+        active: values.active === "" || values.active === "true" ? true : false,
+        last_name: String(values.last_name ?? ""),
       },
       {
         onSuccess: (data) => {
@@ -310,8 +319,7 @@ const Table = () => {
     ),
 
     renderRowActions: ({ row, table }) => {
-      const isActionDisabled =
-        row.original.role === "OWNER" || !row.original.active;
+      const isActionDisabled = row.original.role === "OWNER";
 
       return (
         <>
