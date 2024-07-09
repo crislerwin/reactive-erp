@@ -7,11 +7,22 @@ import {
 } from "./schemas";
 import { z } from "zod";
 
+const allowedRoles = ["ADMIN", "MANAGER"];
+
 export const staffRouter = createTRPCRouter({
   findAll: protectedProcedure
     .meta({ method: "GET", path: "/staff" })
     .input(commonSchema)
     .query(async ({ ctx, input }) => {
+      if (ctx.session.account.role === "OWNER")
+        return ctx.prisma.staff.findMany();
+
+      if (!allowedRoles.includes(ctx.session.account.role))
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          cause: "You are not allowed to perform this action",
+        });
+
       const branch = await ctx.prisma.branch.findUnique({
         where: { branch_id: input.branch_id },
       });
@@ -22,6 +33,7 @@ export const staffRouter = createTRPCRouter({
         where: {
           ...input,
           active: true,
+          role: { in: allowedRoles },
         },
       });
     }),
@@ -73,6 +85,30 @@ export const staffRouter = createTRPCRouter({
     .meta({ openapi: { method: "DELETE", path: "/staff/:id" } })
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
+      const staffToDelete = await ctx.prisma.staff.findUnique({
+        where: { id: input.id, active: true },
+      });
+      if (!staffToDelete)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          cause: "Staff member not found",
+        });
+      if (staffToDelete.role === "OWNER")
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          cause: "You cannot delete an owner",
+        });
+
+      if (
+        staffToDelete.role === "ADMIN" &&
+        ctx.session.account.role !== "OWNER"
+      ) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          cause: "You are not allowed to perform this action",
+        });
+      }
+
       return ctx.prisma.staff.update({
         where: { id: input.id },
         data: { deleted_at: new Date(), active: false },

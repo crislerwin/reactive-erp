@@ -1,10 +1,19 @@
-import { describe, expect, test } from "vitest";
-import { makeSut } from "./__mocks__";
+import { afterAll, afterEach, describe, expect, test } from "vitest";
+import { makeFakeAccount, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 import { type UpdateStaffMemberInput } from "../routers/staff/schemas";
+import { type Staff } from "@prisma/client";
 
-describe("Staff Router", () => {
+describe("Staff member Router", () => {
+  afterEach(async () => {
+    await prisma.staff.deleteMany();
+    await prisma.branch.deleteMany();
+  });
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
   describe("List All", () => {
     test("should return empty if not exist staff", async () => {
       const sut = makeSut();
@@ -20,43 +29,93 @@ describe("Staff Router", () => {
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toBe(0);
     });
-  });
-  test("Should throw if branch not found", async () => {
-    const sut = makeSut();
-    const branch_id = faker.datatype.number();
-    const promise = sut.staff.findAll({ branch_id });
-    await expect(promise).rejects.toThrowError("Branch not found");
-  });
+    test("Should throw if branch not found", async () => {
+      const sut = makeSut();
+      const branch_id = faker.datatype.number();
+      const promise = sut.staff.findAll({ branch_id });
+      await expect(promise).rejects.toThrowError("Branch not found");
+    });
 
-  test("Should return staff list", async () => {
-    const sut = makeSut();
-    const branch = await prisma.branch.create({
-      data: {
-        name: faker.company.name(),
-        company_code: faker.helpers.fake("###-###-###"),
-        email: faker.internet.email(),
-      },
-    });
-    await prisma.staff.createMany({
-      data: [
-        {
-          branch_id: branch.branch_id,
+    test("Should return staff list on the same branch", async () => {
+      const sut = makeSut();
+      const branch = await prisma.branch.create({
+        data: {
+          name: faker.company.name(),
+          company_code: faker.helpers.fake("###-###-###"),
           email: faker.internet.email(),
-          first_name: faker.name.firstName(),
-          role: "ADMIN",
         },
-        {
-          branch_id: branch.branch_id,
-          email: faker.internet.email(),
-          first_name: faker.name.firstName(),
-          role: "ADMIN",
-        },
-      ],
+      });
+      await prisma.staff.createMany({
+        data: [
+          {
+            branch_id: branch.branch_id,
+            email: faker.internet.email(),
+            first_name: faker.name.firstName(),
+            role: "ADMIN",
+          },
+          {
+            branch_id: branch.branch_id,
+            email: faker.internet.email(),
+            first_name: faker.name.firstName(),
+            role: "ADMIN",
+          },
+        ],
+      });
+      const result = await sut.staff.findAll({ branch_id: branch.branch_id });
+      expect(result).toBeDefined();
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBe(2);
     });
-    const result = await sut.staff.findAll({ branch_id: branch.branch_id });
-    expect(result).toBeDefined();
-    expect(result).toBeInstanceOf(Array);
-    expect(result.length).toBe(2);
+    test("Should return staff list on different branch", async () => {
+      const sut = makeSut();
+      const branch1 = await prisma.branch.create({
+        data: {
+          name: faker.company.name(),
+          company_code: faker.helpers.fake("###-###-###"),
+          email: faker.internet.email(),
+        },
+      });
+      const branch2 = await prisma.branch.create({
+        data: {
+          name: faker.company.name(),
+          company_code: faker.helpers.fake("###-###-###"),
+          email: faker.internet.email(),
+        },
+      });
+      await prisma.staff.createMany({
+        data: [
+          {
+            branch_id: branch1.branch_id,
+            email: faker.internet.email(),
+            first_name: faker.name.firstName(),
+            role: "ADMIN",
+          },
+          {
+            branch_id: branch2.branch_id,
+            email: faker.internet.email(),
+            first_name: faker.name.firstName(),
+            role: "ADMIN",
+          },
+        ],
+      });
+      const result = await sut.staff.findAll({ branch_id: branch1.branch_id });
+      expect(result).toBeDefined();
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBe(1);
+
+      const result2 = await sut.staff.findAll({ branch_id: branch2.branch_id });
+      expect(result2).toBeDefined();
+      expect(result2).toBeInstanceOf(Array);
+      expect(result2.length).toBe(1);
+      const ownerAccount: Staff = { ...makeFakeAccount(), role: "OWNER" };
+      const sutOwner = makeSut(ownerAccount);
+      const result3 = await sutOwner.staff.findAll({
+        branch_id: branch2.branch_id,
+      });
+      expect(result3).toBeDefined();
+      expect(result3).toBeInstanceOf(Array);
+      expect(result3.length).toBe(2);
+    });
   });
 
   describe("Create Staff Member", () => {
@@ -209,7 +268,7 @@ describe("Staff Router", () => {
           branch_id: branch.branch_id,
           email: faker.internet.email(),
           first_name: faker.name.firstName(),
-          role: "ADMIN",
+          role: "MANAGER",
         },
       });
       const allStaff = await sut.staff.findAll({
@@ -251,6 +310,78 @@ describe("Staff Router", () => {
       expect(allDeletedStaff).toBeDefined();
       expect(allDeletedStaff).toBeInstanceOf(Array);
       expect(allDeletedStaff.length).toBe(0);
+    });
+    test("Should throw if staff member not found", async () => {
+      const sut = makeSut();
+      const id = faker.datatype.number();
+      const promise = sut.staff.softDeletedStaffMember({ id });
+      await expect(promise).rejects.toThrowError("Staff member not found");
+    });
+    test("Should throw if staff member already deleted", async () => {
+      const sut = makeSut();
+      const branch = await prisma.branch.create({
+        data: {
+          name: faker.company.name(),
+          company_code: faker.helpers.fake("###-###-###"),
+          email: faker.internet.email(),
+        },
+      });
+      const staff = await prisma.staff.create({
+        data: {
+          branch_id: branch.branch_id,
+          email: faker.internet.email(),
+          first_name: faker.name.firstName(),
+          role: "ADMIN",
+          deleted_at: new Date(),
+          active: false,
+        },
+      });
+      const promise = sut.staff.softDeletedStaffMember({ id: staff.id });
+      await expect(promise).rejects.toThrowError("Staff member not found");
+    });
+    test("Should throw if staff member is owner", async () => {
+      const ownerAccount: Staff = { ...makeFakeAccount(), role: "OWNER" };
+      const sut = makeSut(ownerAccount);
+      const branch = await prisma.branch.create({
+        data: {
+          name: faker.company.name(),
+          company_code: faker.helpers.fake("###-###-###"),
+          email: faker.internet.email(),
+        },
+      });
+      const staff = await prisma.staff.create({
+        data: {
+          branch_id: branch.branch_id,
+          email: faker.internet.email(),
+          first_name: faker.name.firstName(),
+          role: "OWNER",
+        },
+      });
+      const promise = sut.staff.softDeletedStaffMember({ id: staff.id });
+      await expect(promise).rejects.toThrowError("You cannot delete an owner");
+    });
+    test("Should throw if staff member is admin and not owner", async () => {
+      const ownerAccount: Staff = { ...makeFakeAccount(), role: "ADMIN" };
+      const sut = makeSut(ownerAccount);
+      const branch = await prisma.branch.create({
+        data: {
+          name: faker.company.name(),
+          company_code: faker.helpers.fake("###-###-###"),
+          email: faker.internet.email(),
+        },
+      });
+      const staff = await prisma.staff.create({
+        data: {
+          branch_id: branch.branch_id,
+          email: faker.internet.email(),
+          first_name: faker.name.firstName(),
+          role: "ADMIN",
+        },
+      });
+      const promise = sut.staff.softDeletedStaffMember({ id: staff.id });
+      await expect(promise).rejects.toThrowError(
+        "You are not allowed to perform this action"
+      );
     });
   });
 });
