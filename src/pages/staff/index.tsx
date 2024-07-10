@@ -8,30 +8,56 @@ import {
   useMantineReactTable,
 } from "mantine-react-table";
 import { useQueryClient } from "@tanstack/react-query";
-import { ActionIcon, Button, Flex, Stack, Title, Tooltip } from "@mantine/core";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+  ActionIcon,
+  Button,
+  Flex,
+  Stack,
+  Switch,
+  Title,
+  Tooltip,
+} from "@mantine/core";
+import { IconEdit, IconNews, IconTrash } from "@tabler/icons-react";
 import { SideMenu } from "@/components/SideMenu";
 import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
-import { createStaffMemberSchema } from "@/server/api/routers/staff/schemas";
+import {
+  createStaffMemberSchema,
+  updateStaffMemberSchema,
+} from "@/server/api/routers/staff/schemas";
 import { type ZodError } from "zod";
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 
-function validateStaffMember(user: StaffType) {
+function validateStaffMember({
+  staffMember,
+  isCreating = true,
+}: {
+  staffMember: StaffType;
+  isCreating?: boolean;
+}) {
   const errors: Record<string, string | undefined> = {};
-
   try {
-    createStaffMemberSchema.parse({
-      ...user,
-      branch_id: Number(user.branch_id),
-      active: Boolean(user.active),
-      last_name: user.last_name ?? "",
-    });
+    const normalizedUser: StaffType = {
+      ...staffMember,
+      branch_id: Number(staffMember.branch_id),
+      id: Number(staffMember.id),
+      active:
+        String(staffMember.active) === "" ||
+        String(staffMember.active) === "true"
+          ? true
+          : false,
+      last_name: staffMember.last_name ?? "",
+    };
+
+    isCreating
+      ? createStaffMemberSchema.parse(normalizedUser)
+      : updateStaffMemberSchema.parse(normalizedUser);
   } catch (err) {
     const error = err as ZodError<StaffType>;
     if (error.errors) {
+      console.log(error.errors);
       error.errors.forEach((error) => {
         if (error.path) {
           errors[String(error.path)] = error.message;
@@ -46,6 +72,8 @@ const Table = () => {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
+
+  const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
   const {
     data: staffMembers = [],
@@ -102,6 +130,7 @@ const Table = () => {
       {
         accessorKey: "email",
         header: "Email",
+        enableEditing: !isEditing,
         mantineEditTextInputProps: {
           type: "email",
           required: true,
@@ -117,8 +146,8 @@ const Table = () => {
         accessorKey: "role",
         header: "Função",
         editVariant: "select",
-
         mantineEditSelectProps: {
+          required: true,
           data: [
             { value: "ADMIN", label: "Administrador" },
             { value: "MANAGER", label: "Gerente" },
@@ -140,32 +169,41 @@ const Table = () => {
           return <div>{branch?.name}</div>;
         },
         mantineEditSelectProps: {
+          required: true,
+          error: validationErrors?.branch_id,
           data: branches.map((branch) => ({
             value: String(branch.branch_id),
             label: branch.name,
           })),
-          error: validationErrors?.branch_id,
         },
       },
       {
         accessorKey: "active",
         accessorFn: (row) => String(row.active),
         Cell: ({ row }) => {
-          return row.original.active ? "Ativo" : "Inativo";
+          return (
+            <Switch
+              labelPosition="left"
+              label={row.original.active ? "Ativo" : "Inativo"}
+              checked={row.original.active}
+            />
+          );
         },
         editVariant: "select",
         mantineEditSelectProps: {
+          required: true,
+          error: validationErrors?.active,
           data: [
             { value: "true", label: "Ativo" },
             { value: "false", label: "Inativo" },
           ],
         },
 
-        header: "Ativo",
+        header: "Status",
         error: validationErrors?.active,
       },
     ],
-    [branches, validationErrors]
+    [branches, isEditing, validationErrors]
   );
   const updateStaffListData = (
     newData: StaffType,
@@ -196,7 +234,9 @@ const Table = () => {
     values,
     exitCreatingMode,
   }) => {
-    const newValidationErrors = validateStaffMember(values);
+    const newValidationErrors = validateStaffMember({
+      staffMember: values,
+    });
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationErrors(newValidationErrors);
       return;
@@ -222,17 +262,19 @@ const Table = () => {
     values,
     table,
   }) => {
-    const newValidationErrors = validateStaffMember(values);
+    const newValidationErrors = validateStaffMember({
+      staffMember: values,
+      isCreating: false,
+    });
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationErrors(newValidationErrors);
       return;
     }
     setValidationErrors({});
-    console.log(values);
     updateStaffMember(
       {
         ...values,
-        staff_id: Number(values.id),
+        id: Number(values.id),
         branch_id: Number(values.branch_id),
         active: values.active === "" || values.active === "true" ? true : false,
         last_name: String(values.last_name ?? ""),
@@ -250,8 +292,8 @@ const Table = () => {
 
   const openDeleteConfirmModal = (row: MRT_Row<StaffType>) => {
     modals.openConfirmModal({
-      title: "Deletar usuário",
-      children: `Vocé tem certeza que quer deletar o usuàrio ${
+      title: "Deletar colaborador",
+      children: `Vocé tem certeza que quer deletar o colaborador ${
         row.original.first_name
       } ${row.original.last_name ?? ""}`,
       labels: { confirm: "Deletar", cancel: "Cancelar" },
@@ -297,11 +339,14 @@ const Table = () => {
     },
     onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreateUser,
-    onEditingRowCancel: () => setValidationErrors({}),
+    onEditingRowCancel: () => {
+      setIsEditing(false);
+      setValidationErrors({});
+    },
     onEditingRowSave: handleSaveUser,
     renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
-        <Title order={3}>Criar novo</Title>
+        <Title order={3}>Criar colaborador</Title>
         {internalEditComponents}
         <Flex justify="flex-end" mt="xl">
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -326,7 +371,12 @@ const Table = () => {
           {isActionDisabled ? null : (
             <Flex gap="md">
               <Tooltip label="Editar">
-                <ActionIcon onClick={() => table.setEditingRow(row)}>
+                <ActionIcon
+                  onClick={() => {
+                    setIsEditing(true);
+                    table.setEditingRow(row);
+                  }}
+                >
                   <IconEdit />
                 </ActionIcon>
               </Tooltip>
@@ -344,14 +394,17 @@ const Table = () => {
       );
     },
     renderTopToolbarCustomActions: ({ table }) => (
-      <Button
-        variant="outline"
-        onClick={() => {
-          table.setCreatingRow(true);
-        }}
-      >
-        Criar novo
-      </Button>
+      <Tooltip withArrow label="Novo colaborador">
+        <Button
+          variant="outline"
+          onClick={() => {
+            table.setCreatingRow(true);
+          }}
+          rightIcon={<IconNews />}
+        >
+          Novo
+        </Button>
+      </Tooltip>
     ),
     state: {
       isLoading: isFetchingStaff || isFetchingBranches,

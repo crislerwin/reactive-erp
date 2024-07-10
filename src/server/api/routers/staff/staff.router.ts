@@ -67,7 +67,7 @@ export const staffRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.staff.update({
         where: {
-          id: input.staff_id,
+          id: input.id,
         },
         data: {
           first_name: input.first_name,
