@@ -6,6 +6,7 @@
     "checkJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "noImplicitAny": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -19,7 +20,12 @@
     "baseUrl": "src",
     "paths": {
       "@/*": ["*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     ".eslintrc.cjs",
@@ -29,7 +35,8 @@
     "**/*.cjs",
     "**/*.mjs",
     "**/*.config.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

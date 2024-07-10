@@ -1,2 +1,2 @@
-export * from "./private/providers.router";
-export * from "./private/institutions.router";
+export * from "./staff/staff.router";
+export * from "./branch/branch.router";

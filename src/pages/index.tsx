@@ -1,10 +1,18 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { SideBar } from "@/components/SideBar";
+import { SideMenu } from "@/components/SideMenu";
+
+import * as React from "react";
+import { ChartComponent } from "@/components/SideMenu/Chart";
 
 const Home = () => {
-  return <SideBar>HEllo</SideBar>;
+  return (
+    <SideMenu>
+      <ChartComponent />
+    </SideMenu>
+  );
 };
+
 export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   const { userId } = getAuth(ctx.req);
   if (userId) {

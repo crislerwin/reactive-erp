@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/router";
-import { useMenuItems, useSideBar } from "./hooks";
+import { useSideMenu } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { Avatar, Button, Menu } from "@mantine/core";
@@ -10,6 +10,8 @@ import {
   IconLogout,
   IconSearch,
   IconApiApp,
+  IconHome,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 
 import CommandPalette, {
@@ -18,34 +20,25 @@ import CommandPalette, {
 } from "../SearchBar";
 import { makeFilterItems } from "./utils";
 
-export type SideBarProps = {
-  children?: React.ReactNode;
-};
-
-export const SideBar: React.FC<SideBarProps> = ({ children }) => {
+export const SideMenu = ({ children }: React.PropsWithChildren) => {
   const { user } = useClerk();
-  const { open, setOpen } = useSideBar();
+  const { open, setOpen } = useSideMenu();
   const { signOut } = useClerk();
   const [openSearch, setOpenSearch] = useState<boolean>(false);
   const router = useRouter();
-  const { route } = router;
-  const menuItems = useMenuItems();
+  const { route, pathname } = router;
   const [search, setSearch] = useState("");
 
   useHandleOpenCommandPalette(setOpenSearch);
 
   const filterItems = makeFilterItems(search);
 
-  const handleRedirect = () => {
+  const handleRedirect = async () => {
     if (!user) return;
-    router
-      .push({
-        pathname: "/account",
-        query: { userId: user.id },
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    await router.push({
+      pathname: "/account",
+      query: { userId: user.id },
+    });
   };
 
   return (
@@ -153,7 +146,23 @@ export const SideBar: React.FC<SideBarProps> = ({ children }) => {
         >
           <IconApiApp width={24} height={24} />
         </div>
-        <MenuItems items={menuItems} open={open} />
+        <MenuItems
+          items={[
+            {
+              icon: <IconHome className="h-4 w-4" />,
+              label: "Home",
+              href: "/",
+              selected: pathname === "/",
+            },
+            {
+              icon: <IconUsersGroup className="h-4 w-4" />,
+              label: "Equipe",
+              href: "/staff",
+              selected: pathname === "/staff",
+            },
+          ]}
+          open={open}
+        />
       </aside>
       <div
         className={`content ${
