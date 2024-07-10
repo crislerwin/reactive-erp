@@ -158,7 +158,8 @@ describe("Staff member Router", () => {
 
       const memberToUpdate: UpdateStaffMemberInput = {
         branch_id: branch.branch_id,
-        staff_id: staff.id,
+        id: staff.id,
+        active: true,
         first_name: faker.name.firstName(),
         role: "MANAGER",
       };
