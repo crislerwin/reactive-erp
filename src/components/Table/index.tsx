@@ -14,8 +14,8 @@ import { modals } from "@mantine/modals";
 interface CustomTableProps<T extends Record<string, unknown>> {
   data: T[];
   columns: MRT_ColumnDef<T>[];
-  tableOptions: MRT_TableOptions<T>;
-  onDelete: (id: string | number) => void;
+  tableOptions?: Partial<MRT_TableOptions<T>>;
+  onDelete: (row: MRT_Row<T>) => void;
   isLoading?: boolean;
   error?: boolean;
   enableEditing?: boolean;
@@ -37,7 +37,7 @@ export default function CustomTable<T extends { id: string | number }>({
       labels: { confirm: "Deletar", cancel: "Cancelar" },
       confirmProps: { variant: "filled", color: "red" },
       cancelProps: { variant: "outline" },
-      onConfirm: () => onDelete(row.original.id),
+      onConfirm: () => onDelete(row),
     });
   };
 

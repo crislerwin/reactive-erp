@@ -1,18 +1,27 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { MantineTable } from ".";
+import CustomTable from ".";
 import { faker } from "@faker-js/faker";
+import { ModalsProvider } from "@mantine/modals";
+import React from "react";
 
-const meta: Meta<typeof MantineTable> = {
+const meta: Meta<typeof CustomTable> = {
   title: "Components/Table",
-  component: MantineTable,
+  component: CustomTable,
   tags: ["autodocs"],
   argTypes: {},
 };
 
 export default meta;
-type Story = StoryObj<typeof MantineTable>;
+type Story = StoryObj<typeof CustomTable>;
 
 export const Primary: Story = {
+  decorators: [
+    (Story) => (
+      <ModalsProvider>
+        <Story />
+      </ModalsProvider>
+    ),
+  ],
   args: {
     columns: [
       {
@@ -37,6 +46,7 @@ export const Primary: Story = {
       },
     ],
     data: Array.from({ length: 10 }, () => ({
+      id: faker.datatype.uuid(),
       cnpj: faker.datatype.number(),
       email: faker.internet.email(),
       fantasyName: faker.company.name(),

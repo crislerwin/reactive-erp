@@ -29,6 +29,7 @@ import {
 import { type ZodError } from "zod";
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
+import CustomTable from "@/components/Table";
 
 function validateStaffMember({
   staffMember,
@@ -318,103 +319,20 @@ const Table = () => {
     });
   };
 
-  const table = useMantineReactTable({
-    columns,
-    data: staffMembers,
-    localization: MRT_Localization_PT_BR,
-    createDisplayMode: "modal",
-    editDisplayMode: "modal",
-    enableEditing: true,
-    getRowId: ({ id }) => String(id),
-    mantineToolbarAlertBannerProps: isFetchingStaff
-      ? {
-          color: "red",
-          children: "Erro ao buscar usuários",
-        }
-      : undefined,
-    mantineTableContainerProps: {
-      sx: {
-        minHeight: "500px",
-      },
-    },
-    onCreatingRowCancel: () => setValidationErrors({}),
-    onCreatingRowSave: handleCreateUser,
-    onEditingRowCancel: () => {
-      setIsEditing(false);
-      setValidationErrors({});
-    },
-    onEditingRowSave: handleSaveUser,
-    renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
-      <Stack>
-        <Title order={3}>Criar colaborador</Title>
-        {internalEditComponents}
-        <Flex justify="flex-end" mt="xl">
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </Flex>
-      </Stack>
-    ),
-    renderEditRowModalContent: ({ table, row, internalEditComponents }) => (
-      <Stack>
-        <Title order={3}>Editar</Title>
-        {internalEditComponents}
-        <Flex justify="flex-end" mt="xl">
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </Flex>
-      </Stack>
-    ),
-
-    renderRowActions: ({ row, table }) => {
-      const isActionDisabled = row.original.role === "OWNER";
-
-      return (
-        <>
-          {isActionDisabled ? null : (
-            <Flex gap="md">
-              <Tooltip label="Editar">
-                <ActionIcon
-                  onClick={() => {
-                    setIsEditing(true);
-                    table.setEditingRow(row);
-                  }}
-                >
-                  <IconEdit />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label="Excluir">
-                <ActionIcon
-                  color="red"
-                  onClick={() => openDeleteConfirmModal(row)}
-                >
-                  <IconTrash />
-                </ActionIcon>
-              </Tooltip>
-            </Flex>
-          )}
-        </>
-      );
-    },
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Tooltip withArrow label="Novo colaborador">
-        <Button
-          variant="outline"
-          onClick={() => {
-            table.setCreatingRow(true);
-          }}
-          rightIcon={<IconNews />}
-        >
-          Novo
-        </Button>
-      </Tooltip>
-    ),
-    state: {
-      isLoading: isFetchingStaff || isFetchingBranches,
-      isSaving: isCreating || isUpdating || isDeleting,
-      showAlertBanner: isGettingStaffError,
-      showProgressBars: isCreating,
-    },
-  });
-
-  return <MantineReactTable table={table} />;
+  return (
+    <CustomTable
+      columns={columns}
+      data={staffMembers}
+      tableOptions={{
+        onCreatingRowSave: handleCreateUser,
+        onEditingRowSave: handleSaveUser,
+      }}
+      onDelete={openDeleteConfirmModal}
+      isLoading={isFetchingStaff || isCreating || isUpdating || isDeleting}
+      error={isGettingStaffError}
+      enableEditing={!isEditing}
+    />
+  );
 };
 
 export default function Staff() {

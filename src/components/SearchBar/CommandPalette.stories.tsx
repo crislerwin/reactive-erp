@@ -40,7 +40,7 @@ const filteredItems = filterItems(
       ],
     },
   ],
-  ""
+  "",
 );
 
 export const Primary: Story = {
