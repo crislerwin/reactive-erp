@@ -2,8 +2,12 @@ import { getAuth } from "@clerk/nextjs/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { SideMenu } from "@/components/SideMenu";
 
+const ChartComponent = dynamic(() => import("@/components/Chart"), {
+  ssr: false,
+});
+
 import * as React from "react";
-import { ChartComponent } from "@/components/SideMenu/Chart";
+import dynamic from "next/dynamic";
 
 const Home = () => {
   return (

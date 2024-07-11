@@ -9,6 +9,18 @@ export const createBranchSchema = z.object({
   company_code: z.string(),
   attributes: z.record(z.string()).optional(),
 });
+
+export const updateBranchSchema = z.object({
+  branch_id: z.number(),
+  name: z.string().optional(),
+  logo_url: z.string().optional(),
+  email: z.string().optional(),
+  company_code: z.string().optional(),
+  attributes: z.record(z.string()).optional(),
+});
+
+const allowedRoles = ["ADMIN", "MANAGER", "OWNER"];
+
 const validateRole = (role: string) => {
   if (!allowedRoles.includes(role))
     throw new TRPCError({
@@ -16,7 +28,7 @@ const validateRole = (role: string) => {
       cause: "You are not allowed to perform this action",
     });
 };
-const allowedRoles = ["ADMIN", "MANAGER", "OWNER"];
+
 export const branchRouter = createTRPCRouter({
   findAll: protectedProcedure
     .meta({ method: "GET", path: "/branch" })
