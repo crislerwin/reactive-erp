@@ -1,79 +1,34 @@
 import { useMemo, useState } from "react";
 import {
-  MRT_EditActionButtons,
-  MantineReactTable,
   type MRT_ColumnDef,
   type MRT_Row,
   type MRT_TableOptions,
-  useMantineReactTable,
 } from "mantine-react-table";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  ActionIcon,
-  Button,
-  Flex,
-  Stack,
-  Switch,
-  Title,
-  Tooltip,
-} from "@mantine/core";
-import { IconEdit, IconNews, IconTrash } from "@tabler/icons-react";
+import { Switch } from "@mantine/core";
 import { SideMenu } from "@/components/SideMenu";
 import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
-import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
-import {
-  createStaffMemberSchema,
-  updateStaffMemberSchema,
-} from "@/server/api/routers/staff/schemas";
-import { type ZodError } from "zod";
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
+import CustomTable from "@/components/Table";
+import { validateData } from "@/components/Table/utils";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import {
+  updateStaffMemberSchema,
+  createStaffMemberSchema,
+  type DefaultPageProps,
+  managerRoles,
+} from "@/common/schemas";
+import { getServerAuthSession } from "@/server/api/auth";
 
-function validateStaffMember({
-  staffMember,
-  isCreating = true,
-}: {
-  staffMember: StaffType;
-  isCreating?: boolean;
-}) {
-  const errors: Record<string, string | undefined> = {};
-  try {
-    const normalizedUser: StaffType = {
-      ...staffMember,
-      branch_id: Number(staffMember.branch_id),
-      id: Number(staffMember.id),
-      active:
-        String(staffMember.active) === "" ||
-        String(staffMember.active) === "true"
-          ? true
-          : false,
-      last_name: staffMember.last_name ?? "",
-    };
+type StaffPageProps = DefaultPageProps;
 
-    isCreating
-      ? createStaffMemberSchema.parse(normalizedUser)
-      : updateStaffMemberSchema.parse(normalizedUser);
-  } catch (err) {
-    const error = err as ZodError<StaffType>;
-    if (error.errors) {
-      console.log(error.errors);
-      error.errors.forEach((error) => {
-        if (error.path) {
-          errors[String(error.path)] = error.message;
-        }
-      });
-    }
-  }
-  return errors;
-}
-
-const Table = () => {
+function Staff({ role }: StaffPageProps) {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
 
-  const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
   const {
     data: staffMembers = [],
@@ -130,7 +85,6 @@ const Table = () => {
       {
         accessorKey: "email",
         header: "Email",
-        enableEditing: !isEditing,
         mantineEditTextInputProps: {
           type: "email",
           required: true,
@@ -203,7 +157,7 @@ const Table = () => {
         error: validationErrors?.active,
       },
     ],
-    [branches, isEditing, validationErrors]
+    [branches, validationErrors]
   );
   const updateStaffListData = (
     newData: StaffType,
@@ -234,9 +188,7 @@ const Table = () => {
     values,
     exitCreatingMode,
   }) => {
-    const newValidationErrors = validateStaffMember({
-      staffMember: values,
-    });
+    const newValidationErrors = validateData(values, createStaffMemberSchema);
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationErrors(newValidationErrors);
       return;
@@ -262,10 +214,7 @@ const Table = () => {
     values,
     table,
   }) => {
-    const newValidationErrors = validateStaffMember({
-      staffMember: values,
-      isCreating: false,
-    });
+    const newValidationErrors = validateData(values, updateStaffMemberSchema);
     if (Object.values(newValidationErrors).some((error) => error)) {
       setValidationErrors(newValidationErrors);
       return;
@@ -317,110 +266,54 @@ const Table = () => {
         ),
     });
   };
-
-  const table = useMantineReactTable({
-    columns,
-    data: staffMembers,
-    localization: MRT_Localization_PT_BR,
-    createDisplayMode: "modal",
-    editDisplayMode: "modal",
-    enableEditing: true,
-    getRowId: ({ id }) => String(id),
-    mantineToolbarAlertBannerProps: isFetchingStaff
-      ? {
-          color: "red",
-          children: "Erro ao buscar usuários",
-        }
-      : undefined,
-    mantineTableContainerProps: {
-      sx: {
-        minHeight: "500px",
-      },
-    },
-    onCreatingRowCancel: () => setValidationErrors({}),
-    onCreatingRowSave: handleCreateUser,
-    onEditingRowCancel: () => {
-      setIsEditing(false);
-      setValidationErrors({});
-    },
-    onEditingRowSave: handleSaveUser,
-    renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
-      <Stack>
-        <Title order={3}>Criar colaborador</Title>
-        {internalEditComponents}
-        <Flex justify="flex-end" mt="xl">
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </Flex>
-      </Stack>
-    ),
-    renderEditRowModalContent: ({ table, row, internalEditComponents }) => (
-      <Stack>
-        <Title order={3}>Editar</Title>
-        {internalEditComponents}
-        <Flex justify="flex-end" mt="xl">
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </Flex>
-      </Stack>
-    ),
-
-    renderRowActions: ({ row, table }) => {
-      const isActionDisabled = row.original.role === "OWNER";
-
-      return (
-        <>
-          {isActionDisabled ? null : (
-            <Flex gap="md">
-              <Tooltip label="Editar">
-                <ActionIcon
-                  onClick={() => {
-                    setIsEditing(true);
-                    table.setEditingRow(row);
-                  }}
-                >
-                  <IconEdit />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label="Excluir">
-                <ActionIcon
-                  color="red"
-                  onClick={() => openDeleteConfirmModal(row)}
-                >
-                  <IconTrash />
-                </ActionIcon>
-              </Tooltip>
-            </Flex>
-          )}
-        </>
-      );
-    },
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Tooltip withArrow label="Novo colaborador">
-        <Button
-          variant="outline"
-          onClick={() => {
-            table.setCreatingRow(true);
-          }}
-          rightIcon={<IconNews />}
-        >
-          Novo
-        </Button>
-      </Tooltip>
-    ),
-    state: {
-      isLoading: isFetchingStaff || isFetchingBranches,
-      isSaving: isCreating || isUpdating || isDeleting,
-      showAlertBanner: isGettingStaffError,
-      showProgressBars: isCreating,
-    },
-  });
-
-  return <MantineReactTable table={table} />;
-};
-
-export default function Staff() {
   return (
-    <SideMenu>
-      <Table />
+    <SideMenu role={role}>
+      <CustomTable
+        columns={columns}
+        data={staffMembers}
+        tableOptions={{
+          onCreatingRowSave: handleCreateUser,
+          onEditingRowSave: handleSaveUser,
+        }}
+        openDeleteConfirmModal={openDeleteConfirmModal}
+        isLoading={
+          isFetchingStaff ||
+          isCreating ||
+          isUpdating ||
+          isDeleting ||
+          isFetchingBranches
+        }
+        error={isGettingStaffError}
+      />
     </SideMenu>
   );
 }
+export async function getServerSideProps(ctx: CreateNextContextOptions) {
+  const staffMember = await getServerAuthSession(ctx);
+  if (!staffMember) {
+    return {
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
+      },
+    };
+  }
+  if (!managerRoles.includes(staffMember.role)) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      email: staffMember.email,
+      role: staffMember.role,
+      id: staffMember.id,
+    },
+  };
+}
+
+export default Staff;

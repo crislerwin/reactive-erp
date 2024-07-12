@@ -1,6 +1,9 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { createStaffMemberSchema, updateStaffMemberSchema } from "./schemas";
+import {
+  createStaffMemberSchema,
+  updateStaffMemberSchema,
+} from "@/common/schemas";
 import { z } from "zod";
 
 const allowedRoles = ["ADMIN", "MANAGER"];
@@ -10,7 +13,7 @@ export const staffRouter = createTRPCRouter({
     .meta({ method: "GET", path: "/staff" })
     .query(async ({ ctx }) => {
       if (ctx.session.account.role === "OWNER")
-        return ctx.prisma.staff.findMany({ where: { deleted_at: null } });
+        return ctx.prisma.staff.findMany({ include: { branch: true } });
 
       if (!allowedRoles.includes(ctx.session.account.role))
         throw new TRPCError({
