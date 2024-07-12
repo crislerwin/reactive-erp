@@ -1,2 +1,2 @@
-export * from "./staff/staff.router";
-export * from "./branch/branch.router";
+export * from "./staff-router";
+export * from "./branch-router";

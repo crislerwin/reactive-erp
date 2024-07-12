@@ -34,7 +34,7 @@ describe("Branch router", () => {
     });
   });
   describe("CREATE branch", () => {
-    it.only("should create a new branch", async () => {
+    it("should create a new branch", async () => {
       const { app } = await makeSut();
       const branch = await app.branch.createBranch({
         name: faker.company.name(),
@@ -122,6 +122,54 @@ describe("Branch router", () => {
       });
       const promisses = app.branch.deleteBranch({
         branch_id: 1,
+      });
+      await expect(promisses).rejects.toThrowError(
+        "You are not allowed to perform this action"
+      );
+    });
+  });
+  describe("Update Branch", () => {
+    it("should update a branch", async () => {
+      const { app } = await makeSut();
+      const branchData = {
+        name: faker.company.name(),
+        company_code: faker.random.alphaNumeric(10),
+        email: faker.internet.email(),
+      };
+      const updatedBranchRequest = {
+        name: faker.company.name(),
+        company_code: faker.random.alphaNumeric(10),
+        email: faker.internet.email(),
+      };
+      const branch = await app.branch.createBranch(branchData);
+
+      const updatedBranch = await app.branch.updateBranch({
+        branch_id: branch.branch_id,
+        ...updatedBranchRequest,
+      });
+      expect(updatedBranch).toMatchObject(updatedBranchRequest);
+    });
+    it("should return an error if the user is not allowed to perform this action", async () => {
+      const app = makeApp({
+        branch_id: 1,
+        staff: {
+          active: true,
+          id: 1,
+          branch_id: 1,
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+          email: faker.internet.email(),
+          first_name: faker.name.firstName(),
+          last_name: faker.name.lastName(),
+          role: "EMPLOYEE",
+        },
+      });
+      const promisses = app.branch.updateBranch({
+        branch_id: 1,
+        name: faker.company.name(),
+        company_code: faker.random.alphaNumeric(10),
+        email: faker.internet.email(),
       });
       await expect(promisses).rejects.toThrowError(
         "You are not allowed to perform this action"

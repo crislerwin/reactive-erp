@@ -19,8 +19,14 @@ import CommandPalette, {
   useHandleOpenCommandPalette,
 } from "../SearchBar";
 import { makeFilterItems } from "./utils";
+import { StoreIcon } from "lucide-react";
 
-export const SideMenu = ({ children }: React.PropsWithChildren) => {
+type SideMenuProps = {
+  children: React.ReactNode;
+  role?: string;
+};
+
+export const SideMenu = ({ children }: SideMenuProps) => {
   const { user } = useClerk();
   const { open, setOpen } = useSideMenu();
   const { signOut } = useClerk();
@@ -159,6 +165,12 @@ export const SideMenu = ({ children }: React.PropsWithChildren) => {
               label: "Equipe",
               href: "/staff",
               selected: pathname === "/staff",
+            },
+            {
+              icon: <StoreIcon className="h-4 w-4" />,
+              label: "Filial",
+              href: "/branch",
+              selected: pathname === "/branch",
             },
           ]}
           open={open}

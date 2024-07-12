@@ -1,23 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-
-export const createBranchSchema = z.object({
-  name: z.string(),
-  logo_url: z.string().optional(),
-  email: z.string(),
-  company_code: z.string(),
-  attributes: z.record(z.string()).optional(),
-});
-
-export const updateBranchSchema = z.object({
-  branch_id: z.number(),
-  name: z.string().optional(),
-  logo_url: z.string().optional(),
-  email: z.string().optional(),
-  company_code: z.string().optional(),
-  attributes: z.record(z.string()).optional(),
-});
+import { createBranchSchema, updateBranchSchema } from "@/common/schemas";
 
 const allowedRoles = ["ADMIN", "MANAGER", "OWNER"];
 
@@ -30,16 +14,11 @@ const validateRole = (role: string) => {
 };
 
 export const branchRouter = createTRPCRouter({
-  findAll: protectedProcedure
-    .meta({ method: "GET", path: "/branch" })
-    .query(async ({ ctx }) => {
-      validateRole(ctx.session.account.role);
-      return ctx.prisma.branch.findMany({
-        where: { deleted_at: null },
-      });
-    }),
+  findAll: protectedProcedure.query(async ({ ctx }) => {
+    validateRole(ctx.session.account.role);
+    return ctx.prisma.branch.findMany();
+  }),
   createBranch: protectedProcedure
-    .meta({ method: "POST", path: "/branch" })
     .input(createBranchSchema)
     .mutation(async ({ ctx, input }) => {
       validateRole(ctx.session.account.role);
@@ -54,13 +33,27 @@ export const branchRouter = createTRPCRouter({
       });
     }),
   deleteBranch: protectedProcedure
-    .meta({ method: "DELETE", path: "/branch" })
     .input(z.object({ branch_id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       validateRole(ctx.session.account.role);
       return ctx.prisma.branch.update({
         where: { branch_id: input.branch_id },
         data: { deleted_at: new Date() },
+      });
+    }),
+  updateBranch: protectedProcedure
+    .input(updateBranchSchema)
+    .mutation(async ({ ctx, input }) => {
+      validateRole(ctx.session.account.role);
+      return ctx.prisma.branch.update({
+        where: { branch_id: input.branch_id },
+        data: {
+          name: input.name,
+          logo_url: input.logo_url,
+          company_code: input.company_code,
+          email: input.email,
+          attributes: input.attributes,
+        },
       });
     }),
 });

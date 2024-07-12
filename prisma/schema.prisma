@@ -11,8 +11,8 @@ datasource db {
 model Branch {
   branch_id     Int       @unique @default(autoincrement())
   name          String
-  email         String
-  company_code  String
+  email         String    @unique
+  company_code  String    @unique
   staff_members Staff[]
   attributes    Json?
   logo_url      String?
@@ -21,6 +21,8 @@ model Branch {
   deleted_at    DateTime?
 
   @@index([company_code])
+  @@index([email])
+  @@index([branch_id])
 }
 
 model Staff {

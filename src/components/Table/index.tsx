@@ -1,7 +1,6 @@
 import React from "react";
 import {
   useMantineReactTable,
-  type MRT_ColumnDef,
   type MRT_TableOptions,
   type MRT_Row,
 } from "mantine-react-table";
@@ -9,38 +8,26 @@ import { MantineReactTable, MRT_EditActionButtons } from "mantine-react-table";
 import { Button, Tooltip, Stack, Title, Flex, ActionIcon } from "@mantine/core";
 import { IconEdit, IconTrash, IconNews } from "@tabler/icons-react";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
-import { modals } from "@mantine/modals";
 
 interface CustomTableProps<T extends Record<string, unknown>> {
   data: T[];
-  columns: MRT_ColumnDef<T>[];
+  columns: MRT_TableOptions<T>["columns"];
   tableOptions?: Partial<MRT_TableOptions<T>>;
-  onDelete: (row: MRT_Row<T>) => void;
   isLoading?: boolean;
   error?: boolean;
+  openDeleteConfirmModal: (row: MRT_Row<T>) => void;
   enableEditing?: boolean;
 }
 
-export default function CustomTable<T extends { id: string | number }>({
+export default function CustomTable<T extends Record<string, unknown>>({
   data,
   columns,
-  onDelete,
   tableOptions,
   isLoading = false,
   error = false,
   enableEditing = true,
+  openDeleteConfirmModal,
 }: CustomTableProps<T>) {
-  const openDeleteConfirmModal = (row: MRT_Row<T>) => {
-    modals.openConfirmModal({
-      title: "Deletar item",
-      children: `Você tem certeza que quer deletar o item com ID ${row.original.id}?`,
-      labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: { variant: "filled", color: "red" },
-      cancelProps: { variant: "outline" },
-      onConfirm: () => onDelete(row),
-    });
-  };
-
   const table = useMantineReactTable({
     ...tableOptions,
     columns,
@@ -80,24 +67,31 @@ export default function CustomTable<T extends { id: string | number }>({
         </Flex>
       </Stack>
     ),
-    renderRowActions: ({ row, table }) => (
-      <Flex gap="md">
-        <Tooltip label="Editar">
-          <ActionIcon
-            onClick={() => {
-              table.setEditingRow(row);
-            }}
-          >
-            <IconEdit />
-          </ActionIcon>
-        </Tooltip>
-        <Tooltip label="Excluir">
-          <ActionIcon color="red" onClick={() => openDeleteConfirmModal(row)}>
-            <IconTrash />
-          </ActionIcon>
-        </Tooltip>
-      </Flex>
-    ),
+    renderRowActions: ({ row, table }) => {
+      const hideActions =
+        "role" in row.original && row.original.role === "OWNER";
+
+      if (hideActions) return null;
+
+      return (
+        <Flex gap="md">
+          <Tooltip label="Editar">
+            <ActionIcon
+              onClick={() => {
+                table.setEditingRow(row);
+              }}
+            >
+              <IconEdit />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Excluir">
+            <ActionIcon color="red" onClick={() => openDeleteConfirmModal(row)}>
+              <IconTrash />
+            </ActionIcon>
+          </Tooltip>
+        </Flex>
+      );
+    },
     renderTopToolbarCustomActions: ({ table }) => (
       <Tooltip withArrow label="Novo item">
         <Button

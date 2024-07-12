@@ -1,8 +1,8 @@
-import { describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { makeFakeStaff, makeApp, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
-import { type UpdateStaffMemberInput } from "../routers/staff/schemas";
+import { type UpdateStaffMemberInput } from "../../../common/schemas/staff.schema";
 import { type Staff } from "@prisma/client";
 
 describe("Staff member Router", () => {

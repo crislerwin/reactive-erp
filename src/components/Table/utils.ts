@@ -2,7 +2,7 @@ import { type ZodError, type ZodSchema } from "zod";
 
 export function validateData<T extends Record<string, unknown>>(
   data: T,
-  schema: ZodSchema<T>
+  schema: ZodSchema
 ): Record<string, string | undefined> {
   const errors: Record<string, string | undefined> = {};
   try {
