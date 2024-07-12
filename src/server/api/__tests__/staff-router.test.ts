@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { makeFakeStaff, makeApp, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
@@ -52,7 +52,7 @@ describe("Staff member Router", () => {
         data: {
           name: faker.company.name(),
           company_code: faker.helpers.fake("###-###-###"),
-          email: faker.internet.email(),
+          website: faker.internet.domainName(),
         },
       });
       await prisma.staff.createMany({

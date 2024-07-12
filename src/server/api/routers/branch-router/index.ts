@@ -27,7 +27,7 @@ export const branchRouter = createTRPCRouter({
           name: input.name,
           logo_url: input.logo_url,
           company_code: input.company_code,
-          email: input.email,
+          website: input.website,
           attributes: input.attributes,
         },
       });
@@ -51,7 +51,7 @@ export const branchRouter = createTRPCRouter({
           name: input.name,
           logo_url: input.logo_url,
           company_code: input.company_code,
-          email: input.email,
+          website: input.website,
           attributes: input.attributes,
         },
       });

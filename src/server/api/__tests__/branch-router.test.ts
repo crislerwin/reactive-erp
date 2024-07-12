@@ -39,7 +39,7 @@ describe("Branch router", () => {
       const branch = await app.branch.createBranch({
         name: faker.company.name(),
         company_code: faker.random.alphaNumeric(10),
-        email: faker.internet.email(),
+        website: faker.internet.email(),
         logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
@@ -48,7 +48,7 @@ describe("Branch router", () => {
       expect(branch).toHaveProperty("branch_id");
       expect(branch).toHaveProperty("name");
       expect(branch).toHaveProperty("company_code");
-      expect(branch).toHaveProperty("email");
+      expect(branch).toHaveProperty("website");
       expect(branch).toHaveProperty("logo_url");
       expect(branch).toHaveProperty("created_at");
       expect(branch).toHaveProperty("updated_at");
@@ -74,7 +74,7 @@ describe("Branch router", () => {
       const promisses = app.branch.createBranch({
         name: faker.company.name(),
         company_code: faker.random.alphaNumeric(10),
-        email: faker.internet.email(),
+        website: faker.internet.email(),
         logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
@@ -91,7 +91,7 @@ describe("Branch router", () => {
       const branch = await app.branch.createBranch({
         name: faker.company.name(),
         company_code: faker.random.alphaNumeric(10),
-        email: faker.internet.email(),
+        website: faker.internet.email(),
         logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
@@ -134,12 +134,12 @@ describe("Branch router", () => {
       const branchData = {
         name: faker.company.name(),
         company_code: faker.random.alphaNumeric(10),
-        email: faker.internet.email(),
+        website: faker.internet.domainName(),
       };
       const updatedBranchRequest = {
         name: faker.company.name(),
         company_code: faker.random.alphaNumeric(10),
-        email: faker.internet.email(),
+        website: faker.internet.domainName(),
       };
       const branch = await app.branch.createBranch(branchData);
 
@@ -169,7 +169,7 @@ describe("Branch router", () => {
         branch_id: 1,
         name: faker.company.name(),
         company_code: faker.random.alphaNumeric(10),
-        email: faker.internet.email(),
+        website: faker.internet.domainWord(),
       });
       await expect(promisses).rejects.toThrowError(
         "You are not allowed to perform this action"

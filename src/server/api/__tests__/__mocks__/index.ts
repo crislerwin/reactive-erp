@@ -28,7 +28,7 @@ export const createBranch = async (): Promise<Branch> => {
     data: {
       name: faker.company.name(),
       company_code: faker.helpers.fake("###-###-###"),
-      email: faker.internet.email(),
+      website: faker.internet.domainName(),
     },
   });
 };

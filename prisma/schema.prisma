@@ -11,17 +11,15 @@ datasource db {
 model Branch {
   branch_id     Int       @unique @default(autoincrement())
   name          String
-  email         String    @unique
-  company_code  String    @unique
+  website       String?
+  logo_url      String?
+  company_code  String
   staff_members Staff[]
   attributes    Json?
-  logo_url      String?
   created_at    DateTime  @default(now())
   updated_at    DateTime? @updatedAt
   deleted_at    DateTime?
 
-  @@index([company_code])
-  @@index([email])
   @@index([branch_id])
 }
 

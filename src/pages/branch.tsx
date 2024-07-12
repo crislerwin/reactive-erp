@@ -121,7 +121,7 @@ function Branch({ role }: BranchPageProps) {
       setValidationErrors({});
       createStaffMember(
         {
-          email: String(values.email),
+          website: String(values.email),
           company_code: String(values.company_code),
           name: String(values.name),
         },
