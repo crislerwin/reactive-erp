@@ -13,7 +13,7 @@ export const staffRouter = createTRPCRouter({
     .meta({ method: "GET", path: "/staff" })
     .query(async ({ ctx }) => {
       if (ctx.session.account.role === "OWNER")
-        return ctx.prisma.staff.findMany();
+        return ctx.prisma.staff.findMany({ include: { branch: true } });
 
       if (!allowedRoles.includes(ctx.session.account.role))
         throw new TRPCError({

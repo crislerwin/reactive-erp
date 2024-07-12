@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 "use client";
 
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
-
 import { cn } from "@/lib/utils";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -186,7 +187,7 @@ const ChartTooltipContent = React.forwardRef<
             const key = `${nameKey || item.name || item.dataKey || "value"}`;
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
             const indicatorColor = String(
-              color || item.payload.fill || item.color
+              color || (item.payload.fill as string | undefined) || item.color
             );
 
             return (
@@ -285,12 +286,12 @@ const ChartLegendContent = React.forwardRef<
         )}
       >
         {payload.map((item) => {
-          const key = `${nameKey || item.dataKey || "value"}`;
+          const key = `${nameKey || (item.dataKey as string) || "value"}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
           return (
             <div
-              key={item.value}
+              key={item.value as string}
               className={cn(
                 "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
               )}
@@ -317,7 +318,7 @@ ChartLegendContent.displayName = "ChartLegend";
 
 function getPayloadConfigFromPayload(
   config: ChartConfig,
-  payload: any,
+  payload: unknown,
   key: string
 ) {
   if (typeof payload !== "object" || payload === null) {
@@ -334,13 +335,13 @@ function getPayloadConfigFromPayload(
   let configLabelKey: string = key;
 
   if (key in payload && typeof payload[key] === "string") {
-    configLabelKey = payload[key];
+    configLabelKey = payload[key] as string;
   } else if (
     payloadPayload &&
     key in payloadPayload &&
     typeof payloadPayload[key] === "string"
   ) {
-    configLabelKey = payloadPayload[key];
+    configLabelKey = payloadPayload[key] as string;
   }
 
   return configLabelKey in config ? config[configLabelKey] : config[key];

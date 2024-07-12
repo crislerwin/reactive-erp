@@ -1,12 +1,13 @@
 import { type NextPage } from "next";
 import { SideMenu } from "@/components/SideMenu";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { getAuth } from "@clerk/nextjs/server";
 import AccountPage from "./[userId]";
+import { getServerAuthSession } from "@/server/api/auth";
+import { type DefaultPageProps } from "@/common/schemas";
 
-const Profile: NextPage = () => {
+const Profile: NextPage<DefaultPageProps> = ({ role }) => {
   return (
-    <SideMenu>
+    <SideMenu role={role}>
       <AccountPage />
     </SideMenu>
   );
@@ -14,9 +15,9 @@ const Profile: NextPage = () => {
 
 export default Profile;
 
-export const getServerSideProps = (ctx: CreateNextContextOptions) => {
-  const { userId } = getAuth(ctx.req);
-  if (!userId) {
+export async function getServerSideProps(ctx: CreateNextContextOptions) {
+  const staffMember = await getServerAuthSession(ctx);
+  if (!staffMember) {
     return {
       redirect: {
         destination: "/sign-in",
@@ -26,6 +27,10 @@ export const getServerSideProps = (ctx: CreateNextContextOptions) => {
   }
 
   return {
-    props: {},
+    props: {
+      email: staffMember.email,
+      role: staffMember.role,
+      id: staffMember.id,
+    },
   };
-};
+}

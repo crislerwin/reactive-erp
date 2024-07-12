@@ -29,9 +29,9 @@ function Branch({ role }: BranchPageProps) {
   >({});
 
   const queryClient = useQueryClient();
-  const { data: branches = [], isFetching: isFetchinsBranches } =
+  const { data: branches = [], isFetching: isFetchingBranches } =
     trpc.branch.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
-  const { mutate: createStaffMember, isLoading: isCreating } =
+  const { mutate: createBranch, isLoading: isCreatingBranch } =
     trpc.branch.createBranch.useMutation();
 
   const columns = useMemo<MRT_ColumnDef<BranchProps>[]>(
@@ -70,12 +70,12 @@ function Branch({ role }: BranchPageProps) {
         },
       },
       {
-        accessorKey: "email",
-        header: "Email",
+        accessorKey: "website",
+        header: "Website",
         mantineEditTextInputProps: {
           type: "email",
           required: true,
-          error: validationErrors?.email,
+          error: validationErrors?.website,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
@@ -86,12 +86,12 @@ function Branch({ role }: BranchPageProps) {
     ],
     [validationErrors]
   );
-  const updateStaffListData = (
+  const updateBranchesData = (
     newData: BranchProps,
     variables: Partial<BranchProps>
   ) =>
     queryClient.setQueryData<BranchProps[] | undefined>(
-      getQueryKey(trpc.staff.findAll, undefined, "query"),
+      getQueryKey(trpc.branch.findAll, undefined, "query"),
       (oldData) => {
         if (!oldData) return;
         if (variables.branch_id) {
@@ -103,15 +103,7 @@ function Branch({ role }: BranchPageProps) {
       }
     );
 
-  const handleErrors = (error: { message: string }) => {
-    modals.open({
-      title: `Ops! Ocorreu ao salver o usuário`,
-      children: error.message,
-      closeOnEscape: true,
-    });
-  };
-
-  const handleCreateUser: MRT_TableOptions<BranchProps>["onCreatingRowSave"] =
+  const handleCreateBranch: MRT_TableOptions<BranchProps>["onCreatingRowSave"] =
     ({ values, exitCreatingMode }) => {
       const newValidationErrors = validateData(values, createBranchSchema);
       if (Object.values(newValidationErrors).some((error) => error)) {
@@ -119,7 +111,7 @@ function Branch({ role }: BranchPageProps) {
         return;
       }
       setValidationErrors({});
-      createStaffMember(
+      createBranch(
         {
           website: String(values.email),
           company_code: String(values.company_code),
@@ -127,10 +119,16 @@ function Branch({ role }: BranchPageProps) {
         },
         {
           onSuccess: (newData, variables) => {
-            updateStaffListData(newData, variables);
+            updateBranchesData(newData, variables);
             exitCreatingMode();
           },
-          onError: handleErrors,
+          onError: (error) => {
+            modals.open({
+              title: `Ops! Ocorreu ao salvar filial`,
+              children: error.message,
+              closeOnEscape: true,
+            });
+          },
         }
       );
     };
@@ -157,10 +155,10 @@ function Branch({ role }: BranchPageProps) {
   return (
     <SideMenu role={role}>
       <CustomTable
-        isLoading={isFetchinsBranches}
+        isLoading={isFetchingBranches || isCreatingBranch}
         openDeleteConfirmModal={openDeleteConfirmModal}
         tableOptions={{
-          onCreatingRowSave: handleCreateUser,
+          onCreatingRowSave: handleCreateBranch,
           onEditingRowSave: handleSaveUser,
         }}
         columns={columns}

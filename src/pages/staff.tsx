@@ -9,7 +9,6 @@ import { Switch } from "@mantine/core";
 import { SideMenu } from "@/components/SideMenu";
 import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
-
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import CustomTable from "@/components/Table";
@@ -18,7 +17,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   updateStaffMemberSchema,
   createStaffMemberSchema,
-  DefaultPageProps,
+  type DefaultPageProps,
   managerRoles,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
@@ -30,7 +29,6 @@ function Staff({ role }: StaffPageProps) {
     Record<string, string | undefined>
   >({});
 
-  const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
   const {
     data: staffMembers = [],
@@ -87,7 +85,6 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "email",
         header: "Email",
-        enableEditing: !isEditing,
         mantineEditTextInputProps: {
           type: "email",
           required: true,
@@ -160,7 +157,7 @@ function Staff({ role }: StaffPageProps) {
         error: validationErrors?.active,
       },
     ],
-    [branches, isEditing, validationErrors]
+    [branches, validationErrors]
   );
   const updateStaffListData = (
     newData: StaffType,
@@ -279,9 +276,14 @@ function Staff({ role }: StaffPageProps) {
           onEditingRowSave: handleSaveUser,
         }}
         openDeleteConfirmModal={openDeleteConfirmModal}
-        isLoading={isFetchingStaff || isCreating || isUpdating || isDeleting}
+        isLoading={
+          isFetchingStaff ||
+          isCreating ||
+          isUpdating ||
+          isDeleting ||
+          isFetchingBranches
+        }
         error={isGettingStaffError}
-        enableEditing={!isEditing}
       />
     </SideMenu>
   );
