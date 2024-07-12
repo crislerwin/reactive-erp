@@ -23,10 +23,12 @@ import { StoreIcon } from "lucide-react";
 
 type SideMenuProps = {
   children: React.ReactNode;
-  role?: string;
+  role: string;
 };
 
-export const SideMenu = ({ children }: SideMenuProps) => {
+const managerRoles = ["OWNER", "ADMIN", "MANAGER"];
+
+export function SideMenu({ children, role }: SideMenuProps) {
   const { user } = useClerk();
   const { open, setOpen } = useSideMenu();
   const { signOut } = useClerk();
@@ -165,12 +167,14 @@ export const SideMenu = ({ children }: SideMenuProps) => {
               label: "Equipe",
               href: "/staff",
               selected: pathname === "/staff",
+              visible: managerRoles.includes(role),
             },
             {
               icon: <StoreIcon className="h-4 w-4" />,
               label: "Filial",
               href: "/branch",
               selected: pathname === "/branch",
+              visible: managerRoles.includes(role),
             },
           ]}
           open={open}
@@ -185,4 +189,4 @@ export const SideMenu = ({ children }: SideMenuProps) => {
       </div>
     </>
   );
-};
+}

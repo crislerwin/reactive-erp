@@ -18,14 +18,17 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   updateStaffMemberSchema,
   createStaffMemberSchema,
+  DefaultPageProps,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 
-function Staff({ email }: { email: string }) {
+type StaffPageProps = DefaultPageProps;
+
+function Staff({ role }: StaffPageProps) {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
-  console.log(email);
+
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
   const {
@@ -266,7 +269,7 @@ function Staff({ email }: { email: string }) {
     });
   };
   return (
-    <SideMenu>
+    <SideMenu role={role}>
       <CustomTable
         columns={columns}
         data={staffMembers}
@@ -283,20 +286,20 @@ function Staff({ email }: { email: string }) {
   );
 }
 export async function getServerSideProps(ctx: CreateNextContextOptions) {
-  const account = await getServerAuthSession(ctx);
-
-  if (account) {
+  const staffMember = await getServerAuthSession(ctx);
+  if (!staffMember) {
     return {
-      props: {
-        email: account.email,
-        role: account.role,
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
       },
     };
   }
   return {
-    redirect: {
-      destination: "/sign-in",
-      permanent: false,
+    props: {
+      email: staffMember.email,
+      role: staffMember.role,
+      id: staffMember.id,
     },
   };
 }

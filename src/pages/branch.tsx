@@ -14,10 +14,12 @@ import { SideMenu } from "@/components/SideMenu";
 import CustomTable from "@/components/Table";
 import { validateData } from "@/components/Table/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { getAuth } from "@clerk/nextjs/server";
-import { createBranchSchema } from "@/common/schemas";
+import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
+import { getServerAuthSession } from "@/server/api/auth";
 
-function Branch() {
+type BranchPageProps = DefaultPageProps;
+
+function Branch({ role }: BranchPageProps) {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
@@ -149,7 +151,7 @@ function Branch() {
     });
   };
   return (
-    <SideMenu>
+    <SideMenu role={role}>
       <CustomTable
         isLoading={isFetchinsBranches}
         openDeleteConfirmModal={openDeleteConfirmModal}
@@ -165,17 +167,21 @@ function Branch() {
 }
 export default Branch;
 
-export const getServerSideProps = (ctx: CreateNextContextOptions) => {
-  const { userId } = getAuth(ctx.req);
-  if (userId) {
+export async function getServerSideProps(ctx: CreateNextContextOptions) {
+  const staffMember = await getServerAuthSession(ctx);
+  if (!staffMember) {
     return {
-      props: {},
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
+      },
     };
   }
   return {
-    redirect: {
-      destination: "/sign-in",
-      permanent: false,
+    props: {
+      email: staffMember.email,
+      role: staffMember.role,
+      id: staffMember.id,
     },
   };
-};
+}
