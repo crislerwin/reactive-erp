@@ -23,7 +23,7 @@ import { getServerAuthSession } from "@/server/api/auth";
 
 type BranchPageProps = DefaultPageProps;
 
-function Branch({ role }: BranchPageProps) {
+function Branch({ role, branch_id }: BranchPageProps) {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
@@ -33,7 +33,10 @@ function Branch({ role }: BranchPageProps) {
     trpc.branch.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
   const { mutate: createBranch, isLoading: isCreatingBranch } =
     trpc.branch.createBranch.useMutation();
-
+  const { mutate: deleteBranch, isLoading: isDeletingBranch } =
+    trpc.branch.deleteBranch.useMutation();
+  const { mutate: updateBranch, isLoading: isUpdatingBranch } =
+    trpc.branch.updateBranch.useMutation();
   const columns = useMemo<MRT_ColumnDef<BranchProps>[]>(
     () => [
       {
@@ -48,11 +51,11 @@ function Branch({ role }: BranchPageProps) {
         mantineEditTextInputProps: {
           type: "email",
           required: true,
-          error: validationErrors?.firstName,
+          error: validationErrors?.name,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
-              firstName: undefined,
+              name: undefined,
             }),
         },
       },
@@ -61,25 +64,27 @@ function Branch({ role }: BranchPageProps) {
         header: "CNPJ",
         mantineEditTextInputProps: {
           type: "email",
-          error: validationErrors?.lastName,
+          error: validationErrors?.company_code,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
-              lastName: undefined,
+              company_code: undefined,
             }),
         },
       },
       {
         accessorKey: "website",
         header: "Website",
+        accessorFn(originalRow) {
+          return originalRow.website || "";
+        },
         mantineEditTextInputProps: {
           type: "email",
-          required: true,
           error: validationErrors?.website,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
-              email: undefined,
+              website: undefined,
             }),
         },
       },
@@ -113,7 +118,7 @@ function Branch({ role }: BranchPageProps) {
       setValidationErrors({});
       createBranch(
         {
-          website: String(values.email),
+          website: values.website ? String(values.website) : undefined,
           company_code: String(values.company_code),
           name: String(values.name),
         },
@@ -133,11 +138,39 @@ function Branch({ role }: BranchPageProps) {
       );
     };
 
-  const handleSaveUser: MRT_TableOptions<BranchProps>["onEditingRowSave"] = ({
+  const handleSaveBranch: MRT_TableOptions<BranchProps>["onEditingRowSave"] = ({
     values,
-    table,
+    exitEditingMode,
   }) => {
-    console.log({ table, values });
+    const newValidationErrors = validateData(values, createBranchSchema);
+    if (Object.values(newValidationErrors).some((error) => error)) {
+      setValidationErrors(newValidationErrors);
+      return;
+    }
+    setValidationErrors({});
+    updateBranch(
+      {
+        branch_id: Number(values.branch_id),
+        website: values.website ? String(values.website) : undefined,
+        company_code: values.company_code
+          ? String(values.company_code)
+          : undefined,
+        name: values.name ? String(values.name) : undefined,
+      },
+      {
+        onSuccess: (newData, variables) => {
+          updateBranchesData(newData, variables);
+          exitEditingMode();
+        },
+        onError: (error) => {
+          modals.open({
+            title: `Ops! Ocorreu ao salvar filial`,
+            children: error.message,
+            closeOnEscape: true,
+          });
+        },
+      }
+    );
   };
 
   const openDeleteConfirmModal = (row: MRT_Row<BranchProps>) => {
@@ -148,18 +181,46 @@ function Branch({ role }: BranchPageProps) {
       confirmProps: { variant: "filled", color: "red" },
       cancelProps: { variant: "outline" },
       onConfirm: () => {
-        console.log("deletar");
+        deleteBranch(
+          { branch_id: row.original.branch_id },
+          {
+            onSuccess: () => {
+              queryClient.setQueryData<BranchProps[] | undefined>(
+                getQueryKey(trpc.branch.findAll, undefined, "query"),
+                (oldData) => {
+                  if (!oldData) return;
+                  return oldData.filter(
+                    (data) => data.branch_id !== row.original.branch_id
+                  );
+                }
+              );
+            },
+            onError: (error) => {
+              modals.open({
+                title: `Ops! Ocorreu ao deletar filial`,
+                children: error.message,
+                closeOnEscape: true,
+              });
+            },
+          }
+        );
       },
     });
   };
   return (
     <SideMenu role={role}>
       <CustomTable
-        isLoading={isFetchingBranches || isCreatingBranch}
+        branch_id={branch_id}
+        isLoading={
+          isFetchingBranches ||
+          isCreatingBranch ||
+          isDeletingBranch ||
+          isUpdatingBranch
+        }
         openDeleteConfirmModal={openDeleteConfirmModal}
         tableOptions={{
           onCreatingRowSave: handleCreateBranch,
-          onEditingRowSave: handleSaveUser,
+          onEditingRowSave: handleSaveBranch,
         }}
         columns={columns}
         data={branches}
@@ -193,6 +254,9 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
       email: staffMember.email,
       role: staffMember.role,
       id: staffMember.id,
+      branch_id: staffMember.branch_id,
+      first_name: staffMember.first_name,
+      last_name: staffMember.last_name,
     },
   };
 }

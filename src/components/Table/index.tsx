@@ -15,6 +15,7 @@ interface CustomTableProps<T extends Record<string, unknown>> {
   tableOptions?: Partial<MRT_TableOptions<T>>;
   isLoading?: boolean;
   error?: boolean;
+  branch_id?: number;
   openDeleteConfirmModal: (row: MRT_Row<T>) => void;
   enableEditing?: boolean;
 }
@@ -24,6 +25,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
   columns,
   tableOptions,
   isLoading = false,
+  branch_id,
   error = false,
   enableEditing = true,
   openDeleteConfirmModal,
@@ -51,7 +53,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
 
     renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
-        <Title order={3}>Criar item</Title>
+        <Title order={3}>Novo</Title>
         {internalEditComponents}
         <Flex justify="flex-end" mt="xl">
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -60,7 +62,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
     ),
     renderEditRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
-        <Title order={3}>Editar item</Title>
+        <Title order={3}>Editar</Title>
         {internalEditComponents}
         <Flex justify="flex-end" mt="xl">
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -68,11 +70,10 @@ export default function CustomTable<T extends Record<string, unknown>>({
       </Stack>
     ),
     renderRowActions: ({ row, table }) => {
-      const hideActions =
-        "role" in row.original && row.original.role === "OWNER";
-
-      if (hideActions) return null;
-
+      const isOwner = row.original?.role && row.original.role === "OWNER";
+      const isSameBranch =
+        row.original?.branch_id && row.original.branch_id === branch_id;
+      const isNotAllowedToDelete = isOwner || isSameBranch;
       return (
         <Flex gap="md">
           <Tooltip label="Editar">
@@ -84,11 +85,16 @@ export default function CustomTable<T extends Record<string, unknown>>({
               <IconEdit />
             </ActionIcon>
           </Tooltip>
-          <Tooltip label="Excluir">
-            <ActionIcon color="red" onClick={() => openDeleteConfirmModal(row)}>
-              <IconTrash />
-            </ActionIcon>
-          </Tooltip>
+          {isNotAllowedToDelete ? null : (
+            <Tooltip label="Excluir">
+              <ActionIcon
+                color="red"
+                onClick={() => openDeleteConfirmModal(row)}
+              >
+                <IconTrash />
+              </ActionIcon>
+            </Tooltip>
+          )}
         </Flex>
       );
     },
