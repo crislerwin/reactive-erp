@@ -19,6 +19,7 @@ import {
   updateStaffMemberSchema,
   createStaffMemberSchema,
   DefaultPageProps,
+  managerRoles,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 
@@ -295,6 +296,15 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
       },
     };
   }
+  if (!managerRoles.includes(staffMember.role)) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       email: staffMember.email,

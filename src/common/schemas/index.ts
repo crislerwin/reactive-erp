@@ -6,3 +6,5 @@ export type DefaultPageProps = {
   role: string;
   id: number;
 };
+
+export const managerRoles = ["OWNER", "ADMIN", "MANAGER"];

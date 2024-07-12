@@ -20,13 +20,12 @@ import CommandPalette, {
 } from "../SearchBar";
 import { makeFilterItems } from "./utils";
 import { StoreIcon } from "lucide-react";
+import { managerRoles } from "@/common/schemas";
 
 type SideMenuProps = {
   children: React.ReactNode;
   role: string;
 };
-
-const managerRoles = ["OWNER", "ADMIN", "MANAGER"];
 
 export function SideMenu({ children, role }: SideMenuProps) {
   const { user } = useClerk();

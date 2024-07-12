@@ -14,7 +14,11 @@ import { SideMenu } from "@/components/SideMenu";
 import CustomTable from "@/components/Table";
 import { validateData } from "@/components/Table/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
+import {
+  createBranchSchema,
+  managerRoles,
+  type DefaultPageProps,
+} from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 
 type BranchPageProps = DefaultPageProps;
@@ -177,6 +181,15 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
       },
     };
   }
+  if (!managerRoles.includes(staffMember.role)) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       email: staffMember.email,
