@@ -5,6 +5,7 @@ import {
   updateStaffMemberSchema,
 } from "@/common/schemas";
 import { z } from "zod";
+import { CustomError, ErrorType } from "@/common/errors/common";
 
 const allowedRoles = ["ADMIN", "MANAGER"];
 
@@ -25,7 +26,10 @@ export const staffRouter = createTRPCRouter({
         where: { branch_id: ctx.session.account.branch_id },
       });
       if (!branch)
-        throw new TRPCError({ code: "NOT_FOUND", cause: "Branch not found" });
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          cause: ErrorType.BRANCH_NOT_FOUND,
+        });
 
       return ctx.prisma.staff.findMany({
         where: {
@@ -42,16 +46,11 @@ export const staffRouter = createTRPCRouter({
         where: { branch_id: input.branch_id },
       });
 
-      if (!branch)
-        throw new TRPCError({ code: "NOT_FOUND", cause: "Branch not found" });
+      if (!branch) throw new TRPCError(CustomError.BRANCH_NOT_FOUND);
       const staffMember = await ctx.prisma.staff.findUnique({
         where: { email: input.email },
       });
-      if (staffMember)
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          cause: "Account already exists",
-        });
+      if (staffMember) throw new TRPCError(CustomError.ACCOUNT_ALREADY_EXISTS);
 
       return ctx.prisma.staff.create({
         data: {
@@ -88,25 +87,15 @@ export const staffRouter = createTRPCRouter({
       const staffToDelete = await ctx.prisma.staff.findUnique({
         where: { id: input.id, active: true },
       });
-      if (!staffToDelete)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          cause: "Staff member not found",
-        });
+      if (!staffToDelete) throw new TRPCError(CustomError.USER_NOT_FOUND);
       if (staffToDelete.role === "OWNER")
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          cause: "You cannot delete an owner",
-        });
+        throw new TRPCError(CustomError.NOT_ALLOWED);
 
       if (
         staffToDelete.role === "ADMIN" &&
         ctx.session.account.role !== "OWNER"
       ) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          cause: "You are not allowed to perform this action",
-        });
+        throw new TRPCError(CustomError.NOT_ALLOWED);
       }
 
       return ctx.prisma.staff.update({
@@ -121,11 +110,7 @@ export const staffRouter = createTRPCRouter({
       const staffMember = await ctx.prisma.staff.findUnique({
         where: { id: input.id, active: true },
       });
-      if (!staffMember)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          cause: "Staff member not found",
-        });
+      if (!staffMember) throw new TRPCError(CustomError.USER_NOT_FOUND);
       return staffMember;
     }),
 });

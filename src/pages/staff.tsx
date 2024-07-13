@@ -21,6 +21,7 @@ import {
   managerRoles,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
+import { customErrorHandler } from "@/common/errors/common";
 
 type StaffPageProps = DefaultPageProps;
 
@@ -111,7 +112,6 @@ function Staff({ role }: StaffPageProps) {
       },
       {
         accessorKey: "branch_id",
-        accessorFn: (originalRow) => String(originalRow.branch_id),
         header: "Filial",
         editVariant: "select",
         Cell(props) {
@@ -133,15 +133,7 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "active",
         accessorFn: (row) => String(row.active),
-        Cell: ({ row }) => {
-          return (
-            <Switch
-              labelPosition="left"
-              label={row.original.active ? "Ativo" : "Inativo"}
-              checked={row.original.active}
-            />
-          );
-        },
+        header: "Status",
         editVariant: "select",
         mantineEditSelectProps: {
           required: true,
@@ -151,9 +143,6 @@ function Staff({ role }: StaffPageProps) {
             { value: "false", label: "Inativo" },
           ],
         },
-
-        header: "Status",
-        error: validationErrors?.active,
       },
     ],
     [branches, validationErrors]
@@ -175,14 +164,6 @@ function Staff({ role }: StaffPageProps) {
       }
     );
 
-  const handleErrors = (error: { message: string }) => {
-    modals.open({
-      title: `Ops! Ocorreu ao salver o usuário`,
-      children: error.message,
-      closeOnEscape: true,
-    });
-  };
-
   const handleCreateUser: MRT_TableOptions<StaffType>["onCreatingRowSave"] = ({
     values,
     exitCreatingMode,
@@ -194,18 +175,14 @@ function Staff({ role }: StaffPageProps) {
     }
     setValidationErrors({});
 
-    createStaffMember(
-      {
-        ...values,
-        branch_id: Number(values.branch_id),
-        active: Boolean(values.active),
-        last_name: String(values.last_name ?? ""),
-      },
-      {
-        onSuccess: updateStaffListData,
-        onError: handleErrors,
-      }
-    );
+    createStaffMember(values, {
+      onSuccess: updateStaffListData,
+      onError: (err) =>
+        customErrorHandler({
+          title: "Ops! Ocorreu um erro ao criar o colaborador",
+          message: err.message,
+        }),
+    });
     exitCreatingMode();
   };
 
@@ -219,22 +196,17 @@ function Staff({ role }: StaffPageProps) {
       return;
     }
     setValidationErrors({});
-    updateStaffMember(
-      {
-        ...values,
-        id: Number(values.id),
-        branch_id: Number(values.branch_id),
-        active: values.active === "" || values.active === "true" ? true : false,
-        last_name: String(values.last_name ?? ""),
+    updateStaffMember(values, {
+      onSuccess: (data) => {
+        updateStaffListData(data, { id: Number(data.id) });
+        table.setEditingRow(null);
       },
-      {
-        onSuccess: (data) => {
-          updateStaffListData(data, { id: Number(data.id) });
-          table.setEditingRow(null);
-        },
-        onError: handleErrors,
-      }
-    );
+      onError: (err) =>
+        customErrorHandler({
+          title: "Ops! Ocorreu um erro ao editar o colaborador",
+          message: err.message,
+        }),
+    });
     table.setEditingRow(null);
   };
 
@@ -260,7 +232,11 @@ function Staff({ role }: StaffPageProps) {
                 }
               );
             },
-            onError: handleErrors,
+            onError: (err) =>
+              customErrorHandler({
+                title: "Ops! Ocorreu um erro ao deletar o colaborador",
+                message: err.message,
+              }),
           }
         ),
     });
