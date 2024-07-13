@@ -36,7 +36,7 @@ export const updateStaffMemberSchema = z.intersection(
         message: "Sobrenome deve ter no mínimo 3 caracteres",
       })
       .optional(),
-    active: customBooleanValidator.default(true),
+    active: customBooleanValidator.optional().default(true),
     role: z
       .enum(["ADMIN", "EMPLOYEE", "MANAGER"], {
         invalid_type_error: "Tipo de usuário inválido",

@@ -9,7 +9,7 @@ export const customNumberValidator = z
 
 export const customBooleanValidator = z
   .any()
-  .refine((v) => v === "true" || v === "false", {
+  .refine((v) => String(v) === "true" || String(v) === "false", {
     message: "Campo deve ser um boolean",
   })
   .transform((v) => Boolean(v));

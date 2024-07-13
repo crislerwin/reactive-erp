@@ -4,6 +4,7 @@ import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 import { type UpdateStaffMemberInput } from "../../../common/schemas/staff.schema";
 import { type Staff } from "@prisma/client";
+import { ErrorType } from "@/common/errors/common";
 
 describe("Staff member Router", () => {
   describe("List All", () => {
@@ -19,7 +20,7 @@ describe("Staff member Router", () => {
       const branch_id = faker.datatype.number();
       const app = makeApp({ branch_id });
       const promise = app.staff.findAll();
-      await expect(promise).rejects.toThrowError("Branch not found");
+      await expect(promise).rejects.toThrowError(ErrorType.BRANCH_NOT_FOUND);
     });
 
     test("Should return staff list on the same branch", async () => {
@@ -51,8 +52,6 @@ describe("Staff member Router", () => {
       const branch2 = await prisma.branch.create({
         data: {
           name: faker.company.name(),
-          company_code: faker.helpers.fake("###-###-###"),
-          website: faker.internet.domainName(),
         },
       });
       await prisma.staff.createMany({
@@ -105,7 +104,7 @@ describe("Staff member Router", () => {
         email: faker.internet.email(),
         role: "ADMIN",
       });
-      await expect(promise).rejects.toThrowError("Branch not found");
+      await expect(promise).rejects.toThrowError(ErrorType.BRANCH_NOT_FOUND);
     });
 
     test("Should throw if account already exists", async () => {
@@ -123,7 +122,9 @@ describe("Staff member Router", () => {
         email,
         role: "ADMIN",
       });
-      await expect(promise).rejects.toThrowError("Account already exists");
+      await expect(promise).rejects.toThrowError(
+        ErrorType.ACCOUNT_ALREADY_EXISTS
+      );
     });
 
     test("Should create staff member correcly", async () => {
@@ -197,7 +198,7 @@ describe("Staff member Router", () => {
       const { app } = await makeSut();
       const id = faker.datatype.number();
       const promise = app.staff.getStaffMember({ id });
-      await expect(promise).rejects.toThrowError("Staff member not found");
+      await expect(promise).rejects.toThrowError(ErrorType.USER_NOT_FOUND);
     });
   });
   describe("DELETE staff member", () => {
@@ -245,14 +246,14 @@ describe("Staff member Router", () => {
 
       const staffMemberPromise = app.staff.getStaffMember({ id: staff.id });
       await expect(staffMemberPromise).rejects.toThrowError(
-        "Staff member not found"
+        ErrorType.USER_NOT_FOUND
       );
     });
     test("Should throw if staff member not found", async () => {
       const { app } = await makeSut();
       const id = faker.datatype.number();
       const promise = app.staff.softDeletedStaffMember({ id });
-      await expect(promise).rejects.toThrowError("Staff member not found");
+      await expect(promise).rejects.toThrowError(ErrorType.USER_NOT_FOUND);
     });
     test("Should throw if staff member already deleted", async () => {
       const { app, branch } = await makeSut();
@@ -268,7 +269,7 @@ describe("Staff member Router", () => {
         },
       });
       const promise = app.staff.softDeletedStaffMember({ id: staff.id });
-      await expect(promise).rejects.toThrowError("Staff member not found");
+      await expect(promise).rejects.toThrowError(ErrorType.USER_NOT_FOUND);
     });
     test("Should throw if staff member is owner", async () => {
       const { branch } = await makeSut();
@@ -287,7 +288,7 @@ describe("Staff member Router", () => {
         },
       });
       const promise = app.staff.softDeletedStaffMember({ id: staff.id });
-      await expect(promise).rejects.toThrowError("You cannot delete an owner");
+      await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
     test("Should throw if staff member is admin and not owner", async () => {
       const { branch } = await makeSut();
@@ -306,9 +307,7 @@ describe("Staff member Router", () => {
         },
       });
       const promise = app.staff.softDeletedStaffMember({ id: staff.id });
-      await expect(promise).rejects.toThrowError(
-        "You are not allowed to perform this action"
-      );
+      await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
   });
 });
