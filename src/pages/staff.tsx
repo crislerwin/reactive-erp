@@ -5,7 +5,6 @@ import {
   type MRT_TableOptions,
 } from "mantine-react-table";
 import { useQueryClient } from "@tanstack/react-query";
-import { Switch } from "@mantine/core";
 import { SideMenu } from "@/components/SideMenu";
 import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";

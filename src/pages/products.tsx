@@ -257,7 +257,12 @@ export default function Products({ role }: ProductsPageProps) {
         addButtonLabel="Novo Produto"
         createModalLabel="Novo Produto"
         editModalLabel="Editar Produto"
-        isLoading={isFetchingProducts || isCreatingProduct || isUpdatingProduct}
+        isLoading={
+          isFetchingProducts ||
+          isCreatingProduct ||
+          isUpdatingProduct ||
+          isDeletingProduct
+        }
         openDeleteConfirmModal={openDeleteConfirmModal}
         tableOptions={{
           onCreatingRowSave: handleCreateProduct,

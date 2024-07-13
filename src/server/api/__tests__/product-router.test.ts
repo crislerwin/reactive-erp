@@ -1,10 +1,9 @@
 import { beforeAll, describe, expect, it, test } from "vitest";
-import { makeApp, makeStaffRequest, makeSut } from "./__mocks__";
+import { makeApp, makeSut } from "./__mocks__";
 import { type createProductSchema } from "@/common/schemas";
 import { type z } from "zod";
 import { faker } from "@faker-js/faker";
 import { prisma } from "@/server/db";
-import { after } from "node:test";
 
 const manyProducs: z.infer<typeof createProductSchema>[] = Array.from(
   { length: 10 },
@@ -85,7 +84,7 @@ describe("Product Router", () => {
   });
   describe("Create a product", () => {
     it("should create a product", async () => {
-      const { app, branch } = await makeSut();
+      const { app } = await makeSut();
       const product = await app.product.create({
         available: "true",
         colors: ["red", "blue"],

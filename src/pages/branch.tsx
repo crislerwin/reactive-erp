@@ -60,36 +60,6 @@ function Branch({ role, branch_id }: BranchPageProps) {
             }),
         },
       },
-      {
-        accessorKey: "company_code",
-        header: "CNPJ",
-        mantineEditTextInputProps: {
-          required: true,
-          type: "number",
-          error: validationErrors?.company_code,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              company_code: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: "website",
-        header: "Website",
-        accessorFn(originalRow) {
-          return originalRow.website || "";
-        },
-        mantineEditTextInputProps: {
-          type: "text",
-          error: validationErrors?.website,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              website: undefined,
-            }),
-        },
-      },
     ],
     [validationErrors]
   );
@@ -118,25 +88,18 @@ function Branch({ role, branch_id }: BranchPageProps) {
         return;
       }
       setValidationErrors({});
-      createBranch(
-        {
-          website: values.website ? String(values.website) : undefined,
-          company_code: String(values.company_code),
-          name: String(values.name),
+      createBranch(values, {
+        onSuccess: (newData, variables) => {
+          updateBranchesData(newData, variables);
+          exitCreatingMode();
         },
-        {
-          onSuccess: (newData, variables) => {
-            updateBranchesData(newData, variables);
-            exitCreatingMode();
-          },
-          onError: (error) => {
-            customErrorHandler({
-              message: error.message,
-              title: "Ops! Ocorreu um erro ao criar a filial",
-            });
-          },
-        }
-      );
+        onError: (error) => {
+          customErrorHandler({
+            message: error.message,
+            title: "Ops! Ocorreu um erro ao criar a filial",
+          });
+        },
+      });
     };
 
   const handleSaveBranch: MRT_TableOptions<BranchProps>["onEditingRowSave"] = ({
@@ -149,28 +112,18 @@ function Branch({ role, branch_id }: BranchPageProps) {
       return;
     }
     setValidationErrors({});
-    updateBranch(
-      {
-        branch_id: Number(values.branch_id),
-        website: values.website ? String(values.website) : undefined,
-        company_code: values.company_code
-          ? String(values.company_code)
-          : undefined,
-        name: values.name ? String(values.name) : undefined,
+    updateBranch(values, {
+      onSuccess: (newData, variables) => {
+        updateBranchesData(newData, variables);
+        exitEditingMode();
       },
-      {
-        onSuccess: (newData, variables) => {
-          updateBranchesData(newData, variables);
-          exitEditingMode();
-        },
-        onError: (error) => {
-          customErrorHandler({
-            message: error.message,
-            title: "Ops! Ocorreu um erro ao salvar a filial",
-          });
-        },
-      }
-    );
+      onError: (error) => {
+        customErrorHandler({
+          message: error.message,
+          title: "Ops! Ocorreu um erro ao salvar a filial",
+        });
+      },
+    });
   };
 
   const openDeleteConfirmModal = (row: MRT_Row<BranchProps>) => {

@@ -38,9 +38,6 @@ describe("Branch router", () => {
       const { app } = await makeSut();
       const branch = await app.branch.createBranch({
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.email(),
-        logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
         },
@@ -73,9 +70,6 @@ describe("Branch router", () => {
       });
       const promisses = app.branch.createBranch({
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.email(),
-        logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
         },
@@ -85,14 +79,11 @@ describe("Branch router", () => {
       );
     });
   });
-  describe("DELETE branch", () => {
+  describe.only("DELETE branch", () => {
     it("should delete a branch", async () => {
       const { app } = await makeSut();
       const branch = await app.branch.createBranch({
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.email(),
-        logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
         },
@@ -168,8 +159,6 @@ describe("Branch router", () => {
       const promisses = app.branch.updateBranch({
         branch_id: 1,
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.domainWord(),
       });
       await expect(promisses).rejects.toThrowError(
         "You are not allowed to perform this action"

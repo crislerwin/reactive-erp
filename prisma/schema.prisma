@@ -11,9 +11,6 @@ datasource db {
 model Branch {
   branch_id     Int       @unique @default(autoincrement())
   name          String
-  website       String?
-  logo_url      String?
-  company_code  String
   staff_members Staff[]
   attributes    Json?
   created_at    DateTime  @default(now())
