@@ -4,8 +4,6 @@ import {
   type MRT_Row,
   type MRT_TableOptions,
 } from "mantine-react-table";
-import { useQueryClient } from "@tanstack/react-query";
-import { Switch } from "@mantine/core";
 import { SideMenu } from "@/components/SideMenu";
 import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
@@ -21,18 +19,16 @@ import {
   managerRoles,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
+import { queryClient } from "@/lib";
 
 type StaffPageProps = DefaultPageProps;
 
 function Staff({ role }: StaffPageProps) {
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string | undefined>
-  >({});
-
-  const queryClient = useQueryClient();
+  const [validationErrors, setValidationErrors] =
+    useState<Record<string, string | undefined>>();
   const {
     data: staffMembers = [],
-    isFetching: isFetchingStaff,
+    isLoading: isLoadingStaff,
     isError: isGettingStaffError,
   } = trpc.staff.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
   const { mutate: createStaffMember, isLoading: isCreating } =
@@ -61,30 +57,32 @@ function Staff({ role }: StaffPageProps) {
         mantineEditTextInputProps: {
           type: "email",
           required: true,
-          error: validationErrors?.firstName,
+          error: validationErrors?.first_name,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
-              firstName: undefined,
+              first_name: undefined,
             }),
         },
       },
       {
         accessorKey: "last_name",
         header: "Sobrenome",
+        accessorFn: (row) => row.last_name ?? "",
         mantineEditTextInputProps: {
           type: "email",
-          error: validationErrors?.lastName,
+          error: validationErrors?.last_name,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
-              lastName: undefined,
+              last_name: undefined,
             }),
         },
       },
       {
         accessorKey: "email",
         header: "Email",
+        enableEditing: (row) => !row.original.email,
         mantineEditTextInputProps: {
           type: "email",
           required: true,
@@ -107,13 +105,13 @@ function Staff({ role }: StaffPageProps) {
             { value: "MANAGER", label: "Gerente" },
             { value: "EMPLOYEE", label: "Funcionario" },
           ],
-          error: validationErrors?.state,
+          error: validationErrors?.role,
         },
       },
       {
         accessorKey: "branch_id",
-        accessorFn: (originalRow) => String(originalRow.branch_id),
         header: "Filial",
+        accessorFn: (row) => (row.branch_id ? String(row.branch_id) : ""),
         editVariant: "select",
         Cell(props) {
           const branch = branches.find(
@@ -133,15 +131,11 @@ function Staff({ role }: StaffPageProps) {
       },
       {
         accessorKey: "active",
-        accessorFn: (row) => String(row.active),
-        Cell: ({ row }) => {
-          return (
-            <Switch
-              labelPosition="left"
-              label={row.original.active ? "Ativo" : "Inativo"}
-              checked={row.original.active}
-            />
-          );
+        accessorFn: (row) =>
+          typeof row.active === "boolean" ? String(row.active) : "true",
+        header: "Status",
+        Cell(props) {
+          return <span>{props.row.original.active ? "Ativo" : "Inativo"}</span>;
         },
         editVariant: "select",
         mantineEditSelectProps: {
@@ -152,9 +146,6 @@ function Staff({ role }: StaffPageProps) {
             { value: "false", label: "Inativo" },
           ],
         },
-
-        header: "Status",
-        error: validationErrors?.active,
       },
     ],
     [branches, validationErrors]
@@ -176,14 +167,6 @@ function Staff({ role }: StaffPageProps) {
       }
     );
 
-  const handleErrors = (error: { message: string }) => {
-    modals.open({
-      title: `Ops! Ocorreu ao salver o usuário`,
-      children: error.message,
-      closeOnEscape: true,
-    });
-  };
-
   const handleCreateUser: MRT_TableOptions<StaffType>["onCreatingRowSave"] = ({
     values,
     exitCreatingMode,
@@ -195,18 +178,9 @@ function Staff({ role }: StaffPageProps) {
     }
     setValidationErrors({});
 
-    createStaffMember(
-      {
-        ...values,
-        branch_id: Number(values.branch_id),
-        active: Boolean(values.active),
-        last_name: String(values.last_name ?? ""),
-      },
-      {
-        onSuccess: updateStaffListData,
-        onError: handleErrors,
-      }
-    );
+    createStaffMember(values, {
+      onSuccess: updateStaffListData,
+    });
     exitCreatingMode();
   };
 
@@ -220,22 +194,12 @@ function Staff({ role }: StaffPageProps) {
       return;
     }
     setValidationErrors({});
-    updateStaffMember(
-      {
-        ...values,
-        id: Number(values.id),
-        branch_id: Number(values.branch_id),
-        active: values.active === "" || values.active === "true" ? true : false,
-        last_name: String(values.last_name ?? ""),
+    updateStaffMember(values, {
+      onSuccess: (data) => {
+        updateStaffListData(data, { id: Number(data.id) });
+        table.setEditingRow(null);
       },
-      {
-        onSuccess: (data) => {
-          updateStaffListData(data, { id: Number(data.id) });
-          table.setEditingRow(null);
-        },
-        onError: handleErrors,
-      }
-    );
+    });
     table.setEditingRow(null);
   };
 
@@ -261,28 +225,27 @@ function Staff({ role }: StaffPageProps) {
                 }
               );
             },
-            onError: handleErrors,
           }
         ),
     });
   };
+
   return (
     <SideMenu role={role}>
       <CustomTable
+        addButtonLabel="Novo Colaborador"
+        createModalLabel="Novo Colaborador"
+        editModalLabel="Editar Colaborador"
         columns={columns}
         data={staffMembers}
         tableOptions={{
           onCreatingRowSave: handleCreateUser,
           onEditingRowSave: handleSaveUser,
+          enableFullScreenToggle: false,
+          manualExpanding: true,
         }}
         openDeleteConfirmModal={openDeleteConfirmModal}
-        isLoading={
-          isFetchingStaff ||
-          isCreating ||
-          isUpdating ||
-          isDeleting ||
-          isFetchingBranches
-        }
+        isLoading={isLoadingStaff}
         error={isGettingStaffError}
       />
     </SideMenu>

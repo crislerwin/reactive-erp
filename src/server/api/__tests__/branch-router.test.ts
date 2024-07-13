@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { makeApp, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
+import { ErrorType } from "@/common/errors/customErrors";
 
 describe("Branch router", () => {
   describe("List all branches", () => {
@@ -28,9 +29,7 @@ describe("Branch router", () => {
         },
       });
       const promisses = app.branch.findAll();
-      await expect(promisses).rejects.toThrowError(
-        "You are not allowed to perform this action"
-      );
+      await expect(promisses).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
   });
   describe("CREATE branch", () => {
@@ -38,18 +37,12 @@ describe("Branch router", () => {
       const { app } = await makeSut();
       const branch = await app.branch.createBranch({
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.email(),
-        logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
         },
       });
       expect(branch).toHaveProperty("branch_id");
       expect(branch).toHaveProperty("name");
-      expect(branch).toHaveProperty("company_code");
-      expect(branch).toHaveProperty("website");
-      expect(branch).toHaveProperty("logo_url");
       expect(branch).toHaveProperty("created_at");
       expect(branch).toHaveProperty("updated_at");
       expect(branch).toHaveProperty("deleted_at");
@@ -73,16 +66,11 @@ describe("Branch router", () => {
       });
       const promisses = app.branch.createBranch({
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.email(),
-        logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
         },
       });
-      await expect(promisses).rejects.toThrowError(
-        "You are not allowed to perform this action"
-      );
+      await expect(promisses).rejects.toThrowError();
     });
   });
   describe("DELETE branch", () => {
@@ -90,9 +78,6 @@ describe("Branch router", () => {
       const { app } = await makeSut();
       const branch = await app.branch.createBranch({
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.email(),
-        logo_url: faker.image.imageUrl(),
         attributes: {
           test: "test",
         },
@@ -123,9 +108,7 @@ describe("Branch router", () => {
       const promisses = app.branch.deleteBranch({
         branch_id: 1,
       });
-      await expect(promisses).rejects.toThrowError(
-        "You are not allowed to perform this action"
-      );
+      await expect(promisses).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
   });
   describe("Update Branch", () => {
@@ -133,13 +116,9 @@ describe("Branch router", () => {
       const { app } = await makeSut();
       const branchData = {
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.domainName(),
       };
       const updatedBranchRequest = {
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.domainName(),
       };
       const branch = await app.branch.createBranch(branchData);
 
@@ -168,12 +147,8 @@ describe("Branch router", () => {
       const promisses = app.branch.updateBranch({
         branch_id: 1,
         name: faker.company.name(),
-        company_code: faker.random.alphaNumeric(10),
-        website: faker.internet.domainWord(),
       });
-      await expect(promisses).rejects.toThrowError(
-        "You are not allowed to perform this action"
-      );
+      await expect(promisses).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
   });
 });

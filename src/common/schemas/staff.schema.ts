@@ -1,31 +1,44 @@
 import z from "zod";
+import { customBooleanValidator, customNumberValidator } from "./common";
 
 export const commonSchema = z.object({
-  branch_id: z.number(),
+  branch_id: customNumberValidator,
 });
 
 export const createStaffMemberSchema = z.intersection(
   z.object({
     first_name: z
       .string()
-      .min(2, { message: "Nome deve ter no mínimo 2 caracteres" }),
+      .min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
     last_name: z.string().optional(),
     email: z.string().email({ message: "Email inválido" }),
     role: z.enum(["ADMIN", "EMPLOYEE", "MANAGER", "OWNER"], {
       invalid_type_error: "Tipo de usuário inválido",
+      message: "Tipo de usuário inválido",
     }),
-    active: z.boolean().default(true),
+    active: customBooleanValidator.optional().default(true),
   }),
   commonSchema
 );
 
 export const updateStaffMemberSchema = z.intersection(
   z.object({
-    id: z.number(),
-    first_name: z.string().optional(),
+    id: customNumberValidator,
+    first_name: z
+      .string()
+      .min(3, {
+        message: "Nome deve ter no mínimo 3 caracteres",
+      })
+      .optional(),
     last_name: z.string().optional(),
-    active: z.boolean().optional().default(true),
-    role: z.enum(["ADMIN", "EMPLOYEE", "MANAGER"]).optional(),
+    email: z.string().email({ message: "Email inválido" }).optional(),
+    active: customBooleanValidator.optional().default(true),
+    role: z
+      .enum(["ADMIN", "EMPLOYEE", "MANAGER"], {
+        invalid_type_error: "Tipo de usuário inválido",
+        message: "Tipo de usuário inválido",
+      })
+      .optional(),
   }),
   commonSchema
 );

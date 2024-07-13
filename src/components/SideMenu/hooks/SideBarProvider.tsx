@@ -1,9 +1,5 @@
 import { parseCookies, setCookie } from "nookies";
-import React, { useEffect } from "react";
-
-type SideBarProviderProps = {
-  children: React.ReactNode;
-};
+import React, { type PropsWithChildren, useEffect } from "react";
 
 type SideBarContextProps = {
   open: boolean;
@@ -18,9 +14,7 @@ export const SideBarContext = React.createContext<SideBarContextProps>({
   },
 });
 
-export const SideBarProvider: React.FC<SideBarProviderProps> = ({
-  children,
-}) => {
+export const SideBarProvider = ({ children }: PropsWithChildren) => {
   const [open, setOpen] = React.useState<boolean>(false);
 
   useEffect(() => {

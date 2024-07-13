@@ -3,6 +3,8 @@ import { appRouter } from "../../root";
 import { createCaller } from "../../trpc";
 import { faker } from "@faker-js/faker";
 import { type Branch, type Staff } from "@prisma/client";
+import { type z } from "zod";
+import { type createBranchSchema } from "@/common/schemas";
 
 export const makeStaffRequest = (branch_id: number): Staff => ({
   active: true,
@@ -17,18 +19,14 @@ export const makeStaffRequest = (branch_id: number): Staff => ({
   updated_at: faker.date.recent(),
 });
 
-export const makeBranchRequest = () => ({
+export const makeBranchRequest = (): z.infer<typeof createBranchSchema> => ({
   name: faker.company.name(),
-  company_code: faker.helpers.fake("###-###-###"),
-  email: faker.internet.email(),
 });
 
 export const createBranch = async (): Promise<Branch> => {
   return prisma.branch.create({
     data: {
       name: faker.company.name(),
-      company_code: faker.helpers.fake("###-###-###"),
-      website: faker.internet.domainName(),
     },
   });
 };

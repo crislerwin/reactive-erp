@@ -42,6 +42,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
     data,
     localization: MRT_Localization_PT_BR,
     createDisplayMode: "modal",
+
     editDisplayMode: "modal",
     enableEditing,
     getRowId: ({ id }) => String(id),

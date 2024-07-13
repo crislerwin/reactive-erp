@@ -7,18 +7,23 @@ import { SideBarProvider } from "@/components/SideMenu";
 import { ThemeProvider } from "@/components/ThemeToggle";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ModalsProvider } from "@mantine/modals";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
     <ThemeProvider>
-      <SideBarProvider>
-        <ClerkProvider localization={ptBR} {...pageProps}>
-          <ModalsProvider>
-            <Component {...pageProps} />
-          </ModalsProvider>
-        </ClerkProvider>
-      </SideBarProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ModalsProvider>
+        <QueryClientProvider client={queryClient}>
+          <ClerkProvider localization={ptBR} {...pageProps}>
+            <SideBarProvider>
+              <Component {...pageProps} />
+            </SideBarProvider>
+          </ClerkProvider>
+
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </ModalsProvider>
     </ThemeProvider>
   );
 };

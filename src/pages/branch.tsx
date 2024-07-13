@@ -4,8 +4,7 @@ import {
   type MRT_Row,
   type MRT_TableOptions,
 } from "mantine-react-table";
-import { useQueryClient } from "@tanstack/react-query";
-import { type Branch as BranchProps } from "@prisma/client";
+import { type Branch } from "@prisma/client";
 
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
@@ -20,16 +19,17 @@ import {
   type DefaultPageProps,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
+import { customErrorHandler } from "@/common/errors/customErrors";
+import { queryClient } from "@/lib";
 
 type BranchPageProps = DefaultPageProps;
 
-function Branch({ role, branch_id }: BranchPageProps) {
+function BranchPage({ role, branch_id }: BranchPageProps) {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
 
-  const queryClient = useQueryClient();
-  const { data: branches = [], isFetching: isFetchingBranches } =
+  const { data: branches = [], isLoading: isLoadingBranches } =
     trpc.branch.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
   const { mutate: createBranch, isLoading: isCreatingBranch } =
     trpc.branch.createBranch.useMutation();
@@ -37,7 +37,8 @@ function Branch({ role, branch_id }: BranchPageProps) {
     trpc.branch.deleteBranch.useMutation();
   const { mutate: updateBranch, isLoading: isUpdatingBranch } =
     trpc.branch.updateBranch.useMutation();
-  const columns = useMemo<MRT_ColumnDef<BranchProps>[]>(
+
+  const columns = useMemo<MRT_ColumnDef<Branch>[]>(
     () => [
       {
         accessorKey: "branch_id",
@@ -59,43 +60,12 @@ function Branch({ role, branch_id }: BranchPageProps) {
             }),
         },
       },
-      {
-        accessorKey: "company_code",
-        header: "CNPJ",
-        mantineEditTextInputProps: {
-          type: "email",
-          error: validationErrors?.company_code,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              company_code: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: "website",
-        header: "Website",
-        accessorFn(originalRow) {
-          return originalRow.website || "";
-        },
-        mantineEditTextInputProps: {
-          type: "email",
-          error: validationErrors?.website,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              website: undefined,
-            }),
-        },
-      },
     ],
     [validationErrors]
   );
-  const updateBranchesData = (
-    newData: BranchProps,
-    variables: Partial<BranchProps>
-  ) =>
-    queryClient.setQueryData<BranchProps[] | undefined>(
+
+  const updateBranchesData = (newData: Branch, variables: Partial<Branch>) =>
+    queryClient.setQueryData<Branch[] | undefined>(
       getQueryKey(trpc.branch.findAll, undefined, "query"),
       (oldData) => {
         if (!oldData) return;
@@ -108,37 +78,31 @@ function Branch({ role, branch_id }: BranchPageProps) {
       }
     );
 
-  const handleCreateBranch: MRT_TableOptions<BranchProps>["onCreatingRowSave"] =
-    ({ values, exitCreatingMode }) => {
-      const newValidationErrors = validateData(values, createBranchSchema);
-      if (Object.values(newValidationErrors).some((error) => error)) {
-        setValidationErrors(newValidationErrors);
-        return;
-      }
-      setValidationErrors({});
-      createBranch(
-        {
-          website: values.website ? String(values.website) : undefined,
-          company_code: String(values.company_code),
-          name: String(values.name),
-        },
-        {
-          onSuccess: (newData, variables) => {
-            updateBranchesData(newData, variables);
-            exitCreatingMode();
-          },
-          onError: (error) => {
-            modals.open({
-              title: `Ops! Ocorreu ao salvar filial`,
-              children: error.message,
-              closeOnEscape: true,
-            });
-          },
-        }
-      );
-    };
+  const handleCreateBranch: MRT_TableOptions<Branch>["onCreatingRowSave"] = ({
+    values,
+    exitCreatingMode,
+  }) => {
+    const newValidationErrors = validateData(values, createBranchSchema);
+    if (Object.values(newValidationErrors).some((error) => error)) {
+      setValidationErrors(newValidationErrors);
+      return;
+    }
+    setValidationErrors({});
+    createBranch(values, {
+      onSuccess: (newData, variables) => {
+        updateBranchesData(newData, variables);
+        exitCreatingMode();
+      },
+      onError: (error) => {
+        customErrorHandler({
+          message: error.message,
+          title: "Ops! Ocorreu um erro ao criar a filial",
+        });
+      },
+    });
+  };
 
-  const handleSaveBranch: MRT_TableOptions<BranchProps>["onEditingRowSave"] = ({
+  const handleSaveBranch: MRT_TableOptions<Branch>["onEditingRowSave"] = ({
     values,
     exitEditingMode,
   }) => {
@@ -148,32 +112,21 @@ function Branch({ role, branch_id }: BranchPageProps) {
       return;
     }
     setValidationErrors({});
-    updateBranch(
-      {
-        branch_id: Number(values.branch_id),
-        website: values.website ? String(values.website) : undefined,
-        company_code: values.company_code
-          ? String(values.company_code)
-          : undefined,
-        name: values.name ? String(values.name) : undefined,
+    updateBranch(values, {
+      onSuccess: (newData, variables) => {
+        updateBranchesData(newData, variables);
+        exitEditingMode();
       },
-      {
-        onSuccess: (newData, variables) => {
-          updateBranchesData(newData, variables);
-          exitEditingMode();
-        },
-        onError: (error) => {
-          modals.open({
-            title: `Ops! Ocorreu ao salvar filial`,
-            children: error.message,
-            closeOnEscape: true,
-          });
-        },
-      }
-    );
+      onError: (error) => {
+        customErrorHandler({
+          message: error.message,
+          title: "Ops! Ocorreu um erro ao salvar a filial",
+        });
+      },
+    });
   };
 
-  const openDeleteConfirmModal = (row: MRT_Row<BranchProps>) => {
+  const openDeleteConfirmModal = (row: MRT_Row<Branch>) => {
     modals.openConfirmModal({
       title: "Deletar Filial",
       children: `Vocé tem certeza que quer excluir a filial ${row.original.name}? Essa ação não pode ser desfeita.`,
@@ -185,7 +138,7 @@ function Branch({ role, branch_id }: BranchPageProps) {
           { branch_id: row.original.branch_id },
           {
             onSuccess: () => {
-              queryClient.setQueryData<BranchProps[] | undefined>(
+              queryClient.setQueryData<Branch[] | undefined>(
                 getQueryKey(trpc.branch.findAll, undefined, "query"),
                 (oldData) => {
                   if (!oldData) return;
@@ -196,10 +149,9 @@ function Branch({ role, branch_id }: BranchPageProps) {
               );
             },
             onError: (error) => {
-              modals.open({
-                title: `Ops! Ocorreu ao deletar filial`,
-                children: error.message,
-                closeOnEscape: true,
+              customErrorHandler({
+                message: error.message,
+                title: "Ops! Ocorreu um erro ao deletar a filial",
               });
             },
           }
@@ -207,20 +159,20 @@ function Branch({ role, branch_id }: BranchPageProps) {
       },
     });
   };
+
   return (
     <SideMenu role={role}>
       <CustomTable
+        addButtonLabel="Nova Filial"
+        createModalLabel="Nova Filial"
+        editModalLabel="Editar Filial"
         branch_id={branch_id}
-        isLoading={
-          isFetchingBranches ||
-          isCreatingBranch ||
-          isDeletingBranch ||
-          isUpdatingBranch
-        }
+        isLoading={isLoadingBranches}
         openDeleteConfirmModal={openDeleteConfirmModal}
         tableOptions={{
           onCreatingRowSave: handleCreateBranch,
           onEditingRowSave: handleSaveBranch,
+          enableStickyHeader: true,
         }}
         columns={columns}
         data={branches}
@@ -228,7 +180,7 @@ function Branch({ role, branch_id }: BranchPageProps) {
     </SideMenu>
   );
 }
-export default Branch;
+export default BranchPage;
 
 export async function getServerSideProps(ctx: CreateNextContextOptions) {
   const staffMember = await getServerAuthSession(ctx);

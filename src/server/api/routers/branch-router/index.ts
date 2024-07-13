@@ -2,15 +2,13 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createBranchSchema, updateBranchSchema } from "@/common/schemas";
+import { CustomError } from "@/common/errors/customErrors";
 
 const allowedRoles = ["ADMIN", "MANAGER", "OWNER"];
 
 const validateRole = (role: string) => {
   if (!allowedRoles.includes(role))
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      cause: "You are not allowed to perform this action",
-    });
+    throw new TRPCError(CustomError.NOT_ALLOWED);
 };
 
 export const branchRouter = createTRPCRouter({
@@ -25,9 +23,6 @@ export const branchRouter = createTRPCRouter({
       return ctx.prisma.branch.create({
         data: {
           name: input.name,
-          logo_url: input.logo_url,
-          company_code: input.company_code,
-          website: input.website,
           attributes: input.attributes,
         },
       });
@@ -49,9 +44,6 @@ export const branchRouter = createTRPCRouter({
         where: { branch_id: input.branch_id },
         data: {
           name: input.name,
-          logo_url: input.logo_url,
-          company_code: input.company_code,
-          website: input.website,
           attributes: input.attributes,
         },
       });
