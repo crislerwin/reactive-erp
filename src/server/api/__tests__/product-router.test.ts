@@ -88,7 +88,6 @@ describe("Product Router", () => {
       const { app, branch } = await makeSut();
       const product = await app.product.create({
         available: "true",
-        branch_id: String(branch.branch_id),
         colors: ["red", "blue"],
         currency: "USD",
         description: faker.lorem.sentence(),
@@ -117,7 +116,6 @@ describe("Product Router", () => {
       });
       const promisses = app.product.create({
         available: "true",
-        branch_id: String(branch.branch_id),
         colors: ["red", "blue"],
         currency: "USD",
         description: faker.lorem.sentence(),
@@ -148,7 +146,6 @@ describe("Product Router", () => {
       const updatedProduct = await app.product.updateProduct({
         product_id: String(product.product_id),
         available: "true",
-        branch_id: String(branch.branch_id),
         colors: ["red", "blue"],
         currency: "USD",
         description: faker.lorem.sentence(),

@@ -5,7 +5,7 @@ import {
 } from "@/common/schemas";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { custom, z } from "zod";
+import { z } from "zod";
 
 const superUserRoles = ["ADMIN", "OWNER"];
 
@@ -39,7 +39,10 @@ export const productRouter = createTRPCRouter({
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
       return ctx.prisma.product.create({
-        data: input,
+        data: {
+          branch_id: ctx.session.account.branch_id,
+          ...input,
+        },
       });
     }),
   updateProduct: protectedProcedure
@@ -56,7 +59,7 @@ export const productRouter = createTRPCRouter({
           price: input.price,
           description: input.description,
           available: input.available,
-          branch_id: input.branch_id,
+          branch_id: ctx.session.account.branch_id,
           currency: input.currency,
           product_id: input.product_id,
           product_category_id: input.product_category_id,

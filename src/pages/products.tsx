@@ -65,8 +65,10 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
       {
         accessorKey: "price",
         header: "Preço",
+
         mantineEditTextInputProps: {
-          type: "email",
+          type: "number",
+          required: true,
           error: validationErrors?.price,
           onFocus: () =>
             setValidationErrors({
@@ -77,9 +79,9 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
       },
       {
         accessorKey: "stock",
-        header: "Em Estoque",
+        header: "Quantidade em estoque",
         mantineEditTextInputProps: {
-          type: "email",
+          type: "number",
           error: validationErrors?.stock,
           onFocus: () =>
             setValidationErrors({
@@ -89,30 +91,17 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
         },
       },
       {
-        accessorKey: "branch_id",
-        header: "Id Filial",
-        mantineEditTextInputProps: {
-          type: "email",
-          error: validationErrors?.stock,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              branch_id: undefined,
-            }),
-        },
-      },
-      {
         accessorKey: "product_category_id",
         header: "Categoria",
         accessorFn: (row) => String(row.product_category_id),
-        mantineEditTextInputProps: {
-          type: "email",
-          error: validationErrors?.stock,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              product_category_id: undefined,
-            }),
+
+        mantineEditSelectProps: {
+          required: true,
+          data: [
+            { label: "Categoria 1", value: "1" },
+            { label: "Categoria 2", value: "2" },
+          ],
+          error: validationErrors?.product_category_id,
         },
       },
       {
@@ -152,14 +141,13 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
       {
         accessorKey: "currency",
         header: "Moeda",
-        mantineEditTextInputProps: {
-          type: "email",
-          error: validationErrors?.stock,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              currency: undefined,
-            }),
+        editVariant: "select",
+        mantineEditSelectProps: {
+          required: true,
+          data: [
+            { label: "USD", value: "USD" },
+            { label: "BRL", value: "BRL" },
+          ],
         },
       },
     ],
