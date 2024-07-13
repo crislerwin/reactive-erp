@@ -19,6 +19,7 @@ model Branch {
   created_at    DateTime  @default(now())
   updated_at    DateTime? @updatedAt
   deleted_at    DateTime?
+  products      Product[]
 
   @@index([branch_id])
 }
@@ -47,17 +48,19 @@ model Product {
   description         String?
   price               Float
   currency            String
-  available_quantity  Int
+  stock               Int             @default(0)
   colors              Json?
   product_category_id Int
   product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
+  branch              Branch          @relation(fields: [branch_id], references: [branch_id])
   available           Boolean         @default(true)
   created_at          DateTime        @default(now())
-  updated_at          DateTime?       @updatedAt
+  updated_at          DateTime        @updatedAt
   deleted_at          DateTime?
 
   @@index([branch_id])
   @@index([product_category_id])
+  @@index([deleted_at])
 }
 
 model ProductCategory {

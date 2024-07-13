@@ -12,6 +12,9 @@ import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
 interface CustomTableProps<T extends Record<string, unknown>> {
   data: T[];
   columns: MRT_TableOptions<T>["columns"];
+  editModalLabel?: string;
+  createModalLabel?: string;
+  addButtonLabel?: string;
   tableOptions?: Partial<MRT_TableOptions<T>>;
   isLoading?: boolean;
   error?: boolean;
@@ -28,6 +31,9 @@ export default function CustomTable<T extends Record<string, unknown>>({
   branch_id,
   error = false,
   enableEditing = true,
+  editModalLabel = "Editar",
+  createModalLabel = "Novo",
+  addButtonLabel = "Novo",
   openDeleteConfirmModal,
 }: CustomTableProps<T>) {
   const table = useMantineReactTable({
@@ -53,7 +59,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
 
     renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
-        <Title order={3}>Novo</Title>
+        <Title order={3}>{createModalLabel}</Title>
         {internalEditComponents}
         <Flex justify="flex-end" mt="xl">
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -62,7 +68,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
     ),
     renderEditRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
-        <Title order={3}>Editar</Title>
+        <Title order={3}>{editModalLabel}</Title>
         {internalEditComponents}
         <Flex justify="flex-end" mt="xl">
           <MRT_EditActionButtons variant="text" table={table} row={row} />
@@ -76,7 +82,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
       const isNotAllowedToDelete = isOwner || isSameBranch;
       return (
         <Flex gap="md">
-          <Tooltip label="Editar">
+          <Tooltip label="Salvar">
             <ActionIcon
               onClick={() => {
                 table.setEditingRow(row);
@@ -99,7 +105,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
       );
     },
     renderTopToolbarCustomActions: ({ table }) => (
-      <Tooltip withArrow label="Novo item">
+      <Tooltip withArrow label={addButtonLabel}>
         <Button
           variant="outline"
           onClick={() => {

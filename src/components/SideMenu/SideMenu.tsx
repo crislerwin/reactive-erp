@@ -19,7 +19,7 @@ import CommandPalette, {
   useHandleOpenCommandPalette,
 } from "../SearchBar";
 import { makeFilterItems } from "./utils";
-import { StoreIcon } from "lucide-react";
+import { PackageSearch, StoreIcon } from "lucide-react";
 import { managerRoles } from "@/common/schemas";
 
 type SideMenuProps = {
@@ -174,6 +174,12 @@ export function SideMenu({ children, role }: SideMenuProps) {
               href: "/branch",
               selected: pathname === "/branch",
               visible: managerRoles.includes(role),
+            },
+            {
+              icon: <PackageSearch className="h-4 w-4" />,
+              label: "Produtos",
+              href: "/products",
+              selected: pathname === "/products",
             },
           ]}
           open={open}

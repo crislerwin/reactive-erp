@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { makeFakeStaff, makeApp, makeSut } from "./__mocks__";
+import { makeStaffRequest, makeApp, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 import { type UpdateStaffMemberInput } from "../../../common/schemas/staff.schema";
@@ -81,7 +81,7 @@ describe("Staff member Router", () => {
       expect(result2).toBeInstanceOf(Array);
       expect(result2.length).toBe(1);
       const accountOwner: Staff = {
-        ...makeFakeStaff(branch1.branch_id),
+        ...makeStaffRequest(branch1.branch_id),
         role: "OWNER",
       };
       const sutOwner = makeApp({
@@ -273,7 +273,7 @@ describe("Staff member Router", () => {
     test("Should throw if staff member is owner", async () => {
       const { branch } = await makeSut();
       const staffOwner: Staff = {
-        ...makeFakeStaff(branch.branch_id),
+        ...makeStaffRequest(branch.branch_id),
         role: "OWNER",
       };
       const app = makeApp({ staff: staffOwner, branch_id: branch.branch_id });
@@ -292,7 +292,7 @@ describe("Staff member Router", () => {
     test("Should throw if staff member is admin and not owner", async () => {
       const { branch } = await makeSut();
       const staffAdmin: Staff = {
-        ...makeFakeStaff(branch.branch_id),
+        ...makeStaffRequest(branch.branch_id),
         role: "ADMIN",
       };
       const app = makeApp({ staff: staffAdmin, branch_id: branch.branch_id });

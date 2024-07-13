@@ -4,7 +4,7 @@ import { createCaller } from "../../trpc";
 import { faker } from "@faker-js/faker";
 import { type Branch, type Staff } from "@prisma/client";
 
-export const makeFakeStaff = (branch_id: number): Staff => ({
+export const makeStaffRequest = (branch_id: number): Staff => ({
   active: true,
   id: faker.datatype.number(),
   branch_id,
@@ -35,7 +35,7 @@ export const createBranch = async (): Promise<Branch> => {
 
 export const makeApp = ({
   branch_id,
-  staff = makeFakeStaff(branch_id),
+  staff = makeStaffRequest(branch_id),
 }: {
   branch_id: number;
   staff?: Staff;
@@ -51,7 +51,7 @@ export const makeApp = ({
 
 export async function makeSut() {
   const branch = await createBranch();
-  const staff = makeFakeStaff(branch.branch_id);
+  const staff = makeStaffRequest(branch.branch_id);
   const app = makeApp({ branch_id: branch.branch_id, staff });
   return { app, branch, staff };
 }
