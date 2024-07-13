@@ -244,6 +244,9 @@ function Staff({ role }: StaffPageProps) {
   return (
     <SideMenu role={role}>
       <CustomTable
+        addButtonLabel="Novo Colaborador"
+        createModalLabel="Novo Colaborador"
+        editModalLabel="Editar Colaborador"
         columns={columns}
         data={staffMembers}
         tableOptions={{

@@ -25,7 +25,7 @@ import { customErrorHandler } from "@/common/errors/common";
 
 type ProductsPageProps = DefaultPageProps;
 
-export default function Products({ role, branch_id }: ProductsPageProps) {
+export default function Products({ role }: ProductsPageProps) {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
@@ -240,6 +240,11 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
                 }
               );
             },
+            onError: (error) =>
+              customErrorHandler({
+                title: "Ops! Ocorreu um erro ao deletar o produto",
+                message: error.message,
+              }),
           }
         );
       },

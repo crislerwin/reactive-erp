@@ -209,6 +209,9 @@ function Branch({ role, branch_id }: BranchPageProps) {
   return (
     <SideMenu role={role}>
       <CustomTable
+        addButtonLabel="Nova Filial"
+        createModalLabel="Nova Filial"
+        editModalLabel="Editar Filial"
         branch_id={branch_id}
         isLoading={
           isFetchingBranches ||
