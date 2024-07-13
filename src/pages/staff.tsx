@@ -25,9 +25,8 @@ import { getServerAuthSession } from "@/server/api/auth";
 type StaffPageProps = DefaultPageProps;
 
 function Staff({ role }: StaffPageProps) {
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string | undefined>
-  >({});
+  const [validationErrors, setValidationErrors] =
+    useState<Record<string, string | undefined>>();
 
   const queryClient = useQueryClient();
   const {
@@ -61,11 +60,11 @@ function Staff({ role }: StaffPageProps) {
         mantineEditTextInputProps: {
           type: "email",
           required: true,
-          error: validationErrors?.firstName,
+          error: validationErrors?.first_name,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
-              firstName: undefined,
+              first_name: undefined,
             }),
         },
       },
@@ -74,11 +73,11 @@ function Staff({ role }: StaffPageProps) {
         header: "Sobrenome",
         mantineEditTextInputProps: {
           type: "email",
-          error: validationErrors?.lastName,
+          error: validationErrors?.last_name,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
-              lastName: undefined,
+              last_name: undefined,
             }),
         },
       },
@@ -107,7 +106,7 @@ function Staff({ role }: StaffPageProps) {
             { value: "MANAGER", label: "Gerente" },
             { value: "EMPLOYEE", label: "Funcionario" },
           ],
-          error: validationErrors?.state,
+          error: validationErrors?.role,
         },
       },
       {

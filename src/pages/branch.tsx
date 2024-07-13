@@ -63,7 +63,8 @@ function Branch({ role, branch_id }: BranchPageProps) {
         accessorKey: "company_code",
         header: "CNPJ",
         mantineEditTextInputProps: {
-          type: "email",
+          required: true,
+          type: "number",
           error: validationErrors?.company_code,
           onFocus: () =>
             setValidationErrors({
@@ -79,7 +80,7 @@ function Branch({ role, branch_id }: BranchPageProps) {
           return originalRow.website || "";
         },
         mantineEditTextInputProps: {
-          type: "email",
+          type: "text",
           error: validationErrors?.website,
           onFocus: () =>
             setValidationErrors({
