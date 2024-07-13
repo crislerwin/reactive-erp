@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Branch {
-  branch_id     Int       @unique @default(autoincrement())
+  branch_id     Int       @id @default(autoincrement())
   name          String
   staff_members Staff[]
   attributes    Json?
@@ -17,12 +17,10 @@ model Branch {
   updated_at    DateTime? @updatedAt
   deleted_at    DateTime?
   products      Product[]
-
-  @@index([branch_id])
 }
 
 model Staff {
-  id         Int       @unique @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   branch_id  Int
   first_name String
   last_name  String?
@@ -39,20 +37,20 @@ model Staff {
 }
 
 model Product {
-  product_id          Int             @unique @default(autoincrement())
+  product_id          Int              @id @default(autoincrement())
   branch_id           Int
   name                String
   description         String?
   price               Float
   currency            String
-  stock               Int             @default(0)
+  stock               Int              @default(0)
   colors              Json?
   product_category_id Int
-  product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
-  branch              Branch          @relation(fields: [branch_id], references: [branch_id])
-  available           Boolean         @default(true)
-  created_at          DateTime        @default(now())
-  updated_at          DateTime        @updatedAt
+  product_category    Product_Category @relation(fields: [product_category_id], references: [id])
+  branch              Branch           @relation(fields: [branch_id], references: [branch_id])
+  available           Boolean          @default(true)
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
   deleted_at          DateTime?
 
   @@index([branch_id])
@@ -60,8 +58,8 @@ model Product {
   @@index([deleted_at])
 }
 
-model ProductCategory {
-  id          Int       @unique @default(autoincrement())
+model Product_Category {
+  id          Int       @id @default(autoincrement())
   branch_id   Int
   name        String
   description String?
@@ -72,18 +70,4 @@ model ProductCategory {
   products    Product[]
 
   @@index([branch_id])
-}
-
-model Currency {
-  id                 Int       @unique @default(autoincrement())
-  currency_name      String
-  currency_code      String
-  currency_symbol    String
-  currency_position  String
-  decimal_separator  String
-  thousand_separator String
-  cent_precision     Int
-  default            Boolean   @default(true)
-  created_at         DateTime  @default(now())
-  updated_at         DateTime? @updatedAt
 }

@@ -5,7 +5,7 @@ import {
   updateStaffMemberSchema,
 } from "@/common/schemas";
 import { z } from "zod";
-import { CustomError, ErrorType } from "@/common/errors/common";
+import { CustomError } from "@/common/errors/common";
 
 const allowedRoles = ["ADMIN", "MANAGER"];
 
@@ -17,20 +17,11 @@ export const staffRouter = createTRPCRouter({
         return ctx.prisma.staff.findMany({ include: { branch: true } });
 
       if (!allowedRoles.includes(ctx.session.account.role))
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          cause: "You are not allowed to perform this action",
-        });
-
+        throw new TRPCError(CustomError.NOT_ALLOWED);
       const branch = await ctx.prisma.branch.findUnique({
         where: { branch_id: ctx.session.account.branch_id },
       });
-      if (!branch)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          cause: ErrorType.BRANCH_NOT_FOUND,
-        });
-
+      if (!branch) throw new TRPCError(CustomError.BRANCH_NOT_FOUND);
       return ctx.prisma.staff.findMany({
         where: {
           branch_id: ctx.session.account.branch_id,
