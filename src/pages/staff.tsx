@@ -4,7 +4,6 @@ import {
   type MRT_Row,
   type MRT_TableOptions,
 } from "mantine-react-table";
-import { useQueryClient } from "@tanstack/react-query";
 import { SideMenu } from "@/components/SideMenu";
 import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
@@ -20,18 +19,16 @@ import {
   managerRoles,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
-import { customErrorHandler } from "@/common/errors/common";
+import { queryClient } from "@/lib";
 
 type StaffPageProps = DefaultPageProps;
 
 function Staff({ role }: StaffPageProps) {
   const [validationErrors, setValidationErrors] =
     useState<Record<string, string | undefined>>();
-
-  const queryClient = useQueryClient();
   const {
     data: staffMembers = [],
-    isFetching: isFetchingStaff,
+    isLoading: isLoadingStaff,
     isError: isGettingStaffError,
   } = trpc.staff.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
   const { mutate: createStaffMember, isLoading: isCreating } =
@@ -71,6 +68,7 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "last_name",
         header: "Sobrenome",
+        accessorFn: (row) => row.last_name ?? "",
         mantineEditTextInputProps: {
           type: "email",
           error: validationErrors?.last_name,
@@ -84,6 +82,7 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "email",
         header: "Email",
+        enableEditing: (row) => !row.original.email,
         mantineEditTextInputProps: {
           type: "email",
           required: true,
@@ -112,6 +111,7 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "branch_id",
         header: "Filial",
+        accessorFn: (row) => (row.branch_id ? String(row.branch_id) : ""),
         editVariant: "select",
         Cell(props) {
           const branch = branches.find(
@@ -131,8 +131,12 @@ function Staff({ role }: StaffPageProps) {
       },
       {
         accessorKey: "active",
-        accessorFn: (row) => String(row.active),
+        accessorFn: (row) =>
+          typeof row.active === "boolean" ? String(row.active) : "true",
         header: "Status",
+        Cell(props) {
+          return <span>{props.row.original.active ? "Ativo" : "Inativo"}</span>;
+        },
         editVariant: "select",
         mantineEditSelectProps: {
           required: true,
@@ -176,11 +180,6 @@ function Staff({ role }: StaffPageProps) {
 
     createStaffMember(values, {
       onSuccess: updateStaffListData,
-      onError: (err) =>
-        customErrorHandler({
-          title: "Ops! Ocorreu um erro ao criar o colaborador",
-          message: err.message,
-        }),
     });
     exitCreatingMode();
   };
@@ -200,11 +199,6 @@ function Staff({ role }: StaffPageProps) {
         updateStaffListData(data, { id: Number(data.id) });
         table.setEditingRow(null);
       },
-      onError: (err) =>
-        customErrorHandler({
-          title: "Ops! Ocorreu um erro ao editar o colaborador",
-          message: err.message,
-        }),
     });
     table.setEditingRow(null);
   };
@@ -231,15 +225,11 @@ function Staff({ role }: StaffPageProps) {
                 }
               );
             },
-            onError: (err) =>
-              customErrorHandler({
-                title: "Ops! Ocorreu um erro ao deletar o colaborador",
-                message: err.message,
-              }),
           }
         ),
     });
   };
+
   return (
     <SideMenu role={role}>
       <CustomTable
@@ -253,13 +243,7 @@ function Staff({ role }: StaffPageProps) {
           onEditingRowSave: handleSaveUser,
         }}
         openDeleteConfirmModal={openDeleteConfirmModal}
-        isLoading={
-          isFetchingStaff ||
-          isCreating ||
-          isUpdating ||
-          isDeleting ||
-          isFetchingBranches
-        }
+        isLoading={isLoadingStaff}
         error={isGettingStaffError}
       />
     </SideMenu>

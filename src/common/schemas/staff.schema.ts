@@ -30,12 +30,8 @@ export const updateStaffMemberSchema = z.intersection(
         message: "Nome deve ter no mínimo 3 caracteres",
       })
       .optional(),
-    last_name: z
-      .string()
-      .min(3, {
-        message: "Sobrenome deve ter no mínimo 3 caracteres",
-      })
-      .optional(),
+    last_name: z.string().optional(),
+    email: z.string().email({ message: "Email inválido" }).optional(),
     active: customBooleanValidator.optional().default(true),
     role: z
       .enum(["ADMIN", "EMPLOYEE", "MANAGER"], {

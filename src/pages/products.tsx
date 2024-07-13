@@ -31,25 +31,25 @@ export default function Products({ role }: ProductsPageProps) {
   >({});
 
   const queryClient = useQueryClient();
-  const { data: products = [], isFetching: isFetchingProducts } =
+  const { data: products = [], isLoading: isLoadingProducts } =
     trpc.product.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
   console.log(products);
-  const { mutate: createProduct, isLoading: isCreatingProduct } =
-    trpc.product.create.useMutation();
-  const { mutate: updateProduct, isLoading: isUpdatingProduct } =
-    trpc.product.updateProduct.useMutation();
+  const { mutate: createProduct } = trpc.product.create.useMutation();
+  const { mutate: updateProduct } = trpc.product.updateProduct.useMutation();
   const { mutate: deleteProduct, isLoading: isDeletingProduct } =
     trpc.product.deleteProduct.useMutation();
   const columns = useMemo<MRT_ColumnDef<Product>[]>(
     () => [
       {
         accessorKey: "product_id",
+        accessorFn: (row) => (row.product_id ? String(row.product_id) : ""),
         header: "Id do Produto",
         enableEditing: false,
         size: 80,
       },
       {
         accessorKey: "name",
+        accessorFn: (row) => row.name ?? "",
         header: "Nome do Produto",
         mantineEditTextInputProps: {
           type: "email",
@@ -65,7 +65,7 @@ export default function Products({ role }: ProductsPageProps) {
       {
         accessorKey: "price",
         header: "Preço",
-
+        accessorFn: (row) => (row.price ? String(row.price) : ""),
         mantineEditTextInputProps: {
           type: "number",
           required: true,
@@ -79,6 +79,7 @@ export default function Products({ role }: ProductsPageProps) {
       },
       {
         accessorKey: "stock",
+        accessorFn: (row) => (row.stock !== undefined ? String(row.stock) : 0),
         header: "Quantidade em estoque",
         mantineEditTextInputProps: {
           type: "number",
@@ -93,7 +94,8 @@ export default function Products({ role }: ProductsPageProps) {
       {
         accessorKey: "product_category_id",
         header: "Categoria",
-        accessorFn: (row) => String(row.product_category_id),
+        accessorFn: (row) =>
+          row.product_category_id ? String(row.product_category_id) : "",
         editVariant: "select",
         mantineEditSelectProps: {
           required: true,
@@ -107,7 +109,7 @@ export default function Products({ role }: ProductsPageProps) {
       {
         accessorKey: "available",
         header: "Disponível",
-        accessorFn: (row) => String(row.available),
+        accessorFn: (row) => (row.available ? "Sim" : "Não"),
         Cell(props) {
           return <div>{props.row.original.available ? "Sim" : "Não"}</div>;
         },
@@ -127,6 +129,7 @@ export default function Products({ role }: ProductsPageProps) {
       },
       {
         accessorKey: "description",
+        accessorFn: (row) => row.description ?? "",
         header: "Descrição",
         mantineEditTextInputProps: {
           type: "email",
@@ -140,6 +143,7 @@ export default function Products({ role }: ProductsPageProps) {
       },
       {
         accessorKey: "currency",
+        accessorFn: (row) => row.currency ?? "",
         header: "Moeda",
         editVariant: "select",
         mantineEditSelectProps: {
@@ -223,7 +227,11 @@ export default function Products({ role }: ProductsPageProps) {
       title: "Deletar Filial",
       children: `Vocé tem certeza que quer excluir o produto ${row.original.name}?`,
       labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: { variant: "filled", color: "red" },
+      confirmProps: {
+        variant: "filled",
+        color: "red",
+        disabled: isDeletingProduct,
+      },
       cancelProps: { variant: "outline" },
       onConfirm: () => {
         deleteProduct(
@@ -257,12 +265,7 @@ export default function Products({ role }: ProductsPageProps) {
         addButtonLabel="Novo Produto"
         createModalLabel="Novo Produto"
         editModalLabel="Editar Produto"
-        isLoading={
-          isFetchingProducts ||
-          isCreatingProduct ||
-          isUpdatingProduct ||
-          isDeletingProduct
-        }
+        isLoading={isLoadingProducts}
         openDeleteConfirmModal={openDeleteConfirmModal}
         tableOptions={{
           onCreatingRowSave: handleCreateProduct,

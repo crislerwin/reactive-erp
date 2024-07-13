@@ -14,7 +14,7 @@ export const staffRouter = createTRPCRouter({
     .meta({ method: "GET", path: "/staff" })
     .query(async ({ ctx }) => {
       if (ctx.session.account.role === "OWNER")
-        return ctx.prisma.staff.findMany({ include: { branch: true } });
+        return ctx.prisma.staff.findMany();
 
       if (!allowedRoles.includes(ctx.session.account.role))
         throw new TRPCError(CustomError.NOT_ALLOWED);
@@ -58,6 +58,10 @@ export const staffRouter = createTRPCRouter({
     .meta({ openapi: { method: "PUT", path: "/staff/:id" } })
     .input(updateStaffMemberSchema)
     .mutation(async ({ ctx, input }) => {
+      const staffToUpdate = await ctx.prisma.staff.findUnique({
+        where: { id: input.id, email: input.email },
+      });
+      if (!staffToUpdate) throw new TRPCError(CustomError.USER_NOT_FOUND);
       return ctx.prisma.staff.update({
         where: {
           id: input.id,
