@@ -25,8 +25,8 @@ export const MenuOpenedItems: React.FC<MenuItemProps> = ({ open, items }) => {
         const { icon, href: path, label, visible, selected } = item;
         return (
           <Link
-            href={path}
             key={label}
+            href={path}
             className={`flex w-full ${
               visible === false ? "hidden" : "visible"
             } transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-slate-700 duration-300 ease-in-out ${
