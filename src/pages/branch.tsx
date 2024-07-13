@@ -20,6 +20,7 @@ import {
   type DefaultPageProps,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
+import { customErrorHandler } from "@/common/errors/common";
 
 type BranchPageProps = DefaultPageProps;
 
@@ -129,10 +130,9 @@ function Branch({ role, branch_id }: BranchPageProps) {
             exitCreatingMode();
           },
           onError: (error) => {
-            modals.open({
-              title: `Ops! Ocorreu ao salvar filial`,
-              children: error.message,
-              closeOnEscape: true,
+            customErrorHandler({
+              message: error.message,
+              title: "Ops! Ocorreu um erro ao criar a filial",
             });
           },
         }
@@ -164,10 +164,9 @@ function Branch({ role, branch_id }: BranchPageProps) {
           exitEditingMode();
         },
         onError: (error) => {
-          modals.open({
-            title: `Ops! Ocorreu ao salvar filial`,
-            children: error.message,
-            closeOnEscape: true,
+          customErrorHandler({
+            message: error.message,
+            title: "Ops! Ocorreu um erro ao salvar a filial",
           });
         },
       }
@@ -197,10 +196,9 @@ function Branch({ role, branch_id }: BranchPageProps) {
               );
             },
             onError: (error) => {
-              modals.open({
-                title: `Ops! Ocorreu ao deletar filial`,
-                children: error.message,
-                closeOnEscape: true,
+              customErrorHandler({
+                message: error.message,
+                title: "Ops! Ocorreu um erro ao deletar a filial",
               });
             },
           }

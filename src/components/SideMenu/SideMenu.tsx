@@ -15,10 +15,10 @@ import {
 } from "@tabler/icons-react";
 
 import CommandPalette, {
+  filterItems,
   getItemIndex,
   useHandleOpenCommandPalette,
 } from "../SearchBar";
-import { makeFilterItems } from "./utils";
 import { PackageSearch, StoreIcon } from "lucide-react";
 import { managerRoles } from "@/common/schemas";
 
@@ -38,7 +38,63 @@ export function SideMenu({ children, role }: SideMenuProps) {
 
   useHandleOpenCommandPalette(setOpenSearch);
 
-  const filterItems = makeFilterItems(search);
+  const searchItems = filterItems(
+    [
+      {
+        heading: "Home",
+        id: "",
+        items: [
+          {
+            id: "home",
+            children: "Home",
+            icon: "IconHome",
+            href: "/",
+          },
+        ],
+      },
+      {
+        heading: "Equipes",
+        id: "/staff",
+        items: [
+          {
+            id: "staff",
+            children: "Equipes",
+            icon: "IconUsersGroup",
+            href: "/staff",
+            disabled: !managerRoles.includes(role),
+          },
+        ],
+      },
+      {
+        heading: "Filiais",
+        id: "/branch",
+
+        items: [
+          {
+            id: "branch",
+            children: "Filiais",
+            icon: "IconScriptPlus",
+            href: "/branch",
+            disabled: !managerRoles.includes(role),
+          },
+        ],
+      },
+      {
+        heading: "Produtos",
+        id: "/products",
+
+        items: [
+          {
+            id: "products",
+            children: "Produtos",
+            icon: "IconPackage",
+            href: "/products",
+          },
+        ],
+      },
+    ],
+    search
+  );
 
   const handleRedirect = async () => {
     if (!user) return;
@@ -58,12 +114,12 @@ export function SideMenu({ children, role }: SideMenuProps) {
         page={route}
         placeholder="Procurar..."
       >
-        {filterItems.map((list) => (
+        {searchItems.map((list) => (
           <CommandPalette.List key={list.id} heading={list.heading}>
             {list.items.map(({ id, ...rest }) => (
               <CommandPalette.ListItem
                 key={id}
-                index={getItemIndex(filterItems, id)}
+                index={getItemIndex(searchItems, id)}
                 {...rest}
               />
             ))}
@@ -97,7 +153,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
                   <Avatar
                     className="rounded-full"
                     alt={`${user?.username ?? "user"}'s profile picture`}
-                    src={user?.profileImageUrl}
+                    src={user?.imageUrl}
                   />
                 </div>
               </Menu.Target>

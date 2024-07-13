@@ -21,6 +21,7 @@ import {
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 import { type z } from "zod";
+import { customErrorHandler } from "@/common/errors/common";
 
 type ProductsPageProps = DefaultPageProps;
 
@@ -129,7 +130,7 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
         header: "Descrição",
         mantineEditTextInputProps: {
           type: "email",
-          error: validationErrors?.stock,
+          error: validationErrors?.description,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
@@ -153,7 +154,7 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
     ],
     [validationErrors]
   );
-  const updateBranchesData = (newData: Product, variables: Partial<Product>) =>
+  const updateProductData = (newData: Product, variables: Partial<Product>) =>
     queryClient.setQueryData<Product[] | undefined>(
       getQueryKey(trpc.product.findAll, undefined, "query"),
       (oldData) => {
@@ -180,9 +181,15 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
     }
     createProduct(values, {
       onSuccess: (data) => {
-        updateBranchesData(data, values);
+        updateProductData(data, values);
         exitCreatingMode();
         setValidationErrors({});
+      },
+      onError: (error) => {
+        customErrorHandler({
+          title: "Ops! Ocorreu um erro ao criar o produto",
+          message: error.message,
+        });
       },
     });
   };
@@ -198,9 +205,15 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
     }
     updateProduct(values, {
       onSuccess: (data) => {
-        updateBranchesData(data, values);
+        updateProductData(data, values);
         exitEditingMode();
         setValidationErrors({});
+      },
+      onError: (error) => {
+        customErrorHandler({
+          title: "Ops! Ocorreu um erro ao atualizar o produto",
+          message: error.message,
+        });
       },
     });
   };
