@@ -19,7 +19,7 @@ import {
   type DefaultPageProps,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
-import { customErrorHandler } from "@/common/errors/common";
+import { customErrorHandler } from "@/common/errors/customErrors";
 import { queryClient } from "@/lib";
 
 type BranchPageProps = DefaultPageProps;
@@ -160,7 +160,6 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
     });
   };
 
-  console.log("branches", branches);
   return (
     <SideMenu role={role}>
       <CustomTable
@@ -173,6 +172,7 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
         tableOptions={{
           onCreatingRowSave: handleCreateBranch,
           onEditingRowSave: handleSaveBranch,
+          enableStickyHeader: true,
         }}
         columns={columns}
         data={branches}

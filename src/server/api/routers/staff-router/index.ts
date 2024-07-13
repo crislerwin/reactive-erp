@@ -5,7 +5,7 @@ import {
   updateStaffMemberSchema,
 } from "@/common/schemas";
 import { z } from "zod";
-import { CustomError } from "@/common/errors/common";
+import { CustomError } from "@/common/errors/customErrors";
 
 const allowedRoles = ["ADMIN", "MANAGER"];
 

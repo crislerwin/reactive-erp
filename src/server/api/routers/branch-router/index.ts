@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createBranchSchema, updateBranchSchema } from "@/common/schemas";
-import { CustomError } from "@/common/errors/common";
+import { CustomError } from "@/common/errors/customErrors";
 
 const allowedRoles = ["ADMIN", "MANAGER", "OWNER"];
 

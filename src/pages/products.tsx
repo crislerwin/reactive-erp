@@ -21,7 +21,7 @@ import {
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 import { type z } from "zod";
-import { customErrorHandler } from "@/common/errors/common";
+import { customErrorHandler } from "@/common/errors/customErrors";
 
 type ProductsPageProps = DefaultPageProps;
 

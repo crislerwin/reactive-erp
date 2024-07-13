@@ -1,4 +1,4 @@
-import { customErrorHandler } from "@/common/errors/common";
+import { customErrorHandler } from "@/common/errors/customErrors";
 import { QueryClient } from "@tanstack/react-query";
 import { type TRPCClientErrorBase } from "@trpc/client";
 import { type DefaultErrorShape } from "@trpc/server";

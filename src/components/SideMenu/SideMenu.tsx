@@ -21,6 +21,7 @@ import CommandPalette, {
 } from "../SearchBar";
 import { PackageSearch, StoreIcon } from "lucide-react";
 import { managerRoles } from "@/common/schemas";
+import { pageNameMap } from "@/common/constants";
 
 type SideMenuProps = {
   children: React.ReactNode;
@@ -126,7 +127,13 @@ export function SideMenu({ children, role }: SideMenuProps) {
           </CommandPalette.List>
         ))}
       </CommandPalette>
-      <div className="fixed z-30 flex h-16 w-full items-center justify-center bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-slate-300">
+      <div className="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-slate-300">
+        <div className={open ? "ml-12 md:ml-60" : "ml-12"}>
+          <span className="text-2xl font-bold">
+            {pageNameMap[pathname] ?? ""}
+          </span>
+        </div>
+
         <div
           className={`logo ${
             open ? "" : "ml-12"
@@ -134,8 +141,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
         >
           {user?.username}
         </div>
-        <div className="flex h-full grow items-center justify-center"></div>
-        <div className="flex h-full flex-none items-center justify-center text-center">
+        <div className="flex h-full">
           <div className="flex items-center space-x-3 px-3">
             <div className="flex flex-none justify-center">
               <div className="flex h-8 w-8 "></div>
@@ -213,7 +219,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
           items={[
             {
               icon: <IconHome className="h-4 w-4" />,
-              label: "Home",
+              label: "Pagina Inicial",
               href: "/",
               selected: pathname === "/",
             },
@@ -226,7 +232,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
             },
             {
               icon: <StoreIcon className="h-4 w-4" />,
-              label: "Filial",
+              label: "Filiais",
               href: "/branch",
               selected: pathname === "/branch",
               visible: managerRoles.includes(role),
@@ -244,7 +250,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
       <div
         className={`content ${
           open ? "ml-12 md:ml-60" : "ml-12"
-        } bg- bg transform px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
+        } bg- bg  px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
         {children}
       </div>

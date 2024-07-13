@@ -4,7 +4,7 @@ import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 import { type UpdateStaffMemberInput } from "../../../common/schemas/staff.schema";
 import { type Staff } from "@prisma/client";
-import { ErrorType } from "@/common/errors/common";
+import { ErrorType } from "@/common/errors/customErrors";
 
 describe("Staff member Router", () => {
   describe("List All", () => {

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { makeApp, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
-import { ErrorType } from "@/common/errors/common";
+import { ErrorType } from "@/common/errors/customErrors";
 
 describe("Branch router", () => {
   describe("List all branches", () => {
