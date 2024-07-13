@@ -94,7 +94,7 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
         accessorKey: "product_category_id",
         header: "Categoria",
         accessorFn: (row) => String(row.product_category_id),
-
+        editVariant: "select",
         mantineEditSelectProps: {
           required: true,
           data: [
@@ -158,7 +158,7 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
       getQueryKey(trpc.product.findAll, undefined, "query"),
       (oldData) => {
         if (!oldData) return;
-        if (variables.branch_id) {
+        if (variables.product_id) {
           return oldData.map((data) =>
             data.product_id === variables.product_id ? newData : data
           );
@@ -233,11 +233,9 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
     });
   };
 
-  console.log(validationErrors);
   return (
     <SideMenu role={role}>
       <CustomTable
-        branch_id={branch_id}
         isLoading={isFetchingProducts || isCreatingProduct || isUpdatingProduct}
         openDeleteConfirmModal={openDeleteConfirmModal}
         tableOptions={{

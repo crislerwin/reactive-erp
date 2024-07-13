@@ -8,7 +8,6 @@ import { MantineReactTable, MRT_EditActionButtons } from "mantine-react-table";
 import { Button, Tooltip, Stack, Title, Flex, ActionIcon } from "@mantine/core";
 import { IconEdit, IconTrash, IconNews } from "@tabler/icons-react";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
-import { parseToStringArray } from "./utils";
 
 interface CustomTableProps<T extends Record<string, unknown>> {
   data: T[];
