@@ -2,15 +2,13 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createBranchSchema, updateBranchSchema } from "@/common/schemas";
+import { CustomError } from "@/common/errors/common";
 
 const allowedRoles = ["ADMIN", "MANAGER", "OWNER"];
 
 const validateRole = (role: string) => {
   if (!allowedRoles.includes(role))
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      cause: "You are not allowed to perform this action",
-    });
+    throw new TRPCError(CustomError.NOT_ALLOWED);
 };
 
 export const branchRouter = createTRPCRouter({
