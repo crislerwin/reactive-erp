@@ -50,7 +50,6 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
       {
         accessorKey: "name",
         header: "Nome do Produto",
-
         mantineEditTextInputProps: {
           type: "email",
           required: true,
@@ -144,6 +143,7 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
         editVariant: "select",
         mantineEditSelectProps: {
           required: true,
+          error: validationErrors?.currency,
           data: [
             { label: "USD", value: "USD" },
             { label: "BRL", value: "BRL" },
@@ -236,6 +236,9 @@ export default function Products({ role, branch_id }: ProductsPageProps) {
   return (
     <SideMenu role={role}>
       <CustomTable
+        addButtonLabel="Novo Produto"
+        createModalLabel="Novo Produto"
+        editModalLabel="Editar Produto"
         isLoading={isFetchingProducts || isCreatingProduct || isUpdatingProduct}
         openDeleteConfirmModal={openDeleteConfirmModal}
         tableOptions={{
