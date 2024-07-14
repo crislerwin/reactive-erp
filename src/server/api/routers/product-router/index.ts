@@ -60,7 +60,6 @@ export const productRouter = createTRPCRouter({
           description: input.description,
           available: input.available,
           branch_id: ctx.session.account.branch_id,
-          currency: input.currency,
           product_id: input.product_id,
           product_category_id: input.product_category_id,
           stock: input.stock,

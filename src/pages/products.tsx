@@ -141,20 +141,6 @@ export default function Products({ role }: ProductsPageProps) {
             }),
         },
       },
-      {
-        accessorKey: "currency",
-        accessorFn: (row) => row.currency ?? "",
-        header: "Moeda",
-        editVariant: "select",
-        mantineEditSelectProps: {
-          required: true,
-          error: validationErrors?.currency,
-          data: [
-            { label: "USD", value: "USD" },
-            { label: "BRL", value: "BRL" },
-          ],
-        },
-      },
     ],
     [validationErrors]
   );
