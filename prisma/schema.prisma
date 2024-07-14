@@ -37,19 +37,19 @@ model Staff {
 }
 
 model Product {
-  product_id          Int              @id @default(autoincrement())
+  product_id          Int             @id @default(autoincrement())
   branch_id           Int
   name                String
   description         String?
   price               Float
-  stock               Int              @default(0)
+  stock               Int             @default(0)
   colors              Json?
   product_category_id Int
-  product_category    Product_Category @relation(fields: [product_category_id], references: [id])
-  branch              Branch           @relation(fields: [branch_id], references: [branch_id])
-  available           Boolean          @default(true)
-  created_at          DateTime         @default(now())
-  updated_at          DateTime         @updatedAt
+  product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
+  branch              Branch          @relation(fields: [branch_id], references: [branch_id])
+  available           Boolean         @default(true)
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
   deleted_at          DateTime?
 
   @@index([branch_id])
@@ -57,7 +57,7 @@ model Product {
   @@index([deleted_at])
 }
 
-model Product_Category {
+model ProductCategory {
   id          Int       @id @default(autoincrement())
   branch_id   Int
   name        String
