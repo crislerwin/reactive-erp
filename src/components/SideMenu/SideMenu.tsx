@@ -12,6 +12,7 @@ import {
   IconApiApp,
   IconHome,
   IconUsersGroup,
+  IconCategory,
 } from "@tabler/icons-react";
 
 import CommandPalette, {
@@ -90,6 +91,19 @@ export function SideMenu({ children, role, branch }: SideMenuProps) {
             children: "Produtos",
             icon: "IconPackage",
             href: PageRoute.PRODUCTS,
+          },
+        ],
+      },
+      {
+        heading: "Categoria de Produtos",
+        id: PageRoute.PRODUCT_CATEGORY,
+
+        items: [
+          {
+            id: "product-category",
+            children: "Categoria de Produtos",
+            icon: "IconCategory",
+            href: PageRoute.PRODUCT_CATEGORY,
           },
         ],
       },
@@ -238,6 +252,11 @@ export function SideMenu({ children, role, branch }: SideMenuProps) {
               icon: <PackageSearch className="h-4 w-4" />,
               label: "Produtos",
               href: "/products",
+            },
+            {
+              icon: <IconCategory className="h-4 w-4" />,
+              label: "Categoria de Produtos",
+              href: "/product-category",
             },
           ]}
           open={open}

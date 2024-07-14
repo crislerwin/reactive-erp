@@ -32,12 +32,13 @@ export default function Products({ role }: ProductsPageProps) {
 
   const queryClient = useQueryClient();
   const { data: products = [], isLoading: isLoadingProducts } =
-    trpc.product.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
+    trpc.product.findAll.useQuery();
   console.log(products);
   const { mutate: createProduct } = trpc.product.create.useMutation();
   const { mutate: updateProduct } = trpc.product.updateProduct.useMutation();
   const { mutate: deleteProduct, isLoading: isDeletingProduct } =
     trpc.product.deleteProduct.useMutation();
+  const { data: productCategory } = trpc.productCategory.findAll.useQuery();
   const columns = useMemo<MRT_ColumnDef<Product>[]>(
     () => [
       {
@@ -99,10 +100,12 @@ export default function Products({ role }: ProductsPageProps) {
         editVariant: "select",
         mantineEditSelectProps: {
           required: true,
-          data: [
-            { label: "Categoria 1", value: "1" },
-            { label: "Categoria 2", value: "2" },
-          ],
+          nothingFound: "Nenhuma categoria encontrada",
+          limit: 5,
+          data: productCategory?.map((category) => ({
+            value: String(category.id),
+            label: category.name,
+          })),
           error: validationErrors?.product_category_id,
         },
       },
