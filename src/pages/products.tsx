@@ -145,7 +145,7 @@ export default function Products({ role }: ProductsPageProps) {
         },
       },
     ],
-    [validationErrors]
+    [productCategory, validationErrors]
   );
   const updateProductData = (newData: Product, variables: Partial<Product>) =>
     queryClient.setQueryData<Product[] | undefined>(

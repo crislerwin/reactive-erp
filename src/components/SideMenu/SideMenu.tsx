@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useState } from "react";
+import React, { type PropsWithChildren, useState } from "react";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useSideMenu } from "./hooks";
@@ -21,15 +21,14 @@ import CommandPalette, {
   useHandleOpenCommandPalette,
 } from "../SearchBar";
 import { PackageSearch, StoreIcon } from "lucide-react";
-import { managerRoles } from "@/common/schemas";
-import { pageNameMap, PageRoute } from "@/common/constants";
+import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
 
 type SideMenuProps = PropsWithChildren & {
   role: string;
   branch?: string;
 };
 
-export function SideMenu({ children, role, branch }: SideMenuProps) {
+export function SideMenu({ children, role }: SideMenuProps) {
   const { user } = useClerk();
   const { open, setOpen } = useSideMenu();
   const { signOut } = useClerk();

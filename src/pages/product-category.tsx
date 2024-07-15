@@ -5,8 +5,7 @@ import {
   type MRT_TableOptions,
 } from "mantine-react-table";
 import { useQueryClient } from "@tanstack/react-query";
-import { ProductCategory, type Product } from "@prisma/client";
-
+import { type ProductCategory } from "@prisma/client";
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
@@ -14,14 +13,12 @@ import { SideMenu } from "@/components/SideMenu";
 import CustomTable from "@/components/Table";
 import { validateData } from "@/components/Table/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import {
-  createProductSchema,
-  updateProductSchema,
-  type DefaultPageProps,
-} from "@/common/schemas";
+import { type DefaultPageProps } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
-import { type z } from "zod";
-import { customErrorHandler } from "@/common/errors/customErrors";
+import {
+  createProductCategorySchema,
+  updateProductCategorySchema,
+} from "@/common/schemas/product-category.schema";
 
 type ProductCategoryPageProps = DefaultPageProps;
 
@@ -36,10 +33,18 @@ export default function ProductCategoryPage({
 
   const { data: productCategories = [], isLoading: isLoadingProductCategory } =
     trpc.productCategory.findAll.useQuery();
+  const { mutate: createProductCategory } =
+    trpc.productCategory.createCategory.useMutation();
+  const { mutate: updateProductCategory } =
+    trpc.productCategory.updateCategory.useMutation();
+  const {
+    mutate: deleteProductCategory,
+    isLoading: isDeletingProductCategory,
+  } = trpc.productCategory.deleteCategory.useMutation();
   const columns = useMemo<MRT_ColumnDef<ProductCategory>[]>(
     () => [
       {
-        accessorKey: "product_id",
+        accessorKey: "id",
         accessorFn: (row) => (row.id ? String(row.id) : ""),
         header: "Id",
         enableEditing: false,
@@ -74,11 +79,29 @@ export default function ProductCategoryPage({
             }),
         },
       },
+      {
+        accessorKey: "active",
+        accessorFn: (row) =>
+          typeof row.active === "boolean" ? String(row.active) : "true",
+        header: "Ativo",
+        mantineEditSelectProps: {
+          data: [
+            { label: "Sim", value: "true" },
+            { label: "Não", value: "false" },
+          ],
+          error: validationErrors?.active,
+          onFocus: () =>
+            setValidationErrors({
+              ...validationErrors,
+              active: undefined,
+            }),
+        },
+      },
     ],
     [validationErrors]
   );
   const updateProductCategoryData = (
-    newData: Product,
+    newData: ProductCategory,
     variables: Partial<ProductCategory>
   ) =>
     queryClient.setQueryData<ProductCategory[] | undefined>(
@@ -140,7 +163,7 @@ export default function ProductCategoryPage({
       confirmProps: {
         variant: "filled",
         color: "red",
-        disabled: isDeletingProduct,
+        disabled: isDeletingProductCategory,
       },
       cancelProps: { variant: "outline" },
       onConfirm: () => {
@@ -161,6 +184,8 @@ export default function ProductCategoryPage({
       },
     });
   };
+
+  console.log(validationErrors);
 
   return (
     <SideMenu role={role}>

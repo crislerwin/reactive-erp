@@ -13,3 +13,6 @@ export const pageNameMap: Record<PageRoute | string, string> = {
   [PageRoute.PRODUCTS]: "Cadastro de Produtos",
   [PageRoute.PRODUCT_CATEGORY]: "Cadastro de Categorias de Produtos",
 };
+
+export const managerRoles = ["OWNER", "ADMIN", "MANAGER"];
+export const superUserRoles = ["ADMIN", "OWNER"];

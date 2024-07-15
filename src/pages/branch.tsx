@@ -13,14 +13,11 @@ import { SideMenu } from "@/components/SideMenu";
 import CustomTable from "@/components/Table";
 import { validateData } from "@/components/Table/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import {
-  createBranchSchema,
-  managerRoles,
-  type DefaultPageProps,
-} from "@/common/schemas";
+import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 import { customErrorHandler } from "@/common/errors/customErrors";
 import { queryClient } from "@/lib";
+import { managerRoles } from "@/common/constants";
 
 type BranchPageProps = DefaultPageProps;
 
@@ -31,12 +28,9 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
 
   const { data: branches = [], isLoading: isLoadingBranches } =
     trpc.branch.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
-  const { mutate: createBranch, isLoading: isCreatingBranch } =
-    trpc.branch.createBranch.useMutation();
-  const { mutate: deleteBranch, isLoading: isDeletingBranch } =
-    trpc.branch.deleteBranch.useMutation();
-  const { mutate: updateBranch, isLoading: isUpdatingBranch } =
-    trpc.branch.updateBranch.useMutation();
+  const { mutate: createBranch } = trpc.branch.createBranch.useMutation();
+  const { mutate: deleteBranch } = trpc.branch.deleteBranch.useMutation();
+  const { mutate: updateBranch } = trpc.branch.updateBranch.useMutation();
 
   const columns = useMemo<MRT_ColumnDef<Branch>[]>(
     () => [

@@ -22,4 +22,75 @@ describe("Product Category CRUD", () => {
       expect(productCategories.length).toBe(0);
     });
   });
+  describe("Product_Category Create", () => {
+    it("should create a product category", async () => {
+      const { app } = await makeSut();
+      const productCategory = await app.productCategory.createCategory({
+        name: "Test Category",
+        active: true,
+      });
+      expect(productCategory.name).toBe("Test Category");
+      expect(productCategory.active).toBe(true);
+      const productCategories = await app.productCategory.findAll();
+      expect(productCategories.length).toBe(1);
+    });
+    it("should not create a product category if the name is empty", async () => {
+      const { app } = await makeSut();
+      const promisse = app.productCategory.createCategory({
+        name: "",
+        active: true,
+      });
+      await expect(promisse).rejects.toThrowError();
+    });
+  });
+  describe("ProductCategory Update", () => {
+    it("should update a product category", async () => {
+      const { app, branch } = await makeSut();
+      const productCategory = await prisma.productCategory.create({
+        data: {
+          branch_id: branch.branch_id,
+          name: "Test Category",
+          active: true,
+        },
+      });
+      const updatedProductCategory = await app.productCategory.updateCategory({
+        id: productCategory.id,
+        name: "Updated Category",
+        active: false,
+      });
+      expect(updatedProductCategory.name).toBe("Updated Category");
+      expect(updatedProductCategory.active).toBe(false);
+    });
+    it("should not update a product category if the name is empty", async () => {
+      const { app, branch } = await makeSut();
+      const productCategory = await prisma.productCategory.create({
+        data: {
+          branch_id: branch.branch_id,
+          name: "Test Category",
+          active: true,
+        },
+      });
+      const promisse = app.productCategory.updateCategory({
+        id: productCategory.id,
+        name: "",
+        active: false,
+      });
+      await expect(promisse).rejects.toThrowError();
+    });
+  });
+  describe("ProductCategory DELETE", () => {
+    it("should delete a product category", async () => {
+      const { app } = await makeSut();
+      const productCategory = await app.productCategory.createCategory({
+        name: "Test Category",
+        active: true,
+      });
+      const deletedProductCategory = await app.productCategory.deleteCategory({
+        id: productCategory.id,
+      });
+      expect(deletedProductCategory).toBeTruthy();
+      const productCategories = await app.productCategory.findAll();
+      expect(productCategories.length).toBe(0);
+    });
+  });
 });

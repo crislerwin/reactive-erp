@@ -16,10 +16,10 @@ import {
   updateStaffMemberSchema,
   createStaffMemberSchema,
   type DefaultPageProps,
-  managerRoles,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 import { queryClient } from "@/lib";
+import { managerRoles } from "@/common/constants";
 
 type StaffPageProps = DefaultPageProps;
 
@@ -31,17 +31,16 @@ function Staff({ role }: StaffPageProps) {
     isLoading: isLoadingStaff,
     isError: isGettingStaffError,
   } = trpc.staff.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
-  const { mutate: createStaffMember, isLoading: isCreating } =
+  const { mutate: createStaffMember } =
     trpc.staff.createStaffMember.useMutation();
-  const { mutate: updateStaffMember, isLoading: isUpdating } =
+  const { mutate: updateStaffMember } =
     trpc.staff.updateStaffMember.useMutation();
-  const { mutate: deleteStaffMember, isLoading: isDeleting } =
+  const { mutate: deleteStaffMember } =
     trpc.staff.softDeletedStaffMember.useMutation();
 
-  const { data: branches = [], isFetching: isFetchingBranches } =
-    trpc.branch.findAll.useQuery(undefined, {
-      refetchOnWindowFocus: false,
-    });
+  const { data: branches = [] } = trpc.branch.findAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   const columns = useMemo<MRT_ColumnDef<StaffType>[]>(
     () => [
