@@ -91,6 +91,9 @@ describe("Product Category CRUD", () => {
         active: false,
       });
       expect(updatedProductCategory.active).toBe(false);
+      const productCategories = await app.productCategory.findAll();
+      expect(productCategories.length).toBe(1);
+      expect(productCategories?.[0]?.active).toBe(false);
     });
   });
   describe("ProductCategory DELETE", () => {

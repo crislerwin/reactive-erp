@@ -39,14 +39,12 @@ export default function ProductsPage({ role }: ProductsPageProps) {
     () => [
       {
         accessorKey: "product_id",
-        accessorFn: (row) => (row.product_id ? String(row.product_id) : ""),
         header: "Id do Produto",
         enableEditing: false,
         size: 80,
       },
       {
         accessorKey: "name",
-        accessorFn: (row) => row.name ?? "",
         header: "Nome do Produto",
         mantineEditTextInputProps: {
           type: "email",
@@ -62,7 +60,6 @@ export default function ProductsPage({ role }: ProductsPageProps) {
       {
         accessorKey: "price",
         header: "Preço",
-        accessorFn: (row) => (row.price ? String(row.price) : ""),
         mantineEditTextInputProps: {
           type: "number",
           required: true,
@@ -76,7 +73,6 @@ export default function ProductsPage({ role }: ProductsPageProps) {
       },
       {
         accessorKey: "stock",
-        accessorFn: (row) => (row.stock !== undefined ? String(row.stock) : 0),
         header: "Quantidade em estoque",
         mantineEditTextInputProps: {
           type: "number",
@@ -91,9 +87,14 @@ export default function ProductsPage({ role }: ProductsPageProps) {
       {
         accessorKey: "product_category_id",
         header: "Categoria",
-        accessorFn: (row) =>
-          row.product_category_id ? String(row.product_category_id) : "",
+        accessorFn: (row) => String(row.product_category_id ?? ""),
         editVariant: "select",
+        Cell(props) {
+          const category = productCategory?.find(
+            (category) => category.id === props.row.original.product_category_id
+          );
+          return <div>{category?.name}</div>;
+        },
         mantineEditSelectProps: {
           required: true,
           nothingFound: "Nenhuma categoria encontrada",

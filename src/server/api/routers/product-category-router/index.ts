@@ -27,8 +27,10 @@ export const productCategory = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.productCategory.create({
         data: {
-          branch_id: ctx.session.account.branch_id,
-          ...input,
+          branch_id: input.branch_id ?? ctx.session.account.branch_id,
+          name: input.name,
+          active: input.active,
+          description: input.description,
         },
       });
     }),
@@ -39,8 +41,13 @@ export const productCategory = createTRPCRouter({
       return ctx.prisma.productCategory.update({
         where: {
           id: input.id,
+          branch_id: input.branch_id ?? ctx.session.account.branch_id,
         },
-        data: input,
+        data: {
+          name: input.name,
+          active: input.active,
+          description: input.description,
+        },
       });
     }),
   deleteCategory: protectedProcedure

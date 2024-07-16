@@ -10,7 +10,7 @@ export const createProductSchema = z.object({
   description: z.string().optional(),
   colors: z.array(z.string()).optional(),
   product_category_id: customNumberValidator,
-  available: customBooleanValidator.optional().default(true),
+  available: customBooleanValidator,
 });
 
 export const updateProductSchema = z.object({
@@ -23,5 +23,5 @@ export const updateProductSchema = z.object({
   description: z.string().optional(),
   colors: z.array(z.string()).optional(),
   product_category_id: customNumberValidator,
-  available: customBooleanValidator,
+  available: customBooleanValidator.optional(),
 });

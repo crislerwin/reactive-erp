@@ -79,7 +79,8 @@ export default function ProductCategoryPage({
       },
       {
         accessorKey: "active",
-        accessorFn: (row) => String(row.active),
+        accessorFn: (row) =>
+          String(Boolean(row.active)) === "true" ? "true" : "false",
         header: "Ativo",
         Cell({ row }) {
           return <>{String(row.original.active) === "true" ? "Sim" : "Não"}</>;
@@ -141,6 +142,8 @@ export default function ProductCategoryPage({
       }
       updateProductCategory(values, {
         onSuccess: (data) => {
+          console.log(data);
+          console.log(values);
           updateQueryData<ProductCategory[]>(
             getQueryKey(trpc.productCategory.findAll, undefined, "query"),
             (oldData) => {
