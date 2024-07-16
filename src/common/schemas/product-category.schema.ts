@@ -12,6 +12,6 @@ export const createProductCategorySchema = z.object({
 
 export const updateProductCategorySchema = z.object({
   id: z.number(),
-  name: productCategoryNameSchema.optional(),
+  name: z.string().optional(),
   active: customBooleanValidator,
 });

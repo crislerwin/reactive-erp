@@ -45,7 +45,7 @@ export default function ProductCategoryPage({
     () => [
       {
         accessorKey: "id",
-        accessorFn: (row) => (row.id ? String(row.id) : ""),
+        accessorFn: (row) => row.id ?? "",
         header: "Id",
         enableEditing: false,
         size: 80,
@@ -84,12 +84,17 @@ export default function ProductCategoryPage({
         accessorFn: (row) =>
           typeof row.active === "boolean" ? String(row.active) : "true",
         header: "Ativo",
+        Cell({ row }) {
+          return <>{String(row.original.active) === "true" ? "Sim" : "Não"}</>;
+        },
+        editVariant: "select",
         mantineEditSelectProps: {
+          error: validationErrors?.active,
+
           data: [
             { label: "Sim", value: "true" },
             { label: "Não", value: "false" },
           ],
-          error: validationErrors?.active,
           onFocus: () =>
             setValidationErrors({
               ...validationErrors,
