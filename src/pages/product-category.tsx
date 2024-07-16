@@ -4,14 +4,13 @@ import {
   type MRT_Row,
   type MRT_TableOptions,
 } from "mantine-react-table";
-import { useQueryClient } from "@tanstack/react-query";
 import { type ProductCategory } from "@prisma/client";
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
 import CustomTable from "@/components/Table";
-import { validateData } from "@/components/Table/utils";
+import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type DefaultPageProps } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
@@ -45,7 +44,6 @@ export default function ProductCategoryPage({
     () => [
       {
         accessorKey: "id",
-        accessorFn: (row) => (row.id ? String(row.id) : ""),
         header: "Id",
         enableEditing: false,
         size: 80,
@@ -81,12 +79,12 @@ export default function ProductCategoryPage({
       },
       {
         accessorKey: "active",
-        accessorFn: (row) =>
-          typeof row.active === "boolean" ? String(row.active) : "true",
+        accessorFn: (row) => String(row.active),
         header: "Ativo",
         Cell({ row }) {
           return <>{String(row.original.active) === "true" ? "Sim" : "Não"}</>;
         },
+
         editVariant: "select",
         mantineEditSelectProps: {
           error: validationErrors?.active,
@@ -189,13 +187,13 @@ export default function ProductCategoryPage({
       },
     });
   };
-
+  console.log(validationErrors);
   return (
     <SideMenu role={role}>
       <CustomTable
-        addButtonLabel="Novo Produto"
-        createModalLabel="Novo Produto"
-        editModalLabel="Editar Produto"
+        addButtonLabel="Nova Categoria"
+        createModalLabel="Nova Categoria"
+        editModalLabel="Editar Categoria"
         isLoading={isLoadingProductCategory}
         openDeleteConfirmModal={openDeleteConfirmModal}
         tableOptions={{

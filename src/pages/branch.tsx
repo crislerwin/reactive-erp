@@ -11,7 +11,7 @@ import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
 import CustomTable from "@/components/Table";
-import { validateData } from "@/components/Table/utils";
+import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";

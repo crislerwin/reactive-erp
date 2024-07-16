@@ -10,7 +10,6 @@ import { trpc } from "@/utils/api";
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import CustomTable from "@/components/Table";
-import { validateData } from "@/components/Table/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   updateStaffMemberSchema,
@@ -20,6 +19,7 @@ import {
 import { getServerAuthSession } from "@/server/api/auth";
 import { updateQueryData } from "@/lib";
 import { managerRoles } from "@/common/constants";
+import { validateData } from "@/common/utils";
 
 type StaffPageProps = DefaultPageProps;
 
