@@ -19,6 +19,7 @@ import {
   createProductCategorySchema,
   updateProductCategorySchema,
 } from "@/common/schemas/product-category.schema";
+import { updateQueryData } from "@/lib";
 
 type ProductCategoryPageProps = DefaultPageProps;
 
@@ -28,8 +29,6 @@ export default function ProductCategoryPage({
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
-
-  const queryClient = useQueryClient();
 
   const { data: productCategories = [], isLoading: isLoadingProductCategory } =
     trpc.productCategory.findAll.useQuery();
@@ -41,11 +40,12 @@ export default function ProductCategoryPage({
     mutate: deleteProductCategory,
     isLoading: isDeletingProductCategory,
   } = trpc.productCategory.deleteCategory.useMutation();
+
   const columns = useMemo<MRT_ColumnDef<ProductCategory>[]>(
     () => [
       {
         accessorKey: "id",
-        accessorFn: (row) => row.id ?? "",
+        accessorFn: (row) => (row.id ? String(row.id) : ""),
         header: "Id",
         enableEditing: false,
         size: 80,
@@ -105,22 +105,6 @@ export default function ProductCategoryPage({
     ],
     [validationErrors]
   );
-  const updateProductCategoryData = (
-    newData: ProductCategory,
-    variables: Partial<ProductCategory>
-  ) =>
-    queryClient.setQueryData<ProductCategory[] | undefined>(
-      getQueryKey(trpc.productCategory.findAll, undefined, "query"),
-      (oldData) => {
-        if (!oldData) return;
-        if (variables.id) {
-          return oldData.map((data) =>
-            data.id === variables.id ? newData : data
-          );
-        }
-        return [...oldData, newData];
-      }
-    );
 
   const handleCreateProduct: MRT_TableOptions<ProductCategory>["onCreatingRowSave"] =
     ({ values, exitCreatingMode }) => {
@@ -134,7 +118,13 @@ export default function ProductCategoryPage({
       }
       createProductCategory(values, {
         onSuccess: (data) => {
-          updateProductCategoryData(data, values);
+          updateQueryData<ProductCategory[]>(
+            getQueryKey(trpc.productCategory.findAll, undefined, "query"),
+            (oldData) => {
+              if (!oldData) return [];
+              return [...oldData, data];
+            }
+          );
           exitCreatingMode();
           setValidationErrors({});
         },
@@ -153,9 +143,17 @@ export default function ProductCategoryPage({
       }
       updateProductCategory(values, {
         onSuccess: (data) => {
-          updateProductCategoryData(data, values);
-          exitEditingMode();
+          updateQueryData<ProductCategory[]>(
+            getQueryKey(trpc.productCategory.findAll, undefined, "query"),
+            (oldData) => {
+              if (!oldData) return [];
+              return oldData.map((productCategory) =>
+                productCategory.id === data.id ? data : productCategory
+              );
+            }
+          );
           setValidationErrors({});
+          exitEditingMode();
         },
       });
     };
@@ -176,11 +174,13 @@ export default function ProductCategoryPage({
           { id: row.original.id },
           {
             onSuccess: () => {
-              queryClient.setQueryData<ProductCategory[] | undefined>(
-                getQueryKey(trpc.product.findAll, undefined, "query"),
+              updateQueryData<ProductCategory[]>(
+                getQueryKey(trpc.productCategory.findAll, undefined, "query"),
                 (oldData) => {
-                  if (!oldData) return;
-                  return oldData.filter((data) => data.id !== row.original.id);
+                  if (!oldData) return [];
+                  return oldData.filter(
+                    (productCategory) => productCategory.id !== row.original.id
+                  );
                 }
               );
             },
@@ -189,8 +189,6 @@ export default function ProductCategoryPage({
       },
     });
   };
-
-  console.log(validationErrors);
 
   return (
     <SideMenu role={role}>

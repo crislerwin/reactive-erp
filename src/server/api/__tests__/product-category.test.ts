@@ -77,6 +77,21 @@ describe("Product Category CRUD", () => {
       });
       await expect(promisse).rejects.toThrowError();
     });
+    it("should update product availability", async () => {
+      const { app, branch } = await makeSut();
+      const productCategory = await prisma.productCategory.create({
+        data: {
+          branch_id: branch.branch_id,
+          name: "Test Category",
+          active: true,
+        },
+      });
+      const updatedProductCategory = await app.productCategory.updateCategory({
+        id: productCategory.id,
+        active: false,
+      });
+      expect(updatedProductCategory.active).toBe(false);
+    });
   });
   describe("ProductCategory DELETE", () => {
     it("should delete a product category", async () => {
