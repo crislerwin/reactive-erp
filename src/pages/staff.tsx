@@ -46,7 +46,7 @@ function Staff({ role }: StaffPageProps) {
     () => [
       {
         accessorKey: "id",
-        accessorFn: (row) => (row.id ? String(row.id) : ""),
+        accessorFn: (row) => String(row.id ?? ""),
         header: "Id",
         enableEditing: false,
         size: 80,
@@ -69,15 +69,10 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "last_name",
         header: "Sobrenome",
-        accessorFn: (row) => row.last_name ?? "",
+
         mantineEditTextInputProps: {
-          type: "email",
+          type: "text",
           error: validationErrors?.last_name,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              last_name: undefined,
-            }),
         },
       },
       {
@@ -113,7 +108,7 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "branch_id",
         header: "Filial",
-        accessorFn: (row) => (row.branch_id ? String(row.branch_id) : ""),
+        accessorFn: (row) => String(row.branch_id ?? ""),
         editVariant: "select",
         Cell(props) {
           const branch = branches.find(
@@ -133,8 +128,7 @@ function Staff({ role }: StaffPageProps) {
       },
       {
         accessorKey: "active",
-        accessorFn: (row) =>
-          typeof row.active === "boolean" ? String(row.active) : "true",
+        accessorFn: (row) => String(Boolean(row.active)),
         header: "Status",
         Cell(props) {
           return <span>{props.row.original.active ? "Ativo" : "Inativo"}</span>;

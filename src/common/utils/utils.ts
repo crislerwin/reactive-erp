@@ -28,3 +28,47 @@ export function parseToStringArray<T extends Record<string, unknown>>(
     return newItem;
   });
 }
+type StringToBoolMap = { [key: string]: boolean };
+
+const defaultStringToBooleanMap: StringToBoolMap = {
+  sim: true,
+  yes: true,
+  true: true,
+  verdadeiro: true,
+  nao: false,
+  no: false,
+  false: false,
+  falso: false,
+};
+
+export const normalizeString = (value: string | undefined): string => {
+  if (!value) return "";
+  return value
+    ?.trim()
+    .toString()
+    .toLocaleLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+};
+
+export const customBoolDict = {
+  ...defaultStringToBooleanMap,
+  "1": true,
+  s: true,
+  y: true,
+  "0": false,
+  n: false,
+};
+
+export const stringToBool = (
+  value: string,
+  dictOnly = true,
+  normalize = true,
+  dictionary: StringToBoolMap = defaultStringToBooleanMap
+): boolean => {
+  const normalizedValue = normalize ? normalizeString(value) : value;
+  const dictTry = dictionary[normalizedValue];
+  const dictOnlyCheck = dictOnly ? false : Boolean(normalizedValue);
+
+  return dictTry != null ? dictTry : dictOnlyCheck;
+};

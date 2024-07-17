@@ -1,15 +1,13 @@
 import { z } from "zod";
-
+import { stringToBool } from "../utils";
 export const customNumberValidator = z
   .any()
-  .refine((v) => v && !Number.isNaN(v), {
+  .refine((v) => v && !Number.isNaN(Number(v)), {
     message: "Campo deve ser um número",
   })
   .transform((v) => Number(v));
 
 export const customBooleanValidator = z
   .any()
-  .refine((v) => String(Boolean(v)), {
-    message: "Campo deve ser um boolean",
-  })
-  .transform((v) => (String(Boolean(v)) === "true" ? true : false));
+  .transform((value) => stringToBool(String(value)))
+  .pipe(z.boolean());

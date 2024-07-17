@@ -2,6 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import {
   createStaffMemberSchema,
+  customNumberValidator,
   updateStaffMemberSchema,
 } from "@/common/schemas";
 import { z } from "zod";
@@ -77,10 +78,10 @@ export const staffRouter = createTRPCRouter({
     }),
   softDeletedStaffMember: protectedProcedure
     .meta({ openapi: { method: "DELETE", path: "/staff/:id" } })
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: customNumberValidator }))
     .mutation(async ({ ctx, input }) => {
       const staffToDelete = await ctx.prisma.staff.findUnique({
-        where: { id: input.id, active: true },
+        where: { id: input.id },
       });
       if (!staffToDelete) throw new TRPCError(CustomError.USER_NOT_FOUND);
       if (staffToDelete.role === "OWNER")
