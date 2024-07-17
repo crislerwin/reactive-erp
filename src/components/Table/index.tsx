@@ -37,13 +37,12 @@ export default function CustomTable<T extends Record<string, unknown>>({
   openDeleteConfirmModal,
 }: CustomTableProps<T>) {
   const table = useMantineReactTable({
-    ...tableOptions,
     columns,
     data,
     localization: MRT_Localization_PT_BR,
-    createDisplayMode: "modal",
-
-    editDisplayMode: "modal",
+    createDisplayMode: "row",
+    editDisplayMode: "row",
+    enableFullScreenToggle: false,
     enableEditing,
     getRowId: ({ id }) => String(id),
     mantineToolbarAlertBannerProps: error
@@ -54,7 +53,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
       : undefined,
     mantineTableContainerProps: {
       sx: {
-        minHeight: "500px",
+        maxHeight: "72vh",
       },
     },
 
@@ -124,6 +123,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
       showAlertBanner: error,
       showProgressBars: isLoading,
     },
+    ...tableOptions,
   });
 
   return <MantineReactTable table={table} />;

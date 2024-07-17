@@ -240,8 +240,6 @@ function Staff({ role }: StaffPageProps) {
             tableOptions={{
               onCreatingRowSave: handleCreateUser,
               onEditingRowSave: handleSaveUser,
-              enableFullScreenToggle: false,
-              manualExpanding: true,
             }}
             openDeleteConfirmModal={openDeleteConfirmModal}
             isLoading={isLoadingStaff}
