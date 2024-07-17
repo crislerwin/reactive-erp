@@ -4,7 +4,7 @@ import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 import { ErrorType } from "@/common/errors/customErrors";
 
-describe("Branch router", () => {
+describe.concurrent("Branch router", () => {
   describe("List all branches", () => {
     it("should return all branches", async () => {
       const { app } = await makeSut();
@@ -109,6 +109,26 @@ describe("Branch router", () => {
         branch_id: 1,
       });
       await expect(promisses).rejects.toThrowError(ErrorType.NOT_ALLOWED);
+    });
+    it("should throw if try to delete a branch with users", async () => {
+      const { app } = await makeSut();
+      const branch = await app.branch.createBranch({
+        name: faker.company.name(),
+        attributes: {
+          test: "test",
+        },
+      });
+      await app.staff.createStaffMember({
+        branch_id: branch.branch_id,
+        email: faker.internet.email(),
+        first_name: faker.name.firstName(),
+        last_name: faker.name.lastName(),
+        role: "EMPLOYEE",
+      });
+      const promisses = app.branch.deleteBranch({
+        branch_id: branch.branch_id,
+      });
+      await expect(promisses).rejects.toThrowError(ErrorType.BRANCH_NOT_EMPTY);
     });
   });
   describe("Update Branch", () => {

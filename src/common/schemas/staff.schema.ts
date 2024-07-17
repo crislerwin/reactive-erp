@@ -10,7 +10,7 @@ export const createStaffMemberSchema = z.intersection(
     first_name: z
       .string()
       .min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
-    last_name: z.string().optional(),
+    last_name: z.string().optional().nullish(),
     email: z.string().email({ message: "Email inválido" }),
     role: z.enum(["ADMIN", "EMPLOYEE", "MANAGER", "OWNER"], {
       invalid_type_error: "Tipo de usuário inválido",
@@ -30,7 +30,7 @@ export const updateStaffMemberSchema = z.intersection(
         message: "Nome deve ter no mínimo 3 caracteres",
       })
       .optional(),
-    last_name: z.string().optional(),
+    last_name: z.string().optional().nullish(),
     email: z.string().email({ message: "Email inválido" }).optional(),
     active: customBooleanValidator.optional().default(true),
     role: z
@@ -38,7 +38,8 @@ export const updateStaffMemberSchema = z.intersection(
         invalid_type_error: "Tipo de usuário inválido",
         message: "Tipo de usuário inválido",
       })
-      .optional(),
+      .optional()
+      .default("EMPLOYEE"),
   }),
   commonSchema
 );

@@ -10,16 +10,17 @@ import { trpc } from "@/utils/api";
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import CustomTable from "@/components/Table";
-import { validateData } from "@/components/Table/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   updateStaffMemberSchema,
   createStaffMemberSchema,
   type DefaultPageProps,
-  managerRoles,
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
-import { queryClient } from "@/lib";
+import { updateQueryData } from "@/lib";
+import { managerRoles } from "@/common/constants";
+import { validateData } from "@/common/utils";
+import { Skeleton } from "@mantine/core";
 
 type StaffPageProps = DefaultPageProps;
 
@@ -30,29 +31,30 @@ function Staff({ role }: StaffPageProps) {
     data: staffMembers = [],
     isLoading: isLoadingStaff,
     isError: isGettingStaffError,
-  } = trpc.staff.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
-  const { mutate: createStaffMember, isLoading: isCreating } =
+  } = trpc.staff.findAll.useQuery();
+  const { mutate: createStaffMember } =
     trpc.staff.createStaffMember.useMutation();
-  const { mutate: updateStaffMember, isLoading: isUpdating } =
+  const { mutate: updateStaffMember } =
     trpc.staff.updateStaffMember.useMutation();
-  const { mutate: deleteStaffMember, isLoading: isDeleting } =
+  const { mutate: deleteStaffMember } =
     trpc.staff.softDeletedStaffMember.useMutation();
 
-  const { data: branches = [], isFetching: isFetchingBranches } =
-    trpc.branch.findAll.useQuery(undefined, {
-      refetchOnWindowFocus: false,
-    });
+  const { data: branches = [] } = trpc.branch.findAll.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   const columns = useMemo<MRT_ColumnDef<StaffType>[]>(
     () => [
       {
         accessorKey: "id",
+        accessorFn: (row) => String(row.id ?? ""),
         header: "Id",
         enableEditing: false,
         size: 80,
       },
       {
         accessorKey: "first_name",
+        accessorFn: (row) => row.first_name ?? "",
         header: "Nome",
         mantineEditTextInputProps: {
           type: "email",
@@ -68,15 +70,10 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "last_name",
         header: "Sobrenome",
-        accessorFn: (row) => row.last_name ?? "",
+
         mantineEditTextInputProps: {
-          type: "email",
+          type: "text",
           error: validationErrors?.last_name,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              last_name: undefined,
-            }),
         },
       },
       {
@@ -97,6 +94,7 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "role",
         header: "Função",
+        accessorFn: (row) => row.role ?? "",
         editVariant: "select",
         mantineEditSelectProps: {
           required: true,
@@ -111,7 +109,7 @@ function Staff({ role }: StaffPageProps) {
       {
         accessorKey: "branch_id",
         header: "Filial",
-        accessorFn: (row) => (row.branch_id ? String(row.branch_id) : ""),
+        accessorFn: (row) => String(row.branch_id ?? ""),
         editVariant: "select",
         Cell(props) {
           const branch = branches.find(
@@ -131,8 +129,7 @@ function Staff({ role }: StaffPageProps) {
       },
       {
         accessorKey: "active",
-        accessorFn: (row) =>
-          typeof row.active === "boolean" ? String(row.active) : "true",
+        accessorFn: (row) => String(Boolean(row.active)),
         header: "Status",
         Cell(props) {
           return <span>{props.row.original.active ? "Ativo" : "Inativo"}</span>;
@@ -150,22 +147,6 @@ function Staff({ role }: StaffPageProps) {
     ],
     [branches, validationErrors]
   );
-  const updateStaffListData = (
-    newData: StaffType,
-    variables: Partial<StaffType>
-  ) =>
-    queryClient.setQueryData<StaffType[] | undefined>(
-      getQueryKey(trpc.staff.findAll, undefined, "query"),
-      (oldData) => {
-        if (!oldData) return;
-        if (variables.id) {
-          return oldData.map((data) =>
-            data.id === variables.id ? newData : data
-          );
-        }
-        return [...oldData, newData];
-      }
-    );
 
   const handleCreateUser: MRT_TableOptions<StaffType>["onCreatingRowSave"] = ({
     values,
@@ -179,7 +160,15 @@ function Staff({ role }: StaffPageProps) {
     setValidationErrors({});
 
     createStaffMember(values, {
-      onSuccess: updateStaffListData,
+      onSuccess: (data) => {
+        updateQueryData<StaffType[]>(
+          getQueryKey(trpc.staff.findAll, undefined, "query"),
+          (oldData) => {
+            if (!oldData) return [];
+            return [...oldData, data];
+          }
+        );
+      },
     });
     exitCreatingMode();
   };
@@ -196,7 +185,15 @@ function Staff({ role }: StaffPageProps) {
     setValidationErrors({});
     updateStaffMember(values, {
       onSuccess: (data) => {
-        updateStaffListData(data, { id: Number(data.id) });
+        updateQueryData<StaffType[]>(
+          getQueryKey(trpc.staff.findAll, undefined, "query"),
+          (oldData) => {
+            if (!oldData) return [];
+            return oldData.map((staff) =>
+              staff.id === data.id ? data : staff
+            );
+          }
+        );
         table.setEditingRow(null);
       },
     });
@@ -217,11 +214,11 @@ function Staff({ role }: StaffPageProps) {
           { id: Number(row.original.id) },
           {
             onSuccess: () => {
-              queryClient.setQueryData<StaffType[] | undefined>(
+              updateQueryData<StaffType[]>(
                 getQueryKey(trpc.staff.findAll, undefined, "query"),
-                (oldData) => {
-                  if (!oldData) return;
-                  return oldData.filter((data) => data.id !== row.original.id);
+                (data) => {
+                  if (!data) return [];
+                  return data.filter((staff) => staff.id !== row.original.id);
                 }
               );
             },
@@ -232,22 +229,26 @@ function Staff({ role }: StaffPageProps) {
 
   return (
     <SideMenu role={role}>
-      <CustomTable
-        addButtonLabel="Novo Colaborador"
-        createModalLabel="Novo Colaborador"
-        editModalLabel="Editar Colaborador"
-        columns={columns}
-        data={staffMembers}
-        tableOptions={{
-          onCreatingRowSave: handleCreateUser,
-          onEditingRowSave: handleSaveUser,
-          enableFullScreenToggle: false,
-          manualExpanding: true,
-        }}
-        openDeleteConfirmModal={openDeleteConfirmModal}
-        isLoading={isLoadingStaff}
-        error={isGettingStaffError}
-      />
+      <Skeleton height="80vh" radius="xl" visible={isLoadingStaff}>
+        {!isLoadingStaff && (
+          <CustomTable
+            addButtonLabel="Novo Colaborador"
+            createModalLabel="Novo Colaborador"
+            editModalLabel="Editar Colaborador"
+            columns={columns}
+            data={staffMembers}
+            tableOptions={{
+              onCreatingRowSave: handleCreateUser,
+              onEditingRowSave: handleSaveUser,
+              enableFullScreenToggle: false,
+              manualExpanding: true,
+            }}
+            openDeleteConfirmModal={openDeleteConfirmModal}
+            isLoading={isLoadingStaff}
+            error={isGettingStaffError}
+          />
+        )}
+      </Skeleton>
     </SideMenu>
   );
 }

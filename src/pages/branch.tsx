@@ -11,16 +11,13 @@ import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
 import CustomTable from "@/components/Table";
-import { validateData } from "@/components/Table/utils";
+import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import {
-  createBranchSchema,
-  managerRoles,
-  type DefaultPageProps,
-} from "@/common/schemas";
+import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
-import { customErrorHandler } from "@/common/errors/customErrors";
-import { queryClient } from "@/lib";
+import { updateQueryData } from "@/lib";
+import { managerRoles } from "@/common/constants";
+import { Skeleton } from "@mantine/core";
 
 type BranchPageProps = DefaultPageProps;
 
@@ -30,13 +27,10 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
   >({});
 
   const { data: branches = [], isLoading: isLoadingBranches } =
-    trpc.branch.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
-  const { mutate: createBranch, isLoading: isCreatingBranch } =
-    trpc.branch.createBranch.useMutation();
-  const { mutate: deleteBranch, isLoading: isDeletingBranch } =
-    trpc.branch.deleteBranch.useMutation();
-  const { mutate: updateBranch, isLoading: isUpdatingBranch } =
-    trpc.branch.updateBranch.useMutation();
+    trpc.branch.findAll.useQuery();
+  const { mutate: createBranch } = trpc.branch.createBranch.useMutation();
+  const { mutate: deleteBranch } = trpc.branch.deleteBranch.useMutation();
+  const { mutate: updateBranch } = trpc.branch.updateBranch.useMutation();
 
   const columns = useMemo<MRT_ColumnDef<Branch>[]>(
     () => [
@@ -64,20 +58,6 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
     [validationErrors]
   );
 
-  const updateBranchesData = (newData: Branch, variables: Partial<Branch>) =>
-    queryClient.setQueryData<Branch[] | undefined>(
-      getQueryKey(trpc.branch.findAll, undefined, "query"),
-      (oldData) => {
-        if (!oldData) return;
-        if (variables.branch_id) {
-          return oldData.map((data) =>
-            data.branch_id === variables.branch_id ? newData : data
-          );
-        }
-        return [...oldData, newData];
-      }
-    );
-
   const handleCreateBranch: MRT_TableOptions<Branch>["onCreatingRowSave"] = ({
     values,
     exitCreatingMode,
@@ -89,15 +69,15 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
     }
     setValidationErrors({});
     createBranch(values, {
-      onSuccess: (newData, variables) => {
-        updateBranchesData(newData, variables);
+      onSuccess: (newData) => {
+        updateQueryData<Branch[]>(
+          getQueryKey(trpc.branch.findAll, undefined, "query"),
+          (oldData) => {
+            if (!oldData) return [];
+            return [...oldData, newData];
+          }
+        );
         exitCreatingMode();
-      },
-      onError: (error) => {
-        customErrorHandler({
-          message: error.message,
-          title: "Ops! Ocorreu um erro ao criar a filial",
-        });
       },
     });
   };
@@ -114,14 +94,16 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
     setValidationErrors({});
     updateBranch(values, {
       onSuccess: (newData, variables) => {
-        updateBranchesData(newData, variables);
+        updateQueryData<Branch[]>(
+          getQueryKey(trpc.branch.findAll, undefined, "query"),
+          (oldData) => {
+            if (!oldData) return [];
+            return oldData.map((data) =>
+              data.branch_id === variables.branch_id ? newData : data
+            );
+          }
+        );
         exitEditingMode();
-      },
-      onError: (error) => {
-        customErrorHandler({
-          message: error.message,
-          title: "Ops! Ocorreu um erro ao salvar a filial",
-        });
       },
     });
   };
@@ -138,21 +120,15 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
           { branch_id: row.original.branch_id },
           {
             onSuccess: () => {
-              queryClient.setQueryData<Branch[] | undefined>(
+              updateQueryData<Branch[]>(
                 getQueryKey(trpc.branch.findAll, undefined, "query"),
                 (oldData) => {
-                  if (!oldData) return;
+                  if (!oldData) return [];
                   return oldData.filter(
-                    (data) => data.branch_id !== row.original.branch_id
+                    (branch) => branch.branch_id !== row.original.branch_id
                   );
                 }
               );
-            },
-            onError: (error) => {
-              customErrorHandler({
-                message: error.message,
-                title: "Ops! Ocorreu um erro ao deletar a filial",
-              });
             },
           }
         );
@@ -162,21 +138,25 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
 
   return (
     <SideMenu role={role}>
-      <CustomTable
-        addButtonLabel="Nova Filial"
-        createModalLabel="Nova Filial"
-        editModalLabel="Editar Filial"
-        branch_id={branch_id}
-        isLoading={isLoadingBranches}
-        openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateBranch,
-          onEditingRowSave: handleSaveBranch,
-          enableStickyHeader: true,
-        }}
-        columns={columns}
-        data={branches}
-      />
+      <Skeleton height="80vh" radius="xl" visible={isLoadingBranches}>
+        {!isLoadingBranches && (
+          <CustomTable
+            addButtonLabel="Nova Filial"
+            createModalLabel="Nova Filial"
+            editModalLabel="Editar Filial"
+            branch_id={branch_id}
+            isLoading={isLoadingBranches}
+            openDeleteConfirmModal={openDeleteConfirmModal}
+            tableOptions={{
+              onCreatingRowSave: handleCreateBranch,
+              onEditingRowSave: handleSaveBranch,
+              enableStickyHeader: true,
+            }}
+            columns={columns}
+            data={branches}
+          />
+        )}
+      </Skeleton>
     </SideMenu>
   );
 }

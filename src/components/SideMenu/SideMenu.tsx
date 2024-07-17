@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { type PropsWithChildren, useState } from "react";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useSideMenu } from "./hooks";
@@ -12,6 +12,7 @@ import {
   IconApiApp,
   IconHome,
   IconUsersGroup,
+  IconCategory,
 } from "@tabler/icons-react";
 
 import CommandPalette, {
@@ -20,12 +21,11 @@ import CommandPalette, {
   useHandleOpenCommandPalette,
 } from "../SearchBar";
 import { PackageSearch, StoreIcon } from "lucide-react";
-import { managerRoles } from "@/common/schemas";
-import { pageNameMap } from "@/common/constants";
+import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
 
-type SideMenuProps = {
-  children: React.ReactNode;
+type SideMenuProps = PropsWithChildren & {
   role: string;
+  branch?: string;
 };
 
 export function SideMenu({ children, role }: SideMenuProps) {
@@ -43,53 +43,66 @@ export function SideMenu({ children, role }: SideMenuProps) {
     [
       {
         heading: "Home",
-        id: "",
+        id: PageRoute.HOME,
         items: [
           {
             id: "home",
             children: "Home",
             icon: "IconHome",
-            href: "/",
+            href: PageRoute.HOME,
           },
         ],
       },
       {
         heading: "Equipes",
-        id: "/staff",
+        id: PageRoute.STAFF,
         items: [
           {
             id: "staff",
             children: "Equipes",
             icon: "IconUsersGroup",
-            href: "/staff",
+            href: PageRoute.STAFF,
             disabled: !managerRoles.includes(role),
           },
         ],
       },
       {
         heading: "Filiais",
-        id: "/branch",
+        id: PageRoute.BRANCH,
 
         items: [
           {
             id: "branch",
             children: "Filiais",
             icon: "IconScriptPlus",
-            href: "/branch",
+            href: PageRoute.BRANCH,
             disabled: !managerRoles.includes(role),
           },
         ],
       },
       {
         heading: "Produtos",
-        id: "/products",
+        id: PageRoute.PRODUCTS,
 
         items: [
           {
             id: "products",
             children: "Produtos",
             icon: "IconPackage",
-            href: "/products",
+            href: PageRoute.PRODUCTS,
+          },
+        ],
+      },
+      {
+        heading: "Categoria de Produtos",
+        id: PageRoute.PRODUCT_CATEGORY,
+
+        items: [
+          {
+            id: "product-category",
+            children: "Categoria de Produtos",
+            icon: "IconCategory",
+            href: PageRoute.PRODUCT_CATEGORY,
           },
         ],
       },
@@ -220,28 +233,29 @@ export function SideMenu({ children, role }: SideMenuProps) {
             {
               icon: <IconHome className="h-4 w-4" />,
               label: "Pagina Inicial",
-              href: "/",
-              selected: pathname === "/",
+              href: PageRoute.HOME,
             },
             {
               icon: <IconUsersGroup className="h-4 w-4" />,
               label: "Equipe",
               href: "/staff",
-              selected: pathname === "/staff",
               visible: managerRoles.includes(role),
             },
             {
               icon: <StoreIcon className="h-4 w-4" />,
               label: "Filiais",
               href: "/branch",
-              selected: pathname === "/branch",
               visible: managerRoles.includes(role),
             },
             {
               icon: <PackageSearch className="h-4 w-4" />,
               label: "Produtos",
               href: "/products",
-              selected: pathname === "/products",
+            },
+            {
+              icon: <IconCategory className="h-4 w-4" />,
+              label: "Categoria de Produtos",
+              href: "/product-category",
             },
           ]}
           open={open}

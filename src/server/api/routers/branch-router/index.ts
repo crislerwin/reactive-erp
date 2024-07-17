@@ -31,6 +31,12 @@ export const branchRouter = createTRPCRouter({
     .input(z.object({ branch_id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       validateRole(ctx.session.account.role);
+      const usersInBranch = await ctx.prisma.staff.findMany({
+        where: { branch_id: input.branch_id },
+      });
+      if (usersInBranch.length > 0)
+        throw new TRPCError(CustomError.BRANCH_NOT_EMPTY);
+
       return ctx.prisma.branch.update({
         where: { branch_id: input.branch_id },
         data: { deleted_at: new Date() },

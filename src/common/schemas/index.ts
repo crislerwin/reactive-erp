@@ -11,5 +11,3 @@ export type DefaultPageProps = {
   email: string;
   role: string;
 };
-
-export const managerRoles = ["OWNER", "ADMIN", "MANAGER"];

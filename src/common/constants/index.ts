@@ -3,6 +3,7 @@ export enum PageRoute {
   STAFF = "/staff",
   BRANCH = "/branch",
   PRODUCTS = "/products",
+  PRODUCT_CATEGORY = "/product-category",
 }
 
 export const pageNameMap: Record<PageRoute | string, string> = {
@@ -10,4 +11,8 @@ export const pageNameMap: Record<PageRoute | string, string> = {
   [PageRoute.STAFF]: "Cadastro de Equipes",
   [PageRoute.BRANCH]: "Cadastro de Filiais",
   [PageRoute.PRODUCTS]: "Cadastro de Produtos",
+  [PageRoute.PRODUCT_CATEGORY]: "Cadastro de Categorias de Produtos",
 };
+
+export const managerRoles = ["OWNER", "ADMIN", "MANAGER"];
+export const superUserRoles = ["ADMIN", "OWNER"];

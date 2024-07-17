@@ -4,15 +4,13 @@ import {
   type MRT_Row,
   type MRT_TableOptions,
 } from "mantine-react-table";
-import { useQueryClient } from "@tanstack/react-query";
 import { type Product } from "@prisma/client";
-
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
 import CustomTable from "@/components/Table";
-import { validateData } from "@/components/Table/utils";
+import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   createProductSchema,
@@ -21,35 +19,33 @@ import {
 } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 import { type z } from "zod";
-import { customErrorHandler } from "@/common/errors/customErrors";
+import { updateQueryData } from "@/lib";
+import { Skeleton } from "@mantine/core";
 
 type ProductsPageProps = DefaultPageProps;
 
-export default function Products({ role }: ProductsPageProps) {
+export default function ProductsPage({ role }: ProductsPageProps) {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
-
-  const queryClient = useQueryClient();
   const { data: products = [], isLoading: isLoadingProducts } =
-    trpc.product.findAll.useQuery(undefined, { refetchOnWindowFocus: false });
-  console.log(products);
+    trpc.product.findAll.useQuery();
   const { mutate: createProduct } = trpc.product.create.useMutation();
   const { mutate: updateProduct } = trpc.product.updateProduct.useMutation();
   const { mutate: deleteProduct, isLoading: isDeletingProduct } =
     trpc.product.deleteProduct.useMutation();
+  const { data: productCategory } = trpc.productCategory.findAll.useQuery();
+
   const columns = useMemo<MRT_ColumnDef<Product>[]>(
     () => [
       {
         accessorKey: "product_id",
-        accessorFn: (row) => (row.product_id ? String(row.product_id) : ""),
         header: "Id do Produto",
         enableEditing: false,
         size: 80,
       },
       {
         accessorKey: "name",
-        accessorFn: (row) => row.name ?? "",
         header: "Nome do Produto",
         mantineEditTextInputProps: {
           type: "email",
@@ -65,7 +61,6 @@ export default function Products({ role }: ProductsPageProps) {
       {
         accessorKey: "price",
         header: "Preço",
-        accessorFn: (row) => (row.price ? String(row.price) : ""),
         mantineEditTextInputProps: {
           type: "number",
           required: true,
@@ -79,7 +74,6 @@ export default function Products({ role }: ProductsPageProps) {
       },
       {
         accessorKey: "stock",
-        accessorFn: (row) => (row.stock !== undefined ? String(row.stock) : 0),
         header: "Quantidade em estoque",
         mantineEditTextInputProps: {
           type: "number",
@@ -94,22 +88,30 @@ export default function Products({ role }: ProductsPageProps) {
       {
         accessorKey: "product_category_id",
         header: "Categoria",
-        accessorFn: (row) =>
-          row.product_category_id ? String(row.product_category_id) : "",
+        accessorFn: (row) => String(row.product_category_id ?? ""),
         editVariant: "select",
+        Cell(props) {
+          const category = productCategory?.find(
+            (category) => category.id === props.row.original.product_category_id
+          );
+          return <div>{category?.name}</div>;
+        },
         mantineEditSelectProps: {
           required: true,
-          data: [
-            { label: "Categoria 1", value: "1" },
-            { label: "Categoria 2", value: "2" },
-          ],
+          nothingFound: "Nenhuma categoria encontrada",
+          limit: 5,
+          data: productCategory?.map((category) => ({
+            value: String(category.id),
+            label: category.name,
+          })),
           error: validationErrors?.product_category_id,
         },
       },
       {
         accessorKey: "available",
         header: "Disponível",
-        accessorFn: (row) => (row.available ? "Sim" : "Não"),
+        accessorFn: (row) =>
+          typeof row.available === "boolean" ? String(row.available) : "true",
         Cell(props) {
           return <div>{props.row.original.available ? "Sim" : "Não"}</div>;
         },
@@ -141,36 +143,9 @@ export default function Products({ role }: ProductsPageProps) {
             }),
         },
       },
-      {
-        accessorKey: "currency",
-        accessorFn: (row) => row.currency ?? "",
-        header: "Moeda",
-        editVariant: "select",
-        mantineEditSelectProps: {
-          required: true,
-          error: validationErrors?.currency,
-          data: [
-            { label: "USD", value: "USD" },
-            { label: "BRL", value: "BRL" },
-          ],
-        },
-      },
     ],
-    [validationErrors]
+    [productCategory, validationErrors]
   );
-  const updateProductData = (newData: Product, variables: Partial<Product>) =>
-    queryClient.setQueryData<Product[] | undefined>(
-      getQueryKey(trpc.product.findAll, undefined, "query"),
-      (oldData) => {
-        if (!oldData) return;
-        if (variables.product_id) {
-          return oldData.map((data) =>
-            data.product_id === variables.product_id ? newData : data
-          );
-        }
-        return [...oldData, newData];
-      }
-    );
 
   const handleCreateProduct: MRT_TableOptions<Product>["onCreatingRowSave"] = ({
     values,
@@ -185,15 +160,15 @@ export default function Products({ role }: ProductsPageProps) {
     }
     createProduct(values, {
       onSuccess: (data) => {
-        updateProductData(data, values);
-        exitCreatingMode();
+        updateQueryData<Product[]>(
+          getQueryKey(trpc.product.findAll, undefined, "query"),
+          (oldData) => {
+            if (!oldData) return [];
+            return [...oldData, data];
+          }
+        );
         setValidationErrors({});
-      },
-      onError: (error) => {
-        customErrorHandler({
-          title: "Ops! Ocorreu um erro ao criar o produto",
-          message: error.message,
-        });
+        exitCreatingMode();
       },
     });
   };
@@ -209,15 +184,17 @@ export default function Products({ role }: ProductsPageProps) {
     }
     updateProduct(values, {
       onSuccess: (data) => {
-        updateProductData(data, values);
-        exitEditingMode();
+        updateQueryData<Product[]>(
+          getQueryKey(trpc.product.findAll, undefined, "query"),
+          (oldData) => {
+            if (!oldData) return [];
+            return oldData.map((product) =>
+              product.product_id === data.product_id ? data : product
+            );
+          }
+        );
         setValidationErrors({});
-      },
-      onError: (error) => {
-        customErrorHandler({
-          title: "Ops! Ocorreu um erro ao atualizar o produto",
-          message: error.message,
-        });
+        exitEditingMode();
       },
     });
   };
@@ -229,7 +206,6 @@ export default function Products({ role }: ProductsPageProps) {
       labels: { confirm: "Deletar", cancel: "Cancelar" },
       confirmProps: {
         variant: "filled",
-        color: "red",
         disabled: isDeletingProduct,
       },
       cancelProps: { variant: "outline" },
@@ -238,21 +214,16 @@ export default function Products({ role }: ProductsPageProps) {
           { product_id: row.original.product_id },
           {
             onSuccess: () => {
-              queryClient.setQueryData<Product[] | undefined>(
+              updateQueryData<Product[]>(
                 getQueryKey(trpc.product.findAll, undefined, "query"),
                 (oldData) => {
-                  if (!oldData) return;
+                  if (!oldData) return [];
                   return oldData.filter(
                     (data) => data.product_id !== row.original.product_id
                   );
                 }
               );
             },
-            onError: (error) =>
-              customErrorHandler({
-                title: "Ops! Ocorreu um erro ao deletar o produto",
-                message: error.message,
-              }),
           }
         );
       },
@@ -261,19 +232,23 @@ export default function Products({ role }: ProductsPageProps) {
 
   return (
     <SideMenu role={role}>
-      <CustomTable
-        addButtonLabel="Novo Produto"
-        createModalLabel="Novo Produto"
-        editModalLabel="Editar Produto"
-        isLoading={isLoadingProducts}
-        openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateProduct,
-          onEditingRowSave: handleSaveProduct,
-        }}
-        columns={columns}
-        data={products}
-      />
+      <Skeleton height="80vh" radius="xl" visible={isLoadingProducts}>
+        {!isLoadingProducts && (
+          <CustomTable
+            addButtonLabel="Novo Produto"
+            createModalLabel="Novo Produto"
+            editModalLabel="Editar Produto"
+            isLoading={isLoadingProducts}
+            openDeleteConfirmModal={openDeleteConfirmModal}
+            tableOptions={{
+              onCreatingRowSave: handleCreateProduct,
+              onEditingRowSave: handleSaveProduct,
+            }}
+            columns={columns}
+            data={products}
+          />
+        )}
+      </Skeleton>
     </SideMenu>
   );
 }
