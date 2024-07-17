@@ -20,6 +20,7 @@ import {
 import { getServerAuthSession } from "@/server/api/auth";
 import { type z } from "zod";
 import { updateQueryData } from "@/lib";
+import { Skeleton } from "@mantine/core";
 
 type ProductsPageProps = DefaultPageProps;
 
@@ -231,19 +232,23 @@ export default function ProductsPage({ role }: ProductsPageProps) {
 
   return (
     <SideMenu role={role}>
-      <CustomTable
-        addButtonLabel="Novo Produto"
-        createModalLabel="Novo Produto"
-        editModalLabel="Editar Produto"
-        isLoading={isLoadingProducts}
-        openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateProduct,
-          onEditingRowSave: handleSaveProduct,
-        }}
-        columns={columns}
-        data={products}
-      />
+      <Skeleton height="80vh" radius="xl" visible={isLoadingProducts}>
+        {!isLoadingProducts && (
+          <CustomTable
+            addButtonLabel="Novo Produto"
+            createModalLabel="Novo Produto"
+            editModalLabel="Editar Produto"
+            isLoading={isLoadingProducts}
+            openDeleteConfirmModal={openDeleteConfirmModal}
+            tableOptions={{
+              onCreatingRowSave: handleCreateProduct,
+              onEditingRowSave: handleSaveProduct,
+            }}
+            columns={columns}
+            data={products}
+          />
+        )}
+      </Skeleton>
     </SideMenu>
   );
 }

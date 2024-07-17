@@ -19,6 +19,7 @@ import {
   updateProductCategorySchema,
 } from "@/common/schemas/product-category.schema";
 import { updateQueryData } from "@/lib";
+import { Skeleton } from "@mantine/core";
 
 type ProductCategoryPageProps = DefaultPageProps;
 
@@ -142,8 +143,6 @@ export default function ProductCategoryPage({
       }
       updateProductCategory(values, {
         onSuccess: (data) => {
-          console.log(data);
-          console.log(values);
           updateQueryData<ProductCategory[]>(
             getQueryKey(trpc.productCategory.findAll, undefined, "query"),
             (oldData) => {
@@ -193,19 +192,23 @@ export default function ProductCategoryPage({
   console.log(validationErrors);
   return (
     <SideMenu role={role}>
-      <CustomTable
-        addButtonLabel="Nova Categoria"
-        createModalLabel="Nova Categoria"
-        editModalLabel="Editar Categoria"
-        isLoading={isLoadingProductCategory}
-        openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateProduct,
-          onEditingRowSave: handleSaveProduct,
-        }}
-        columns={columns}
-        data={productCategories}
-      />
+      <Skeleton height="80vh" radius="xl" visible={isLoadingProductCategory}>
+        {!isLoadingProductCategory && (
+          <CustomTable
+            addButtonLabel="Nova Categoria"
+            createModalLabel="Nova Categoria"
+            editModalLabel="Editar Categoria"
+            isLoading={isLoadingProductCategory}
+            openDeleteConfirmModal={openDeleteConfirmModal}
+            tableOptions={{
+              onCreatingRowSave: handleCreateProduct,
+              onEditingRowSave: handleSaveProduct,
+            }}
+            columns={columns}
+            data={productCategories}
+          />
+        )}
+      </Skeleton>
     </SideMenu>
   );
 }

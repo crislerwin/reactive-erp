@@ -20,6 +20,7 @@ import { getServerAuthSession } from "@/server/api/auth";
 import { updateQueryData } from "@/lib";
 import { managerRoles } from "@/common/constants";
 import { validateData } from "@/common/utils";
+import { Skeleton } from "@mantine/core";
 
 type StaffPageProps = DefaultPageProps;
 
@@ -228,22 +229,26 @@ function Staff({ role }: StaffPageProps) {
 
   return (
     <SideMenu role={role}>
-      <CustomTable
-        addButtonLabel="Novo Colaborador"
-        createModalLabel="Novo Colaborador"
-        editModalLabel="Editar Colaborador"
-        columns={columns}
-        data={staffMembers}
-        tableOptions={{
-          onCreatingRowSave: handleCreateUser,
-          onEditingRowSave: handleSaveUser,
-          enableFullScreenToggle: false,
-          manualExpanding: true,
-        }}
-        openDeleteConfirmModal={openDeleteConfirmModal}
-        isLoading={isLoadingStaff}
-        error={isGettingStaffError}
-      />
+      <Skeleton height="80vh" radius="xl" visible={isLoadingStaff}>
+        {!isLoadingStaff && (
+          <CustomTable
+            addButtonLabel="Novo Colaborador"
+            createModalLabel="Novo Colaborador"
+            editModalLabel="Editar Colaborador"
+            columns={columns}
+            data={staffMembers}
+            tableOptions={{
+              onCreatingRowSave: handleCreateUser,
+              onEditingRowSave: handleSaveUser,
+              enableFullScreenToggle: false,
+              manualExpanding: true,
+            }}
+            openDeleteConfirmModal={openDeleteConfirmModal}
+            isLoading={isLoadingStaff}
+            error={isGettingStaffError}
+          />
+        )}
+      </Skeleton>
     </SideMenu>
   );
 }

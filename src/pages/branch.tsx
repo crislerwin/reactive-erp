@@ -17,6 +17,7 @@ import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
 import { getServerAuthSession } from "@/server/api/auth";
 import { updateQueryData } from "@/lib";
 import { managerRoles } from "@/common/constants";
+import { Skeleton } from "@mantine/core";
 
 type BranchPageProps = DefaultPageProps;
 
@@ -137,21 +138,25 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
 
   return (
     <SideMenu role={role}>
-      <CustomTable
-        addButtonLabel="Nova Filial"
-        createModalLabel="Nova Filial"
-        editModalLabel="Editar Filial"
-        branch_id={branch_id}
-        isLoading={isLoadingBranches}
-        openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateBranch,
-          onEditingRowSave: handleSaveBranch,
-          enableStickyHeader: true,
-        }}
-        columns={columns}
-        data={branches}
-      />
+      <Skeleton height="80vh" radius="xl" visible={isLoadingBranches}>
+        {!isLoadingBranches && (
+          <CustomTable
+            addButtonLabel="Nova Filial"
+            createModalLabel="Nova Filial"
+            editModalLabel="Editar Filial"
+            branch_id={branch_id}
+            isLoading={isLoadingBranches}
+            openDeleteConfirmModal={openDeleteConfirmModal}
+            tableOptions={{
+              onCreatingRowSave: handleCreateBranch,
+              onEditingRowSave: handleSaveBranch,
+              enableStickyHeader: true,
+            }}
+            columns={columns}
+            data={branches}
+          />
+        )}
+      </Skeleton>
     </SideMenu>
   );
 }
