@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 
-describe("Product Category CRUD", () => {
+describe.concurrent("Product Category CRUD", () => {
   describe("Product_Category ListAll", () => {
     it("should return a list of product categories", async () => {
       const { app, branch } = await makeSut();

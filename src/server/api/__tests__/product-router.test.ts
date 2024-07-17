@@ -5,35 +5,25 @@ import { type z } from "zod";
 import { faker } from "@faker-js/faker";
 import { prisma } from "@/server/db";
 
-const manyProducs: z.infer<typeof createProductSchema>[] = Array.from(
-  { length: 10 },
-  () => ({
-    available: true,
-    branch_id: 1,
-    colors: ["red", "blue"],
-    description: faker.lorem.sentence(),
-    name: faker.commerce.productName(),
-    price: Number(faker.commerce.price()),
-    product_category_id: 1,
-    stock: faker.datatype.number(),
-  })
-);
-describe("Product Router", () => {
-  beforeAll(async () => {
-    await prisma.product.deleteMany();
-  });
-
+describe.concurrent("Product Router", () => {
   describe("GET all products", () => {
     it("should return all products", async () => {
       const { app, branch } = await makeSut();
-      const createManyProducts = await prisma.product.createMany({
-        data: manyProducs.map((product) => ({
-          ...product,
+      await prisma.product.createMany({
+        data: Array.from({ length: 10 }, () => ({
+          available: true,
           branch_id: branch.branch_id,
+          colors: ["red", "blue"],
+          description: faker.lorem.sentence(),
+          name: faker.commerce.productName(),
+          price: Number(faker.commerce.price()),
+          product_category_id: 1,
+          stock: faker.datatype.number(),
         })),
       });
       const products = await app.product.findAll();
-      expect(products).toHaveLength(createManyProducts.count);
+      const allProducts = await prisma.product.findMany();
+      expect(products).toHaveLength(allProducts.length);
     });
     test("should return an error if the user branch is invalid", async () => {
       const app = makeApp({
@@ -72,9 +62,15 @@ describe("Product Router", () => {
         staff,
       });
       const createManyProducts = await prisma.product.createMany({
-        data: manyProducs.map((product) => ({
-          ...product,
+        data: Array.from({ length: 10 }, () => ({
+          available: true,
           branch_id: branch.branch_id,
+          colors: ["red", "blue"],
+          description: faker.lorem.sentence(),
+          name: faker.commerce.productName(),
+          price: Number(faker.commerce.price()),
+          product_category_id: 1,
+          stock: faker.datatype.number(),
         })),
       });
       const products = await app.product.findAll();

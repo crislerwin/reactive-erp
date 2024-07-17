@@ -51,7 +51,7 @@ export const productRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       if (!superUserRoles.includes(ctx.session.account.role))
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      console.log(input);
+
       return ctx.prisma.product.update({
         where: { product_id: input.product_id },
         data: {
