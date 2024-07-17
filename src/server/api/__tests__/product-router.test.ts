@@ -1,7 +1,5 @@
-import { beforeAll, describe, expect, it, test } from "vitest";
+import { describe, expect, it, test } from "vitest";
 import { makeApp, makeSut } from "./__mocks__";
-import { type createProductSchema } from "@/common/schemas";
-import { type z } from "zod";
 import { faker } from "@faker-js/faker";
 import { prisma } from "@/server/db";
 
