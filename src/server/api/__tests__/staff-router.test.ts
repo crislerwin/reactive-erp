@@ -269,7 +269,7 @@ describe("Staff member Router", () => {
         },
       });
       const promise = app.staff.softDeletedStaffMember({ id: staff.id });
-      await expect(promise).rejects.toThrowError(ErrorType.USER_NOT_FOUND);
+      await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
     test("Should throw if staff member is owner", async () => {
       const { branch } = await makeSut();
