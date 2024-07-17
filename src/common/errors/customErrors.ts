@@ -6,6 +6,7 @@ export enum ErrorType {
   ACCOUNT_ALREADY_EXISTS = "ACCOUNT_ALREADY_EXISTS",
   USER_NOT_FOUND = "USER_NOT_FOUND",
   NOT_ALLOWED = "NOT_ALLOWED",
+  BRANCH_NOT_EMPTY = "BRANCH_NOT_EMPTY",
 }
 
 export type CustomErrorsValues = {
@@ -30,6 +31,10 @@ export const CustomError: Record<ErrorType, CustomErrorsValues> = {
     code: "UNAUTHORIZED",
     cause: ErrorType.NOT_ALLOWED,
   },
+  BRANCH_NOT_EMPTY: {
+    code: "BAD_REQUEST",
+    cause: ErrorType.BRANCH_NOT_EMPTY,
+  },
 };
 
 export const ErrorTranslation: Record<ErrorType | string, string> = {
@@ -37,6 +42,7 @@ export const ErrorTranslation: Record<ErrorType | string, string> = {
   ACCOUNT_ALREADY_EXISTS: "Já existe uma conta com este e-mail",
   USER_NOT_FOUND: "Usuário não encontrado",
   NOT_ALLOWED: "Você não tem permissão para realizar esta ação",
+  BRANCH_NOT_EMPTY: "Existem usuários cadastrados nesta filial",
 };
 
 export function customErrorHandler({
