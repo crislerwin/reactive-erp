@@ -142,8 +142,8 @@ importers:
         specifier: ^1.45.1
         version: 1.45.1
       '@prisma/client':
-        specifier: ^5.8.1
-        version: 5.8.1(prisma@5.8.1)
+        specifier: ^5.17.0
+        version: 5.17.0(prisma@5.8.1)
       '@storybook/addon-essentials':
         specifier: ^8.2.1
         version: 8.2.1(storybook@8.2.1(@babel/preset-env@7.24.8(@babel/core@7.24.7)))
@@ -2048,8 +2048,8 @@ packages:
       webpack-plugin-serve:
         optional: true
 
-  '@prisma/client@5.8.1':
-    resolution: {integrity: sha512-xQtMPfbIwLlbm0VVIVQY2yqQVOxPwRQhvIp7Z3m2900g1bu/zRHKhYZJQWELqmjl6d8YwBy0K2NvMqh47v1ubw==}
+  '@prisma/client@5.17.0':
+    resolution: {integrity: sha512-N2tnyKayT0Zf7mHjwEyE8iG7FwTmXDHFZ1GnNhQp0pJUObsuel4ZZ1XwfuAYkq5mRIiC/Kot0kt0tGCfLJ70Jw==}
     engines: {node: '>=16.13'}
     peerDependencies:
       prisma: '*'
@@ -9366,7 +9366,7 @@ snapshots:
       type-fest: 2.19.0
       webpack-hot-middleware: 2.26.0
 
-  '@prisma/client@5.8.1(prisma@5.8.1)':
+  '@prisma/client@5.17.0(prisma@5.8.1)':
     optionalDependencies:
       prisma: 5.8.1
 
