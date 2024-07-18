@@ -64,7 +64,7 @@
     "@chromatic-com/storybook": "^1.6.1",
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.45.1",
-    "@prisma/client": "^5.8.1",
+    "@prisma/client": "^5.17.0",
     "@storybook/addon-essentials": "^8.2.1",
     "@storybook/addon-interactions": "^8.2.1",
     "@storybook/addon-links": "^8.2.1",
