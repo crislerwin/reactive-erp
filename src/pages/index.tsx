@@ -9,8 +9,8 @@ type HomeProps = DefaultPageProps;
 
 import * as React from "react";
 import dynamic from "next/dynamic";
-import { getServerAuthSession } from "@/server/api/auth";
 import { type DefaultPageProps } from "@/common/schemas";
+import { createTRPCContext } from "@/server/api/trpc";
 
 export default function Home({ role }: HomeProps) {
   return (
@@ -21,8 +21,9 @@ export default function Home({ role }: HomeProps) {
 }
 
 export async function getServerSideProps(ctx: CreateNextContextOptions) {
-  const staffMember = await getServerAuthSession(ctx);
-  if (!staffMember) {
+  const { session } = await createTRPCContext(ctx);
+  const { staffMember, user } = session;
+  if (!user) {
     return {
       redirect: {
         destination: "/sign-in",
@@ -30,6 +31,16 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
       },
     };
   }
+
+  if (!staffMember) {
+    return {
+      redirect: {
+        destination: "/unauthorized",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       email: staffMember.email,

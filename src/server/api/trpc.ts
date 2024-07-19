@@ -5,28 +5,31 @@ import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { type Staff, type PrismaClient } from "@prisma/client";
-import { getServerAuthSession } from "./auth";
+import { getServerAuthSession, type LoggedUser } from "./auth";
 import { type AppRouter } from "./root";
 
 type CreateContextOptions = {
   prisma?: PrismaClient;
   session: {
-    account: Staff;
+    user: LoggedUser;
+    staffMember: Staff | null;
   };
 };
 
-export const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    session: opts.session,
-    prisma: opts.prisma || prisma,
-  };
-};
+export const createInnerTRPCContext = (opts: CreateContextOptions) => ({
+  session: opts.session,
+  prisma: opts.prisma || prisma,
+});
 
 export const createTRPCContext = async (ctx: CreateNextContextOptions) => {
-  const account = await getServerAuthSession(ctx);
-
+  const user = await getServerAuthSession(ctx);
+  const staffMember = await prisma.staff.findUnique({
+    where: {
+      email: user.email,
+    },
+  });
   return createInnerTRPCContext({
-    session: { account },
+    session: { user, staffMember },
   });
 };
 
@@ -51,13 +54,13 @@ export const createCaller = (router: AppRouter) =>
   t.createCallerFactory(router);
 
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.account) {
+  if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
   return next({
     ctx: {
-      session: { ...ctx.session, account: ctx.session.account },
+      session: { ...ctx.session, user: ctx.session.user },
     },
   });
 });

@@ -1,27 +1,30 @@
-import { prisma } from "@/server/db";
+import { ServerError } from "@/common/errors";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
-import { type Staff } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 
+export type LoggedUser = {
+  email: string;
+  user_id: string;
+  first_name: string;
+  last_name?: string;
+};
+
 export const getServerAuthSession = async (
   ctx: CreateNextContextOptions
-): Promise<Staff> => {
+): Promise<LoggedUser> => {
   const { userId } = getAuth(ctx.req);
-  if (!userId) throw new TRPCError({ code: "UNAUTHORIZED" });
-  const { emailAddresses } = await clerkClient.users.getUser(userId);
+  if (!userId) throw new TRPCError(ServerError.NOT_ALLOWED);
+  const { emailAddresses, firstName, lastName } =
+    await clerkClient.users.getUser(userId);
   const [firstEmailAddress] = emailAddresses;
   if (!firstEmailAddress)
-    throw new TRPCError({ code: "BAD_REQUEST", cause: "Email is not defined" });
-  const staffMember = await prisma.staff.findUnique({
-    where: { email: firstEmailAddress.emailAddress },
-    include: { branch: true },
-  });
-  if (!staffMember)
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      cause: "Staff member not found",
-    });
+    throw new TRPCError(ServerError.EMAIL_ADDRESS_NOT_FOUND);
 
-  return staffMember;
+  return {
+    email: firstEmailAddress.emailAddress,
+    user_id: userId,
+    first_name: firstName || "",
+    last_name: lastName || "",
+  };
 };

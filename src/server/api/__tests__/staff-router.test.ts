@@ -205,7 +205,9 @@ describe("Staff member Router", () => {
       const { app } = await makeSut();
       const id = faker.datatype.number();
       const promise = app.staff.getStaffMember({ id });
-      await expect(promise).rejects.toThrowError(ErrorType.USER_NOT_FOUND);
+      await expect(promise).rejects.toThrowError(
+        ErrorType.STAFF_MEMBER_NOT_FOUND
+      );
     });
   });
   describe("DELETE staff member", () => {
@@ -253,14 +255,16 @@ describe("Staff member Router", () => {
 
       const staffMemberPromise = app.staff.getStaffMember({ id: staff.id });
       await expect(staffMemberPromise).rejects.toThrowError(
-        ErrorType.USER_NOT_FOUND
+        ErrorType.STAFF_MEMBER_NOT_FOUND
       );
     });
     it("Should throw if staff member not found", async () => {
       const { app } = await makeSut();
       const id = faker.datatype.number();
       const promise = app.staff.softDeletedStaffMember({ id });
-      await expect(promise).rejects.toThrowError(ErrorType.USER_NOT_FOUND);
+      await expect(promise).rejects.toThrowError(
+        ErrorType.STAFF_MEMBER_NOT_FOUND
+      );
     });
     it("Should throw if staff member already deleted", async () => {
       const { app, branch } = await makeSut();

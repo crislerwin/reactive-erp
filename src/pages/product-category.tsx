@@ -13,13 +13,14 @@ import CustomTable from "@/components/Table";
 import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type DefaultPageProps } from "@/common/schemas";
-import { getServerAuthSession } from "@/server/api/auth";
 import {
   createProductCategorySchema,
   updateProductCategorySchema,
 } from "@/common/schemas/product-category.schema";
 import { updateQueryData } from "@/lib";
 import { Skeleton } from "@mantine/core";
+import { managerRoles } from "@/common/constants";
+import { createTRPCContext } from "@/server/api/trpc";
 
 type ProductCategoryPageProps = DefaultPageProps;
 
@@ -214,11 +215,29 @@ export default function ProductCategoryPage({
 }
 
 export async function getServerSideProps(ctx: CreateNextContextOptions) {
-  const staffMember = await getServerAuthSession(ctx);
-  if (!staffMember) {
+  const { session } = await createTRPCContext(ctx);
+  const { staffMember, user } = session;
+  if (!user) {
     return {
       redirect: {
         destination: "/sign-in",
+        permanent: false,
+      },
+    };
+  }
+
+  if (!staffMember) {
+    return {
+      redirect: {
+        destination: "/unauthorized",
+        permanent: false,
+      },
+    };
+  }
+  if (!managerRoles.includes(staffMember.role)) {
+    return {
+      redirect: {
+        destination: "/",
         permanent: false,
       },
     };
@@ -229,9 +248,6 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
       email: staffMember.email,
       role: staffMember.role,
       id: staffMember.id,
-      branch_id: staffMember.branch_id,
-      first_name: staffMember.first_name,
-      last_name: staffMember.last_name,
     },
   };
 }

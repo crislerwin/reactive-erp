@@ -8,6 +8,7 @@ import {
   type createStaffMemberSchema,
   type createBranchSchema,
 } from "@/common/schemas";
+import { randomUUID } from "crypto";
 
 export const makeStaffRequest = (
   branch_id: number
@@ -53,7 +54,13 @@ export const makeApp = async ({
   return app({
     prisma,
     session: {
-      account: staff,
+      user: {
+        email: staff.email,
+        first_name: staff.first_name,
+        last_name: staff.last_name || "",
+        user_id: randomUUID(),
+      },
+      staffMember: staff,
     },
   });
 };

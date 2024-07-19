@@ -4,9 +4,10 @@ import { type TRPC_ERROR_CODE_KEY } from "@trpc/server/rpc";
 export enum ErrorType {
   BRANCH_NOT_FOUND = "BRANCH_NOT_FOUND",
   ACCOUNT_ALREADY_EXISTS = "ACCOUNT_ALREADY_EXISTS",
-  USER_NOT_FOUND = "USER_NOT_FOUND",
+  STAFF_MEMBER_NOT_FOUND = "STAFF_MEMBER_NOT_FOUND",
   NOT_ALLOWED = "NOT_ALLOWED",
   BRANCH_NOT_EMPTY = "BRANCH_NOT_EMPTY",
+  EMAIL_ADDRESS_NOT_FOUND = "EMAIL_ADDRESS_NOT_FOUND",
 }
 
 export type CustomErrorsValues = {
@@ -14,7 +15,7 @@ export type CustomErrorsValues = {
   cause: ErrorType;
 };
 
-export const CustomError: Record<ErrorType, CustomErrorsValues> = {
+export const ServerError: Record<ErrorType, CustomErrorsValues> = {
   BRANCH_NOT_FOUND: {
     code: "NOT_FOUND",
     cause: ErrorType.BRANCH_NOT_FOUND,
@@ -23,9 +24,9 @@ export const CustomError: Record<ErrorType, CustomErrorsValues> = {
     code: "BAD_REQUEST",
     cause: ErrorType.ACCOUNT_ALREADY_EXISTS,
   },
-  USER_NOT_FOUND: {
+  STAFF_MEMBER_NOT_FOUND: {
     code: "NOT_FOUND",
-    cause: ErrorType.USER_NOT_FOUND,
+    cause: ErrorType.STAFF_MEMBER_NOT_FOUND,
   },
   NOT_ALLOWED: {
     code: "UNAUTHORIZED",
@@ -34,6 +35,10 @@ export const CustomError: Record<ErrorType, CustomErrorsValues> = {
   BRANCH_NOT_EMPTY: {
     code: "BAD_REQUEST",
     cause: ErrorType.BRANCH_NOT_EMPTY,
+  },
+  EMAIL_ADDRESS_NOT_FOUND: {
+    code: "BAD_REQUEST",
+    cause: ErrorType.EMAIL_ADDRESS_NOT_FOUND,
   },
 };
 

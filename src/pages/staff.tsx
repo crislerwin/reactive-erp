@@ -16,11 +16,11 @@ import {
   createStaffMemberSchema,
   type DefaultPageProps,
 } from "@/common/schemas";
-import { getServerAuthSession } from "@/server/api/auth";
 import { updateQueryData } from "@/lib";
 import { managerRoles } from "@/common/constants";
 import { validateData } from "@/common/utils";
 import { Skeleton } from "@mantine/core";
+import { createTRPCContext } from "@/server/api/trpc";
 
 type StaffPageProps = DefaultPageProps;
 
@@ -250,12 +250,25 @@ function Staff({ role }: StaffPageProps) {
     </SideMenu>
   );
 }
+
+export default Staff;
+
 export async function getServerSideProps(ctx: CreateNextContextOptions) {
-  const staffMember = await getServerAuthSession(ctx);
-  if (!staffMember) {
+  const { session } = await createTRPCContext(ctx);
+  const { staffMember, user } = session;
+  if (!user) {
     return {
       redirect: {
         destination: "/sign-in",
+        permanent: false,
+      },
+    };
+  }
+
+  if (!staffMember) {
+    return {
+      redirect: {
+        destination: "/unauthorized",
         permanent: false,
       },
     };
@@ -277,5 +290,3 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
     },
   };
 }
-
-export default Staff;

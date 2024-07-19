@@ -18,6 +18,8 @@ import { getServerAuthSession } from "@/server/api/auth";
 import { updateQueryData } from "@/lib";
 import { managerRoles } from "@/common/constants";
 import { Skeleton } from "@mantine/core";
+import { prisma } from "@/server/db";
+import { createTRPCContext } from "@/server/api/trpc";
 
 type BranchPageProps = DefaultPageProps;
 
@@ -162,8 +164,9 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
 export default BranchPage;
 
 export async function getServerSideProps(ctx: CreateNextContextOptions) {
-  const staffMember = await getServerAuthSession(ctx);
-  if (!staffMember) {
+  const { session } = await createTRPCContext(ctx);
+  const { staffMember, user } = session;
+  if (!user) {
     return {
       redirect: {
         destination: "/sign-in",
@@ -171,10 +174,11 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
       },
     };
   }
-  if (!managerRoles.includes(staffMember.role)) {
+
+  if (!staffMember) {
     return {
       redirect: {
-        destination: "/",
+        destination: "/unauthorized",
         permanent: false,
       },
     };
@@ -185,9 +189,6 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
       email: staffMember.email,
       role: staffMember.role,
       id: staffMember.id,
-      branch_id: staffMember.branch_id,
-      first_name: staffMember.first_name,
-      last_name: staffMember.last_name,
     },
   };
 }

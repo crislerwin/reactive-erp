@@ -6,7 +6,7 @@ import {
   updateStaffMemberSchema,
 } from "@/common/schemas";
 import { z } from "zod";
-import { CustomError } from "@/common/errors/customErrors";
+import { ServerError } from "@/common/errors/customErrors";
 
 const allowedRoles = ["ADMIN", "MANAGER"];
 
@@ -14,18 +14,20 @@ export const staffRouter = createTRPCRouter({
   findAll: protectedProcedure
     .meta({ method: "GET", path: "/staff" })
     .query(async ({ ctx }) => {
-      if (ctx.session.account.role === "OWNER")
+      if (!ctx.session.staffMember)
+        throw new TRPCError(ServerError.NOT_ALLOWED);
+      if (ctx.session.staffMember.role === "OWNER")
         return ctx.prisma.staff.findMany();
 
-      if (!allowedRoles.includes(ctx.session.account.role))
-        throw new TRPCError(CustomError.NOT_ALLOWED);
+      if (!allowedRoles.includes(ctx.session.staffMember.role))
+        throw new TRPCError(ServerError.NOT_ALLOWED);
       const branch = await ctx.prisma.branch.findUnique({
-        where: { branch_id: ctx.session.account.branch_id },
+        where: { branch_id: ctx.session.staffMember.branch_id },
       });
-      if (!branch) throw new TRPCError(CustomError.BRANCH_NOT_FOUND);
+      if (!branch) throw new TRPCError(ServerError.BRANCH_NOT_FOUND);
       return ctx.prisma.staff.findMany({
         where: {
-          branch_id: ctx.session.account.branch_id,
+          branch_id: ctx.session.staffMember.branch_id,
           role: { in: allowedRoles },
         },
       });
@@ -38,11 +40,11 @@ export const staffRouter = createTRPCRouter({
         where: { branch_id: input.branch_id },
       });
 
-      if (!branch) throw new TRPCError(CustomError.BRANCH_NOT_FOUND);
+      if (!branch) throw new TRPCError(ServerError.BRANCH_NOT_FOUND);
       const staffMember = await ctx.prisma.staff.findUnique({
         where: { email: input.email },
       });
-      if (staffMember) throw new TRPCError(CustomError.ACCOUNT_ALREADY_EXISTS);
+      if (staffMember) throw new TRPCError(ServerError.ACCOUNT_ALREADY_EXISTS);
 
       return ctx.prisma.staff.create({
         data: {
@@ -62,7 +64,8 @@ export const staffRouter = createTRPCRouter({
       const staffToUpdate = await ctx.prisma.staff.findUnique({
         where: { id: input.id, email: input.email },
       });
-      if (!staffToUpdate) throw new TRPCError(CustomError.USER_NOT_FOUND);
+      if (!staffToUpdate)
+        throw new TRPCError(ServerError.STAFF_MEMBER_NOT_FOUND);
       return ctx.prisma.staff.update({
         where: {
           id: input.id,
@@ -83,15 +86,16 @@ export const staffRouter = createTRPCRouter({
       const staffToDelete = await ctx.prisma.staff.findUnique({
         where: { id: input.id },
       });
-      if (!staffToDelete) throw new TRPCError(CustomError.USER_NOT_FOUND);
+      if (!staffToDelete)
+        throw new TRPCError(ServerError.STAFF_MEMBER_NOT_FOUND);
       if (staffToDelete.role === "OWNER")
-        throw new TRPCError(CustomError.NOT_ALLOWED);
+        throw new TRPCError(ServerError.NOT_ALLOWED);
 
       if (
         staffToDelete.role === "ADMIN" &&
-        ctx.session.account.role !== "OWNER"
+        ctx.session.staffMember?.role !== "OWNER"
       ) {
-        throw new TRPCError(CustomError.NOT_ALLOWED);
+        throw new TRPCError(ServerError.NOT_ALLOWED);
       }
 
       return ctx.prisma.staff.update({
@@ -106,7 +110,7 @@ export const staffRouter = createTRPCRouter({
       const staffMember = await ctx.prisma.staff.findUnique({
         where: { id: input.id, active: true },
       });
-      if (!staffMember) throw new TRPCError(CustomError.USER_NOT_FOUND);
+      if (!staffMember) throw new TRPCError(ServerError.STAFF_MEMBER_NOT_FOUND);
       return staffMember;
     }),
 });
