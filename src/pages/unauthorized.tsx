@@ -798,16 +798,3 @@ export default function Unauthorized() {
     </div>
   );
 }
-
-export async function getServerSideProps(ctx: CreateNextContextOptions) {
-  const { session } = await createTRPCContext(ctx);
-  const { staffMember, user } = session;
-  if (user && staffMember) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-}
