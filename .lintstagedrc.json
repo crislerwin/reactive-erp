@@ -1,0 +1,4 @@
+{
+  "*.ts": ["npm run format", "eslint --fix --ext .tsx,.ts"],
+  "*.test.ts": ["npm test:ci"]
+}

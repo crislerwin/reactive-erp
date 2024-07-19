@@ -12,7 +12,16 @@
     "db:push": "prisma db push",
     "start": "next start",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js, jsx,ts,tsx}": [
+      "eslint --quiet --fix"
+    ],
+    "*.{json,js,ts,jsx,tsx,html}": [
+      "prettier --write --ignore-unknown"
+    ]
   },
   "prisma": {
     "seed": "ts-node prisma/seed.mjs"
@@ -84,6 +93,8 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
     "eslint-plugin-storybook": "^0.8.0",
+    "husky": "^9.1.1",
+    "lint-staged": "^15.2.7",
     "postcss": "^8.4.33",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.2.8",
