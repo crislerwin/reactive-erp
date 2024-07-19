@@ -13,7 +13,7 @@ describe.concurrent("Branch router", () => {
       expect(branches).toHaveLength(allCreatedBranches.length);
     });
     it("should return an error if the user is not allowed to perform this action", async () => {
-      const app = makeApp({
+      const app = await makeApp({
         branch_id: 1,
         staff: {
           active: true,
@@ -49,7 +49,7 @@ describe.concurrent("Branch router", () => {
       expect(branch).toHaveProperty("attributes");
     });
     it("should return an error if the user is not allowed to perform this action", async () => {
-      const app = makeApp({
+      const app = await makeApp({
         branch_id: 1,
         staff: {
           active: true,
@@ -90,7 +90,7 @@ describe.concurrent("Branch router", () => {
       expect(deletedBranch.deleted_at).not.toBeNull();
     });
     it("should return an error if the user is not allowed to perform this action", async () => {
-      const app = makeApp({
+      const app = await makeApp({
         branch_id: 1,
         staff: {
           active: true,
@@ -149,7 +149,7 @@ describe.concurrent("Branch router", () => {
       expect(updatedBranch).toMatchObject(updatedBranchRequest);
     });
     it("should return an error if the user is not allowed to perform this action", async () => {
-      const app = makeApp({
+      const app = await makeApp({
         branch_id: 1,
         staff: {
           active: true,

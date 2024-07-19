@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { makeApp, makeSut } from "./__mocks__";
 import { faker } from "@faker-js/faker";
 import { prisma } from "@/server/db";
@@ -23,8 +23,8 @@ describe.concurrent("Product Router", () => {
       const allProducts = await prisma.product.findMany();
       expect(products).toHaveLength(allProducts.length);
     });
-    test("should return an error if the user branch is invalid", async () => {
-      const app = makeApp({
+    it("should return an error if the user branch is invalid", async () => {
+      const app = await makeApp({
         branch_id: faker.datatype.number(),
         staff: {
           active: true,
@@ -43,7 +43,7 @@ describe.concurrent("Product Router", () => {
       const promisses = app.product.findAll();
       await expect(promisses).rejects.toThrowError("Branch not found");
     });
-    test("should return all products from the user branch", async () => {
+    it("should return all products from the user branch", async () => {
       const { branch } = await makeSut();
       const staff = await prisma.staff.create({
         data: {
@@ -55,7 +55,7 @@ describe.concurrent("Product Router", () => {
           role: "EMPLOYEE",
         },
       });
-      const app = makeApp({
+      const app = await makeApp({
         branch_id: branch.branch_id,
         staff,
       });
@@ -101,7 +101,7 @@ describe.concurrent("Product Router", () => {
           role: "EMPLOYEE",
         },
       });
-      const app = makeApp({
+      const app = await makeApp({
         branch_id: branch.branch_id,
         staff,
       });

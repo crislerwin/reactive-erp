@@ -9,14 +9,17 @@ datasource db {
 }
 
 model Branch {
-  branch_id     Int       @id @default(autoincrement())
+  branch_id     Int        @id @default(autoincrement())
   name          String
-  staff_members Staff[]
   attributes    Json?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime? @updatedAt
+  created_at    DateTime   @default(now())
+  updated_at    DateTime?  @updatedAt
   deleted_at    DateTime?
   products      Product[]
+  customer      Customer[]
+  staff_members Staff[]
+
+  @@index([branch_id])
 }
 
 model Staff {
@@ -27,10 +30,10 @@ model Staff {
   email      String    @unique
   role       String
   active     Boolean   @default(true)
-  branch     Branch    @relation(fields: [branch_id], references: [branch_id])
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
+  branch     Branch    @relation(fields: [branch_id], references: [branch_id])
 
   @@index([branch_id])
   @@index([email])
@@ -67,6 +70,42 @@ model ProductCategory {
   updated_at  DateTime? @updatedAt
   deleted_at  DateTime?
   products    Product[]
+
+  @@index([branch_id])
+}
+
+model Invoice {
+  id          Int       @id @default(autoincrement())
+  branch_id   Int
+  staff_id    Int
+  customer_id Int
+  items       Json
+  total       Float
+  status      String
+  expires_at  DateTime
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
+  customer    Customer? @relation(fields: [customer_id], references: [customer_id])
+
+  @@index([branch_id])
+  @@index([staff_id])
+  @@index([customer_id])
+}
+
+model Customer {
+  customer_id   Int       @id @default(autoincrement())
+  branch_id     Int
+  customer_code Int
+  first_name    String
+  last_name     String?
+  email         String    @unique
+  orders        Invoice[]
+  branch        Branch    @relation(fields: [branch_id], references: [branch_id])
+  phone         String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime? @updatedAt
+  deleted_at    DateTime?
 
   @@index([branch_id])
 }

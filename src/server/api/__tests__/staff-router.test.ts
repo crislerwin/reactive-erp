@@ -1,29 +1,33 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { makeStaffRequest, makeApp, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 import { type UpdateStaffMemberInput } from "../../../common/schemas/staff.schema";
-import { type Staff } from "@prisma/client";
 import { ErrorType } from "@/common/errors/customErrors";
 
 describe("Staff member Router", () => {
   describe("List All", () => {
-    test("should return empty if not exist staff", async () => {
-      const { app } = await makeSut();
+    it("should return only the logged staff member", async () => {
+      const branch = await prisma.branch.create({
+        data: {
+          name: faker.company.name(),
+        },
+      });
+      const app = await makeApp({ branch_id: branch.branch_id });
 
       const result = await app.staff.findAll();
       expect(result).toBeDefined();
       expect(result).toBeInstanceOf(Array);
-      expect(result.length).toBe(0);
+      expect(result.length).toBe(1);
     });
-    test("Should throw if branch not found", async () => {
+    it("Should throw if branch not found", async () => {
       const branch_id = faker.datatype.number();
-      const app = makeApp({ branch_id });
+      const app = await makeApp({ branch_id });
       const promise = app.staff.findAll();
       await expect(promise).rejects.toThrowError(ErrorType.BRANCH_NOT_FOUND);
     });
 
-    test("Should return staff list on the same branch", async () => {
+    it("Should return staff list on the same branch include the logged user", async () => {
       const { app, branch } = await makeSut();
       await prisma.staff.createMany({
         data: [
@@ -44,9 +48,9 @@ describe("Staff member Router", () => {
       const result = await app.staff.findAll();
       expect(result).toBeDefined();
       expect(result).toBeInstanceOf(Array);
-      expect(result.length).toBe(2);
+      expect(result.length).toBe(3);
     });
-    test("Should return staff list on different branch", async () => {
+    it("Should return staff list on different branch", async () => {
       const { app, branch: branch1 } = await makeSut();
 
       const branch2 = await prisma.branch.create({
@@ -73,19 +77,22 @@ describe("Staff member Router", () => {
       const result = await app.staff.findAll();
       expect(result).toBeDefined();
       expect(result).toBeInstanceOf(Array);
-      expect(result.length).toBe(1);
+      expect(result.length).toBe(2);
 
       const result2 = await app.staff.findAll();
       expect(result2).toBeDefined();
       expect(result2).toBeInstanceOf(Array);
-      expect(result2.length).toBe(1);
-      const accountOwner: Staff = {
+      expect(result2.length).toBe(2);
+      const accountOwner = {
         ...makeStaffRequest(branch1.branch_id),
         role: "OWNER",
       };
-      const sutOwner = makeApp({
+      const staff = await prisma.staff.create({
+        data: accountOwner,
+      });
+      const sutOwner = await makeApp({
         branch_id: branch1.branch_id,
-        staff: accountOwner,
+        staff,
       });
       const result3 = await sutOwner.staff.findAll();
       expect(result3).toBeDefined();
@@ -95,9 +102,9 @@ describe("Staff member Router", () => {
   });
 
   describe("Create Staff Member", () => {
-    test("Should throw if branch not found", async () => {
+    it("Should throw if branch not found", async () => {
       const branch_id = faker.datatype.number();
-      const sut = makeApp({ branch_id });
+      const sut = await makeApp({ branch_id });
       const promise = sut.staff.createStaffMember({
         branch_id,
         first_name: faker.name.firstName(),
@@ -107,7 +114,7 @@ describe("Staff member Router", () => {
       await expect(promise).rejects.toThrowError(ErrorType.BRANCH_NOT_FOUND);
     });
 
-    test("Should throw if account already exists", async () => {
+    it("Should throw if account already exists", async () => {
       const { app, branch } = await makeSut();
       const email = faker.internet.email();
       await app.staff.createStaffMember({
@@ -127,7 +134,7 @@ describe("Staff member Router", () => {
       );
     });
 
-    test("Should create staff member correcly", async () => {
+    it("Should create staff member correcly", async () => {
       const { app, branch } = await makeSut();
       const result = await app.staff.createStaffMember({
         branch_id: branch.branch_id,
@@ -145,7 +152,7 @@ describe("Staff member Router", () => {
     });
   });
   describe("Update staff member", () => {
-    test("Should update staff member", async () => {
+    it("Should update staff member", async () => {
       const { app, branch } = await makeSut();
 
       const staff = await prisma.staff.create({
@@ -176,7 +183,7 @@ describe("Staff member Router", () => {
     });
   });
   describe("Get staff member", () => {
-    test("Should return staff member", async () => {
+    it("Should return staff member", async () => {
       const { app, branch } = await makeSut();
       const staff = await prisma.staff.create({
         data: {
@@ -194,7 +201,7 @@ describe("Staff member Router", () => {
       expect(result).toHaveProperty("role");
       expect(result).toHaveProperty("first_name");
     });
-    test("Should throw if staff member is not found", async () => {
+    it("Should throw if staff member is not found", async () => {
       const { app } = await makeSut();
       const id = faker.datatype.number();
       const promise = app.staff.getStaffMember({ id });
@@ -202,7 +209,7 @@ describe("Staff member Router", () => {
     });
   });
   describe("DELETE staff member", () => {
-    test("Should soft delete staff member", async () => {
+    it("Should soft delete staff member", async () => {
       const { app, branch } = await makeSut();
 
       const staff = await prisma.staff.create({
@@ -216,7 +223,7 @@ describe("Staff member Router", () => {
       const allStaff = await app.staff.findAll();
       expect(allStaff).toBeDefined();
       expect(allStaff).toBeInstanceOf(Array);
-      expect(allStaff.length).toBe(1);
+      expect(allStaff.length).toBe(2);
 
       const createdStaff = await app.staff.getStaffMember({ id: staff.id });
       expect(createdStaff).toBeDefined();
@@ -249,13 +256,13 @@ describe("Staff member Router", () => {
         ErrorType.USER_NOT_FOUND
       );
     });
-    test("Should throw if staff member not found", async () => {
+    it("Should throw if staff member not found", async () => {
       const { app } = await makeSut();
       const id = faker.datatype.number();
       const promise = app.staff.softDeletedStaffMember({ id });
       await expect(promise).rejects.toThrowError(ErrorType.USER_NOT_FOUND);
     });
-    test("Should throw if staff member already deleted", async () => {
+    it("Should throw if staff member already deleted", async () => {
       const { app, branch } = await makeSut();
 
       const staff = await prisma.staff.create({
@@ -271,15 +278,20 @@ describe("Staff member Router", () => {
       const promise = app.staff.softDeletedStaffMember({ id: staff.id });
       await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
-    test("Should throw if staff member is owner", async () => {
+    it("Should throw if staff member is owner", async () => {
       const { branch } = await makeSut();
-      const staffOwner: Staff = {
-        ...makeStaffRequest(branch.branch_id),
-        role: "OWNER",
-      };
-      const app = makeApp({ staff: staffOwner, branch_id: branch.branch_id });
+      const staffOwner = await prisma.staff.create({
+        data: {
+          ...makeStaffRequest(branch.branch_id),
+          role: "OWNER",
+        },
+      });
+      const app = await makeApp({
+        staff: staffOwner,
+        branch_id: branch.branch_id,
+      });
 
-      const staff = await prisma.staff.create({
+      const anotherStaffOwner = await prisma.staff.create({
         data: {
           branch_id: branch.branch_id,
           email: faker.internet.email(),
@@ -287,16 +299,24 @@ describe("Staff member Router", () => {
           role: "OWNER",
         },
       });
-      const promise = app.staff.softDeletedStaffMember({ id: staff.id });
+      const promise = app.staff.softDeletedStaffMember({
+        id: anotherStaffOwner.id,
+      });
       await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
-    test("Should throw if staff member is admin and not owner", async () => {
+    it("Should throw if staff member is admin and not owner", async () => {
       const { branch } = await makeSut();
-      const staffAdmin: Staff = {
-        ...makeStaffRequest(branch.branch_id),
-        role: "ADMIN",
-      };
-      const app = makeApp({ staff: staffAdmin, branch_id: branch.branch_id });
+
+      const staffAdmin = await prisma.staff.create({
+        data: {
+          ...makeStaffRequest(branch.branch_id),
+          role: "ADMIN",
+        },
+      });
+      const app = await makeApp({
+        staff: staffAdmin,
+        branch_id: branch.branch_id,
+      });
 
       const staff = await prisma.staff.create({
         data: {
