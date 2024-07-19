@@ -17,13 +17,10 @@ import {
   updateProductSchema,
   type DefaultPageProps,
 } from "@/common/schemas";
-import { getServerAuthSession } from "@/server/api/auth";
 import { type z } from "zod";
 import { updateQueryData } from "@/lib";
 import { Skeleton } from "@mantine/core";
-import { prisma } from "@/server/db";
 import { createTRPCContext } from "@/server/api/trpc";
-import { managerRoles } from "@/common/constants";
 
 type ProductsPageProps = DefaultPageProps;
 

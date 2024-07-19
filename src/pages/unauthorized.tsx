@@ -1,5 +1,5 @@
 import { createTRPCContext } from "@/server/api/trpc";
-import { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import React from "react";
 
 export default function Unauthorized() {

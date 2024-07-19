@@ -14,11 +14,8 @@ import CustomTable from "@/components/Table";
 import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
-import { getServerAuthSession } from "@/server/api/auth";
 import { updateQueryData } from "@/lib";
-import { managerRoles } from "@/common/constants";
 import { Skeleton } from "@mantine/core";
-import { prisma } from "@/server/db";
 import { createTRPCContext } from "@/server/api/trpc";
 
 type BranchPageProps = DefaultPageProps;
