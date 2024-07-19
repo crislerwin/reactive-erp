@@ -14,6 +14,7 @@ describe.concurrent("Product Category CRUD", () => {
         },
       });
       const productCategories = await app.productCategory.findAll();
+      expect(productCategories).toBeDefined();
       expect(productCategories.length).toBe(1);
     });
     it("should return an empty list if no product categories are found", async () => {
