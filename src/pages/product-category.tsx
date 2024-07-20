@@ -190,7 +190,6 @@ export default function ProductCategoryPage({
       },
     });
   };
-  console.log(validationErrors);
   return (
     <SideMenu role={role}>
       <Table

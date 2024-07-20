@@ -34,7 +34,6 @@ export default function ProductsPage({ role }: ProductsPageProps) {
   const { mutate: deleteProduct, isLoading: isDeletingProduct } =
     trpc.product.deleteProduct.useMutation();
   const { data: productCategory } = trpc.productCategory.findAll.useQuery();
-  console.log(validationErrors);
   const columns = useMemo<MRT_ColumnDef<Product>[]>(
     () => [
       {
