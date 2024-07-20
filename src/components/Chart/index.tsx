@@ -76,7 +76,7 @@ export default function ChartComponent() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+      <CardHeader className=" flex flex-col items-stretch space-y-0 border-b p-0  dark:border-gray-600 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Vendas - Trimestre</CardTitle>
           <CardDescription>Total de vendas dos últimos 3 meses</CardDescription>
@@ -88,7 +88,7 @@ export default function ChartComponent() {
               <button
                 key={chart}
                 data-active={activeChart === chart}
-                className="relative z-10 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                className="relative z-10 flex flex-1 flex-col justify-center gap-1 border-t px-6  py-4 text-left even:border-l data-[active=true]:bg-muted/50 dark:border-gray-600 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
                 onClick={() => setActiveChart(chart)}
               >
                 <span className="text-xs text-muted-foreground">
