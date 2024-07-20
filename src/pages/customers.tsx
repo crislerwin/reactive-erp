@@ -64,7 +64,7 @@ export default function Customers({ role }: { role: string }) {
       },
       {
         accessorKey: "email",
-        header: "Quantidade em estoque",
+        header: "Email",
         mantineEditTextInputProps: {
           type: "email",
           error: validationErrors?.email,
