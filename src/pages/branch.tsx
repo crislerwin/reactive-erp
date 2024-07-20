@@ -146,11 +146,6 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
         tableOptions={{
           onCreatingRowSave: handleCreateBranch,
           onEditingRowSave: handleSaveBranch,
-          state: {
-            columnVisibility: {
-              branch_id: false,
-            },
-          },
         }}
         columns={columns}
         data={branches}

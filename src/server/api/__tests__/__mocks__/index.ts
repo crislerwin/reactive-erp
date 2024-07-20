@@ -68,5 +68,11 @@ export const makeApp = async ({
 export async function makeSut() {
   const branch = await createBranch();
   const app = await makeApp({ branch_id: branch.branch_id });
-  return { app, branch };
+  const productCategory = await prisma.productCategory.create({
+    data: {
+      name: faker.commerce.department(),
+      branch_id: branch.branch_id,
+    },
+  });
+  return { app, branch, productCategory };
 }

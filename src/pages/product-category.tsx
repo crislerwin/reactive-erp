@@ -202,11 +202,6 @@ export default function ProductCategoryPage({
         tableOptions={{
           onCreatingRowSave: handleCreateProduct,
           onEditingRowSave: handleSaveProduct,
-          state: {
-            columnVisibility: {
-              id: false,
-            },
-          },
         }}
         columns={columns}
         data={productCategories}

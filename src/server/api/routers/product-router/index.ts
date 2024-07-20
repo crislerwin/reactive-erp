@@ -42,7 +42,11 @@ export const productRouter = createTRPCRouter({
         throw new TRPCError(ServerError.NOT_ALLOWED);
       if (!superUserRoles.includes(ctx.session.staffMember.role))
         throw new TRPCError({ code: "UNAUTHORIZED" });
-
+      const productCategory = await ctx.prisma.productCategory.findUnique({
+        where: { id: input.product_category_id },
+      });
+      if (!productCategory)
+        throw new TRPCError(ServerError.PRODUCT_CATEGORY_NOT_FOUND);
       return ctx.prisma.product.create({
         data: {
           branch_id: ctx.session.staffMember.branch_id,

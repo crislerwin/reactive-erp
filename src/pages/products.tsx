@@ -34,7 +34,7 @@ export default function ProductsPage({ role }: ProductsPageProps) {
   const { mutate: deleteProduct, isLoading: isDeletingProduct } =
     trpc.product.deleteProduct.useMutation();
   const { data: productCategory } = trpc.productCategory.findAll.useQuery();
-
+  console.log(validationErrors);
   const columns = useMemo<MRT_ColumnDef<Product>[]>(
     () => [
       {
@@ -87,13 +87,16 @@ export default function ProductsPage({ role }: ProductsPageProps) {
       {
         accessorKey: "product_category_id",
         header: "Categoria",
-        accessorFn: (row) => String(row.product_category_id ?? ""),
         editVariant: "select",
         Cell(props) {
-          const category = productCategory?.find(
-            (category) => category.id === props.row.original.product_category_id
+          const categoryMap = new Map(
+            productCategory?.map((category) => [category.id, category.name])
           );
-          return <div>{category?.name}</div>;
+          return (
+            <div>
+              {categoryMap.get(Number(props.row.original.product_category_id))}
+            </div>
+          );
         },
         mantineEditSelectProps: {
           required: true,
@@ -240,11 +243,6 @@ export default function ProductsPage({ role }: ProductsPageProps) {
         tableOptions={{
           onCreatingRowSave: handleCreateProduct,
           onEditingRowSave: handleSaveProduct,
-          state: {
-            columnVisibility: {
-              product_id: false,
-            },
-          },
         }}
         columns={columns}
         data={products}
