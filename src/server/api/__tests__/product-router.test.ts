@@ -2,12 +2,38 @@ import { describe, expect, it } from "vitest";
 import { makeApp, makeSut } from "./__mocks__";
 import { faker } from "@faker-js/faker";
 import { prisma } from "@/server/db";
-import { ErrorType, ServerError } from "../../../common/errors";
+import { ErrorType } from "../../../common/errors";
 
 describe.concurrent("Product Router", () => {
   describe("GET all products", () => {
     it("should return all products", async () => {
-      const { app, branch, productCategory } = await makeSut();
+      const branch = await prisma.branch.create({
+        data: {
+          name: "Test Branch",
+        },
+      });
+      const staff = await prisma.staff.create({
+        data: {
+          active: true,
+          branch_id: branch.branch_id,
+          email: faker.internet.email(),
+          first_name: faker.name.firstName(),
+          last_name: faker.name.lastName(),
+          role: "ADMIN",
+        },
+      });
+
+      const app = await makeApp({
+        branch_id: branch.branch_id,
+        staff,
+      });
+      const productCategory = await prisma.productCategory.create({
+        data: {
+          active: true,
+          branch_id: branch.branch_id,
+          name: "Test Category",
+        },
+      });
       await prisma.product.createMany({
         data: Array.from({ length: 10 }, () => ({
           available: true,
@@ -21,8 +47,8 @@ describe.concurrent("Product Router", () => {
         })),
       });
       const products = await app.product.findAll();
-      const allProducts = await prisma.product.findMany();
-      expect(products).toHaveLength(allProducts.length);
+
+      expect(products).toHaveLength(10);
     });
     it("should return an error if the user branch is invalid", async () => {
       const app = await makeApp({
