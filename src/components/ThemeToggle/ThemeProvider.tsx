@@ -1,7 +1,7 @@
 import { type ColorScheme, MantineProvider } from "@mantine/core";
 import { parseCookies, setCookie } from "nookies";
 import React from "react";
-import { ThemeKind, makeTheme } from "./utils";
+import { ThemeKind, mantineTheme } from "./utils";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -46,7 +46,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS
-        theme={makeTheme[theme]}
+        theme={mantineTheme[theme]}
       >
         {children}
       </MantineProvider>

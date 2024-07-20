@@ -8,7 +8,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-const superUserRoles = ["ADMIN", "OWNER"];
+const superUserRoles = ["OWNER", "ADMIN"];
 
 export const productRouter = createTRPCRouter({
   findAll: protectedProcedure
@@ -16,7 +16,7 @@ export const productRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       if (!ctx.session.staffMember)
         throw new TRPCError(ServerError.NOT_ALLOWED);
-      if (superUserRoles.includes(ctx.session.staffMember.role))
+      if (ctx.session.staffMember.role === "OWNER")
         return ctx.prisma.product.findMany();
 
       const branch = await ctx.prisma.branch.findUnique({
@@ -42,7 +42,11 @@ export const productRouter = createTRPCRouter({
         throw new TRPCError(ServerError.NOT_ALLOWED);
       if (!superUserRoles.includes(ctx.session.staffMember.role))
         throw new TRPCError({ code: "UNAUTHORIZED" });
-
+      const productCategory = await ctx.prisma.productCategory.findUnique({
+        where: { id: input.product_category_id },
+      });
+      if (!productCategory)
+        throw new TRPCError(ServerError.PRODUCT_CATEGORY_NOT_FOUND);
       return ctx.prisma.product.create({
         data: {
           branch_id: ctx.session.staffMember.branch_id,

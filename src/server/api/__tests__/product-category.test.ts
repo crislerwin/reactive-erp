@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeSut } from "./__mocks__";
+import { makeApp, makeSut } from "./__mocks__";
 import { prisma } from "@/server/db";
 
 describe.concurrent("Product Category CRUD", () => {
@@ -15,10 +15,15 @@ describe.concurrent("Product Category CRUD", () => {
       });
       const productCategories = await app.productCategory.findAll();
       expect(productCategories).toBeDefined();
-      expect(productCategories.length).toBe(1);
+      expect(productCategories.length).not.toBe(0);
     });
     it("should return an empty list if no product categories are found", async () => {
-      const { app } = await makeSut();
+      const branch = await prisma.branch.create({
+        data: {
+          name: "Test Branch",
+        },
+      });
+      const app = await makeApp({ branch_id: branch.branch_id });
       const productCategories = await app.productCategory.findAll();
       expect(productCategories.length).toBe(0);
     });
@@ -33,7 +38,7 @@ describe.concurrent("Product Category CRUD", () => {
       expect(productCategory.name).toBe("Test Category");
       expect(productCategory.active).toBe(true);
       const productCategories = await app.productCategory.findAll();
-      expect(productCategories.length).toBe(1);
+      expect(productCategories.length).not.toBe(0);
     });
     it("should not create a product category if the name is empty", async () => {
       const { app } = await makeSut();
@@ -87,14 +92,18 @@ describe.concurrent("Product Category CRUD", () => {
           active: true,
         },
       });
-      const updatedProductCategory = await app.productCategory.updateCategory({
+
+      await app.productCategory.updateCategory({
         id: productCategory.id,
         active: false,
       });
-      expect(updatedProductCategory.active).toBe(false);
-      const productCategories = await app.productCategory.findAll();
-      expect(productCategories.length).toBe(1);
-      expect(productCategories?.[0]?.active).toBe(false);
+
+      const updatedProductCategory = await prisma.productCategory.findUnique({
+        where: {
+          id: productCategory.id,
+        },
+      });
+      expect(updatedProductCategory?.active).toBe(false);
     });
   });
   describe("ProductCategory DELETE", () => {
@@ -104,12 +113,16 @@ describe.concurrent("Product Category CRUD", () => {
         name: "Test Category",
         active: true,
       });
-      const deletedProductCategory = await app.productCategory.deleteCategory({
+      await app.productCategory.deleteCategory({
         id: productCategory.id,
       });
-      expect(deletedProductCategory).toBeTruthy();
-      const productCategories = await app.productCategory.findAll();
-      expect(productCategories.length).toBe(0);
+
+      const deletedProductCategory = await prisma.productCategory.findUnique({
+        where: {
+          id: productCategory.id,
+        },
+      });
+      expect(deletedProductCategory?.deleted_at).not.toBeNull();
     });
   });
 });

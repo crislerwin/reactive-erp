@@ -9,7 +9,7 @@ import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
-import CustomTable from "@/components/Table";
+import { Table } from "@/design-system/Table";
 import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type DefaultPageProps } from "@/common/schemas";
@@ -190,26 +190,21 @@ export default function ProductCategoryPage({
       },
     });
   };
-  console.log(validationErrors);
   return (
     <SideMenu role={role}>
-      <Skeleton height="80vh" radius="xl" visible={isLoadingProductCategory}>
-        {!isLoadingProductCategory && (
-          <CustomTable
-            addButtonLabel="Nova Categoria"
-            createModalLabel="Nova Categoria"
-            editModalLabel="Editar Categoria"
-            isLoading={isLoadingProductCategory}
-            openDeleteConfirmModal={openDeleteConfirmModal}
-            tableOptions={{
-              onCreatingRowSave: handleCreateProduct,
-              onEditingRowSave: handleSaveProduct,
-            }}
-            columns={columns}
-            data={productCategories}
-          />
-        )}
-      </Skeleton>
+      <Table
+        addButtonLabel="Nova Categoria"
+        createModalLabel="Nova Categoria"
+        editModalLabel="Editar Categoria"
+        isLoading={isLoadingProductCategory}
+        openDeleteConfirmModal={openDeleteConfirmModal}
+        tableOptions={{
+          onCreatingRowSave: handleCreateProduct,
+          onEditingRowSave: handleSaveProduct,
+        }}
+        columns={columns}
+        data={productCategories}
+      />
     </SideMenu>
   );
 }

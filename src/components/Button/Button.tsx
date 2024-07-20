@@ -1,11 +1,15 @@
 import React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-
+import {
+  Button as MantineButton,
+  type ButtonProps as MantineButtonProps,
+} from "@mantine/core";
 const button = tv({
-  base: "font-medium bg-blue-500 text-white rounded-full active:opacity-80",
+  base: "font-medium  active:opacity-80",
   variants: {
     color: {
-      primary: "bg-blue-500 text-white ",
+      primary:
+        "text-gray-100 bg-gradient-to-r  from-indigo-500 via-purple-500 to-purple-500 dark:bg-gray-800 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-500",
       secondary: "bg-purple-500 text-white",
       danger: "bg-red-500 text-white",
     },
@@ -18,7 +22,7 @@ const button = tv({
   compoundVariants: [
     {
       size: ["sm", "md"],
-      class: "px-3 py-1",
+      class: "px-3 py-1 text-sm",
     },
   ],
   defaultVariants: {
@@ -28,17 +32,13 @@ const button = tv({
 });
 
 type ButtonProps = VariantProps<typeof button> &
-  React.ButtonHTMLAttributes<HTMLButtonElement>;
+  React.ButtonHTMLAttributes<HTMLButtonElement> &
+  MantineButtonProps;
 
-export const Button: React.FC<ButtonProps> = ({
-  color,
-  size,
-  children,
-  ...rest
-}) => {
+export const Button = ({ color, size, children, ...rest }: ButtonProps) => {
   return (
-    <button className={button({ color, size })} {...rest}>
+    <MantineButton className={button({ color, size })} {...rest}>
       {children}
-    </button>
+    </MantineButton>
   );
 };

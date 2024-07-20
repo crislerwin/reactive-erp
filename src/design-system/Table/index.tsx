@@ -5,11 +5,19 @@ import {
   type MRT_Row,
 } from "mantine-react-table";
 import { MantineReactTable, MRT_EditActionButtons } from "mantine-react-table";
-import { Button, Tooltip, Stack, Title, Flex, ActionIcon } from "@mantine/core";
+import {
+  Button,
+  Tooltip,
+  Stack,
+  Title,
+  Flex,
+  ActionIcon,
+  Skeleton,
+} from "@mantine/core";
 import { IconEdit, IconTrash, IconNews } from "@tabler/icons-react";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
 
-interface CustomTableProps<T extends Record<string, unknown>> {
+interface TableProps<T extends Record<string, unknown>> {
   data: T[];
   columns: MRT_TableOptions<T>["columns"];
   editModalLabel?: string;
@@ -21,9 +29,10 @@ interface CustomTableProps<T extends Record<string, unknown>> {
   branch_id?: number;
   openDeleteConfirmModal: (row: MRT_Row<T>) => void;
   enableEditing?: boolean;
+  className?: string;
 }
 
-export default function CustomTable<T extends Record<string, unknown>>({
+export function Table<T extends Record<string, unknown>>({
   data,
   columns,
   tableOptions,
@@ -35,15 +44,40 @@ export default function CustomTable<T extends Record<string, unknown>>({
   createModalLabel = "Novo",
   addButtonLabel = "Novo",
   openDeleteConfirmModal,
-}: CustomTableProps<T>) {
+  className = "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
+}: TableProps<T>) {
   const table = useMantineReactTable({
     columns,
     data,
     localization: MRT_Localization_PT_BR,
     createDisplayMode: "row",
     editDisplayMode: "row",
+
     enableFullScreenToggle: false,
     enableEditing,
+    mantineTableProps: {
+      variant: "hovered",
+      withBorder: true,
+    },
+    mantineTableBodyCellProps: {
+      className,
+    },
+    mantinePaperProps: {
+      className,
+    },
+    mantineBottomToolbarProps: {
+      className,
+    },
+    mantineTableHeadCellProps: {
+      className,
+    },
+    mantineTopToolbarProps: {
+      className,
+    },
+    mantinePaginationProps: {
+      className,
+    },
+
     getRowId: ({ id }) => String(id),
     mantineToolbarAlertBannerProps: error
       ? {
@@ -56,7 +90,6 @@ export default function CustomTable<T extends Record<string, unknown>>({
         maxHeight: "72vh",
       },
     },
-
     renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
         <Title order={3}>{createModalLabel}</Title>
@@ -122,9 +155,14 @@ export default function CustomTable<T extends Record<string, unknown>>({
       isSaving: isLoading,
       showAlertBanner: error,
       showProgressBars: isLoading,
+      ...tableOptions?.state,
     },
     ...tableOptions,
   });
 
-  return <MantineReactTable table={table} />;
+  return (
+    <Skeleton height="80vh" radius="xl" visible={isLoading}>
+      {!isLoading && <MantineReactTable table={table} />}
+    </Skeleton>
+  );
 }

@@ -8,6 +8,7 @@ export enum ErrorType {
   NOT_ALLOWED = "NOT_ALLOWED",
   BRANCH_NOT_EMPTY = "BRANCH_NOT_EMPTY",
   EMAIL_ADDRESS_NOT_FOUND = "EMAIL_ADDRESS_NOT_FOUND",
+  PRODUCT_CATEGORY_NOT_FOUND = "PRODUCT_CATEGORY_NOT_FOUND",
 }
 
 export type CustomErrorsValues = {
@@ -40,14 +41,20 @@ export const ServerError: Record<ErrorType, CustomErrorsValues> = {
     code: "BAD_REQUEST",
     cause: ErrorType.EMAIL_ADDRESS_NOT_FOUND,
   },
+  PRODUCT_CATEGORY_NOT_FOUND: {
+    code: "NOT_FOUND",
+    cause: ErrorType.PRODUCT_CATEGORY_NOT_FOUND,
+  },
 };
 
-export const ErrorTranslation: Record<ErrorType | string, string> = {
+export const ErrorTranslation: Record<ErrorType, string> = {
   BRANCH_NOT_FOUND: "Filial não encontrada",
   ACCOUNT_ALREADY_EXISTS: "Já existe uma conta com este e-mail",
-  USER_NOT_FOUND: "Usuário não encontrado",
   NOT_ALLOWED: "Você não tem permissão para realizar esta ação",
   BRANCH_NOT_EMPTY: "Existem usuários cadastrados nesta filial",
+  EMAIL_ADDRESS_NOT_FOUND: "E-mail não encontrado",
+  PRODUCT_CATEGORY_NOT_FOUND: "Categoria de produto não encontrada",
+  STAFF_MEMBER_NOT_FOUND: "Usuário não encontrado",
 };
 
 export function customErrorHandler({
@@ -59,7 +66,7 @@ export function customErrorHandler({
 }) {
   modals.open({
     title,
-    children: ErrorTranslation[message] ?? message,
+    children: ErrorTranslation[message as ErrorType] ?? message,
     closeOnEscape: true,
   });
 }

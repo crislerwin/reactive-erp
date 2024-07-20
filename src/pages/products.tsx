@@ -9,7 +9,7 @@ import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
-import CustomTable from "@/components/Table";
+import { Table } from "@/design-system";
 import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
@@ -19,7 +19,6 @@ import {
 } from "@/common/schemas";
 import { type z } from "zod";
 import { updateQueryData } from "@/lib";
-import { Skeleton } from "@mantine/core";
 import { createTRPCContext } from "@/server/api/trpc";
 
 type ProductsPageProps = DefaultPageProps;
@@ -35,14 +34,13 @@ export default function ProductsPage({ role }: ProductsPageProps) {
   const { mutate: deleteProduct, isLoading: isDeletingProduct } =
     trpc.product.deleteProduct.useMutation();
   const { data: productCategory } = trpc.productCategory.findAll.useQuery();
-
   const columns = useMemo<MRT_ColumnDef<Product>[]>(
     () => [
       {
         accessorKey: "product_id",
         header: "Id do Produto",
         enableEditing: false,
-        size: 80,
+        size: 30,
       },
       {
         accessorKey: "name",
@@ -88,13 +86,16 @@ export default function ProductsPage({ role }: ProductsPageProps) {
       {
         accessorKey: "product_category_id",
         header: "Categoria",
-        accessorFn: (row) => String(row.product_category_id ?? ""),
         editVariant: "select",
         Cell(props) {
-          const category = productCategory?.find(
-            (category) => category.id === props.row.original.product_category_id
+          const categoryMap = new Map(
+            productCategory?.map((category) => [category.id, category.name])
           );
-          return <div>{category?.name}</div>;
+          return (
+            <div>
+              {categoryMap.get(Number(props.row.original.product_category_id))}
+            </div>
+          );
         },
         mantineEditSelectProps: {
           required: true,
@@ -232,23 +233,19 @@ export default function ProductsPage({ role }: ProductsPageProps) {
 
   return (
     <SideMenu role={role}>
-      <Skeleton height="80vh" radius="xl" visible={isLoadingProducts}>
-        {!isLoadingProducts && (
-          <CustomTable
-            addButtonLabel="Novo Produto"
-            createModalLabel="Novo Produto"
-            editModalLabel="Editar Produto"
-            isLoading={isLoadingProducts}
-            openDeleteConfirmModal={openDeleteConfirmModal}
-            tableOptions={{
-              onCreatingRowSave: handleCreateProduct,
-              onEditingRowSave: handleSaveProduct,
-            }}
-            columns={columns}
-            data={products}
-          />
-        )}
-      </Skeleton>
+      <Table
+        addButtonLabel="Novo Produto"
+        createModalLabel="Novo Produto"
+        editModalLabel="Editar Produto"
+        isLoading={isLoadingProducts}
+        openDeleteConfirmModal={openDeleteConfirmModal}
+        tableOptions={{
+          onCreatingRowSave: handleCreateProduct,
+          onEditingRowSave: handleSaveProduct,
+        }}
+        columns={columns}
+        data={products}
+      />
     </SideMenu>
   );
 }

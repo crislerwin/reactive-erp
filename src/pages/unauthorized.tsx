@@ -1,8 +1,11 @@
-import { createTRPCContext } from "@/server/api/trpc";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { useClerk } from "@clerk/nextjs";
+import { Button } from "@mantine/core";
 import React from "react";
+import { createTRPCContext } from "../server/api/trpc";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 export default function Unauthorized() {
+  const { signOut } = useClerk();
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-12 py-8">
       <svg
@@ -794,6 +797,9 @@ export default function Unauthorized() {
         <p className="text-center text-xl">
           Entre em contato com o administrador do sistema.
         </p>
+        <Button bg="" onClick={() => signOut()}>
+          Voltar Para o Login
+        </Button>
       </div>
     </div>
   );
@@ -802,7 +808,16 @@ export default function Unauthorized() {
 export async function getServerSideProps(ctx: CreateNextContextOptions) {
   const { session } = await createTRPCContext(ctx);
   const { staffMember, user } = session;
-  if (user && staffMember) {
+  if (!user) {
+    return {
+      redirect: {
+        destination: "/sign-in",
+        permanent: false,
+      },
+    };
+  }
+
+  if (staffMember) {
     return {
       redirect: {
         destination: "/",
@@ -810,4 +825,8 @@ export async function getServerSideProps(ctx: CreateNextContextOptions) {
       },
     };
   }
+
+  return {
+    props: {},
+  };
 }

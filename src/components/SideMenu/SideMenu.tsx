@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useSideMenu } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
-import { Avatar, Button, Menu } from "@mantine/core";
+import { Avatar, Menu } from "@mantine/core";
 import {
   IconSettings,
   IconLogout,
@@ -22,6 +22,7 @@ import CommandPalette, {
 } from "../SearchBar";
 import { PackageSearch, StoreIcon } from "lucide-react";
 import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
+import { Button } from "../Button/Button";
 
 type SideMenuProps = PropsWithChildren & {
   role: string;
@@ -140,9 +141,9 @@ export function SideMenu({ children, role }: SideMenuProps) {
           </CommandPalette.List>
         ))}
       </CommandPalette>
-      <div className="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 px-10 dark:bg-[#0F172A] dark:text-slate-300">
+      <div className="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 px-10 dark:bg-gray-900 dark:text-slate-300">
         <div className={open ? "ml-12 md:ml-60" : "ml-12"}>
-          <span className="text-2xl font-bold">
+          <span className="font-bold sm:text-sm lg:text-2xl">
             {pageNameMap[pathname] ?? ""}
           </span>
         </div>
@@ -159,13 +160,6 @@ export function SideMenu({ children, role }: SideMenuProps) {
             <div className="flex flex-none justify-center">
               <div className="flex h-8 w-8 "></div>
             </div>
-            <Button
-              leftIcon={<IconSearch className="h-4 w-4" />}
-              className="border border-slate-100 bg-slate-100 hover:bg-slate-200 dark:border-gray-600 dark:bg-[#0F172A] dark:text-slate-300 dark:hover:bg-gray-800"
-              onClick={() => setOpenSearch(true)}
-            >
-              Procurar (Ctrl + K)
-            </Button>
             <Menu width={240} position="bottom-end" shadow="md">
               <Menu.Target>
                 <div className="flex flex-none cursor-pointer justify-center">
@@ -193,7 +187,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
                 </Menu.Item>
                 <Menu.Item
                   onClick={() => signOut()}
-                  className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-[#0F172A] dark:text-slate-300 dark:hover:bg-gray-800"
+                  className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-gray-800 dark:text-slate-300 dark:hover:bg-gray-800"
                   icon={<IconLogout className="text-white" size={14} />}
                 >
                   Sair
@@ -211,14 +205,14 @@ export function SideMenu({ children, role }: SideMenuProps) {
         <div
           className={`max-toolbar  absolute -right-6 top-2 flex h-12 w-full ${
             open ? "translate-x-0" : "translate-x-24 scale-x-0"
-          } transform items-center justify-between rounded-full border-4 border-white transition  duration-300 ease-in dark:border-[#0F172A] dark:bg-slate-800`}
+          } transform items-center justify-between rounded-full border-4 border-white transition  duration-300 ease-in dark:border-[#0F172A] dark:bg-gray-800`}
         >
-          <div className="flex items-center space-x-2 pl-4 ">
+          <div className="flex items-center space-x-2 pl-4">
             <ThemeToggle />
           </div>
           <div className="group flex items-center space-x-3 rounded-full bg-gradient-to-r  from-indigo-500 via-purple-500 to-purple-500 py-1  pl-10 pr-2 dark:from-cyan-500 dark:to-blue-500 dark:text-slate-300">
             <div className="mr-12 transform duration-300 ease-in-out">
-              HEALTH
+              <span className="text-lg font-semibold">Reactive</span>
             </div>
           </div>
         </div>
@@ -264,7 +258,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
       <div
         className={`content ${
           open ? "ml-12 md:ml-60" : "ml-12"
-        } bg- bg  px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
+        } h-screen px-2 pb-4 pt-20 duration-500 ease-in-out dark:bg-gray-900 md:px-5`}
       >
         {children}
       </div>
