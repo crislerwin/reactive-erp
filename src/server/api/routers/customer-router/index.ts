@@ -66,7 +66,6 @@ export const customerRouter = createTRPCRouter({
       const { staffMember } = ctx.session;
       if (!staffMember) throw new TRPCError(ServerError.NOT_ALLOWED);
       validateRole(staffMember.role);
-      // softdeleted
       return ctx.prisma.customer.update({
         where: { customer_id: input.customer_id },
         data: { deleted_at: new Date() },
