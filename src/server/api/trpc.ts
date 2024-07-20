@@ -27,6 +27,9 @@ export const createTRPCContext = async (ctx: CreateNextContextOptions) => {
     where: {
       email: user.email,
     },
+    include: {
+      branch: true,
+    },
   });
   return createInnerTRPCContext({
     session: { user, staffMember },

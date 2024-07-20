@@ -20,7 +20,7 @@ import CommandPalette, {
   getItemIndex,
   useHandleOpenCommandPalette,
 } from "../SearchBar";
-import { PackageSearch, StoreIcon } from "lucide-react";
+import { PackageSearch, PersonStandingIcon, StoreIcon } from "lucide-react";
 import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
 import { Button } from "../Button/Button";
 
@@ -230,26 +230,31 @@ export function SideMenu({ children, role }: SideMenuProps) {
               href: PageRoute.HOME,
             },
             {
+              icon: <PersonStandingIcon className="h-4 w-4" />,
+              label: "Clientes",
+              href: PageRoute.CUSTOMERS,
+            },
+            {
               icon: <IconUsersGroup className="h-4 w-4" />,
               label: "Equipe",
-              href: "/staff",
+              href: PageRoute.STAFF,
               visible: managerRoles.includes(role),
             },
             {
               icon: <StoreIcon className="h-4 w-4" />,
               label: "Filiais",
-              href: "/branch",
+              href: PageRoute.BRANCH,
               visible: managerRoles.includes(role),
             },
             {
               icon: <PackageSearch className="h-4 w-4" />,
               label: "Produtos",
-              href: "/products",
+              href: PageRoute.PRODUCTS,
             },
             {
               icon: <IconCategory className="h-4 w-4" />,
               label: "Categoria de Produtos",
-              href: "/product-category",
+              href: PageRoute.PRODUCT_CATEGORY,
             },
           ]}
           open={open}
