@@ -1,16 +1,15 @@
+import * as React from "react";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import dynamic from "next/dynamic";
 import { SideMenu } from "@/components/SideMenu";
+import { type DefaultPageProps } from "@/common/schemas";
+import { createTRPCContext } from "@/server/api/trpc";
 
 const ChartComponent = dynamic(() => import("@/components/Chart"), {
   ssr: false,
 });
 
 type HomeProps = DefaultPageProps;
-
-import * as React from "react";
-import dynamic from "next/dynamic";
-import { type DefaultPageProps } from "@/common/schemas";
-import { createTRPCContext } from "@/server/api/trpc";
 
 export default function Home({ role }: HomeProps) {
   return (

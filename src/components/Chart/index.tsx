@@ -48,16 +48,16 @@ const chartConfig = {
     label: "Faturadas",
     color: "hsl(var(--chart-1))",
     theme: {
-      light: "#2563eb",
-      dark: "#dc2626",
+      light: "hsl(var(--chart-1))",
+      dark: "hsl(var(--chart-1))",
     },
   },
   mobile: {
     label: "Recebidas",
     color: "hsl(var(--chart-2))",
     theme: {
-      light: "#2563eb",
-      dark: "#dc2626",
+      light: "hsl(var(--chart-2))",
+      dark: "hsl(var(--chart-2))",
     },
   },
 } satisfies ChartConfig;
@@ -88,7 +88,7 @@ export default function ChartComponent() {
               <button
                 key={chart}
                 data-active={activeChart === chart}
-                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                className="relative z-10 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
                 onClick={() => setActiveChart(chart)}
               >
                 <span className="text-xs text-muted-foreground">
@@ -123,7 +123,7 @@ export default function ChartComponent() {
               minTickGap={32}
               tickFormatter={(value: string) => {
                 const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
+                return date.toLocaleDateString("pt-BR", {
                   month: "short",
                   day: "numeric",
                 });
@@ -132,10 +132,10 @@ export default function ChartComponent() {
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  className="w-[150px] bg-slate-100"
+                  className="w-[150px] bg-slate-100 text-slate-900 dark:bg-gray-800 dark:text-slate-300"
                   nameKey="views"
                   labelFormatter={(value) => {
-                    return new Date(String(value)).toLocaleDateString("en-US", {
+                    return new Date(String(value)).toLocaleDateString("pt-Br", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
@@ -144,7 +144,17 @@ export default function ChartComponent() {
                 />
               }
             />
-            <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
+            <Bar
+              dataKey={activeChart}
+              label={{
+                position: "top",
+                fill: "#fff",
+                fontSize: 14,
+                fontFamily: "inherit",
+                fontWeight: "bold",
+              }}
+              fill={`var(--color-${activeChart})`}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
