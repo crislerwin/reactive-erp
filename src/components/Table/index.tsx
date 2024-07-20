@@ -42,8 +42,28 @@ export default function CustomTable<T extends Record<string, unknown>>({
     localization: MRT_Localization_PT_BR,
     createDisplayMode: "row",
     editDisplayMode: "row",
+
     enableFullScreenToggle: false,
     enableEditing,
+    mantineTableProps: {
+      variant: "hovered",
+      withBorder: true,
+    },
+    mantineTableBodyCellProps: {
+      className: "bg-gray-800 dark:text-white text-black",
+    },
+    mantinePaperProps: {
+      className: "bg-gray-800 dark:text-white text-black",
+    },
+    mantineBottomToolbarProps: {
+      className: "bg-gray-800 text-white",
+    },
+    mantineTableHeadCellProps: {
+      className: "bg-gray-800 dark:text-white text-black",
+    },
+    mantineTopToolbarProps: {
+      className: "bg-gray-800 dark:text-white text-black",
+    },
     getRowId: ({ id }) => String(id),
     mantineToolbarAlertBannerProps: error
       ? {
@@ -53,10 +73,10 @@ export default function CustomTable<T extends Record<string, unknown>>({
       : undefined,
     mantineTableContainerProps: {
       sx: {
+        backgroundColor: "transparent",
         maxHeight: "72vh",
       },
     },
-
     renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
       <Stack>
         <Title order={3}>{createModalLabel}</Title>

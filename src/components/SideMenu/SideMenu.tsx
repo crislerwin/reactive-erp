@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useSideMenu } from "./hooks";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
-import { Avatar, Button, Menu } from "@mantine/core";
+import { Avatar, Menu } from "@mantine/core";
 import {
   IconSettings,
   IconLogout,
@@ -22,6 +22,7 @@ import CommandPalette, {
 } from "../SearchBar";
 import { PackageSearch, StoreIcon } from "lucide-react";
 import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
+import { Button } from "../Button/Button";
 
 type SideMenuProps = PropsWithChildren & {
   role: string;
@@ -161,7 +162,6 @@ export function SideMenu({ children, role }: SideMenuProps) {
             </div>
             <Button
               leftIcon={<IconSearch className="h-4 w-4" />}
-              className="border border-slate-100 bg-slate-100 hover:bg-slate-200 dark:border-gray-600 dark:bg-[#0F172A] dark:text-slate-300 dark:hover:bg-gray-800"
               onClick={() => setOpenSearch(true)}
             >
               Procurar (Ctrl + K)
