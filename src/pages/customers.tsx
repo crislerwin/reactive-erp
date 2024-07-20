@@ -114,8 +114,9 @@ export default function Customers({ role }: { role: string }) {
       }
       createCustomer(values, {
         onSuccess: (data) => {
+          console.log("data", data);
           updateQueryData<Customer[]>(
-            getQueryKey(trpc.product.findAll, undefined, "query"),
+            getQueryKey(trpc.customer.findAll, undefined, "query"),
             (oldData) => {
               if (!oldData) return [];
               return [...oldData, data];
@@ -137,7 +138,7 @@ export default function Customers({ role }: { role: string }) {
       updateCustomer(values, {
         onSuccess: (data) => {
           updateQueryData<Customer[]>(
-            getQueryKey(trpc.product.findAll, undefined, "query"),
+            getQueryKey(trpc.customer.findAll, undefined, "query"),
             (oldData) => {
               if (!oldData) return [];
               return oldData.map((oldCustomer) =>
@@ -169,7 +170,7 @@ export default function Customers({ role }: { role: string }) {
           {
             onSuccess: () => {
               updateQueryData<Customer[]>(
-                getQueryKey(trpc.product.findAll, undefined, "query"),
+                getQueryKey(trpc.customer.findAll, undefined, "query"),
                 (oldData) => {
                   if (!oldData) return [];
                   return oldData.filter(
@@ -183,6 +184,8 @@ export default function Customers({ role }: { role: string }) {
       },
     });
   };
+
+  console.log(validationErrors);
 
   return (
     <SideMenu role={role}>
