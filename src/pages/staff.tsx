@@ -9,7 +9,7 @@ import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
 import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
-import CustomTable from "@/components/Table";
+import { Table } from "@/design-system/Table";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   updateStaffMemberSchema,
@@ -229,29 +229,25 @@ function Staff({ role }: StaffPageProps) {
 
   return (
     <SideMenu role={role}>
-      <Skeleton height="80vh" radius="xl" visible={isLoadingStaff}>
-        {!isLoadingStaff && (
-          <CustomTable
-            addButtonLabel="Novo Colaborador"
-            createModalLabel="Novo Colaborador"
-            editModalLabel="Editar Colaborador"
-            columns={columns}
-            data={staffMembers}
-            tableOptions={{
-              onCreatingRowSave: handleCreateUser,
-              onEditingRowSave: handleSaveUser,
-              state: {
-                columnVisibility: {
-                  id: false,
-                },
-              },
-            }}
-            openDeleteConfirmModal={openDeleteConfirmModal}
-            isLoading={isLoadingStaff}
-            error={isGettingStaffError}
-          />
-        )}
-      </Skeleton>
+      <Table
+        addButtonLabel="Novo Colaborador"
+        createModalLabel="Novo Colaborador"
+        editModalLabel="Editar Colaborador"
+        columns={columns}
+        data={staffMembers}
+        tableOptions={{
+          onCreatingRowSave: handleCreateUser,
+          onEditingRowSave: handleSaveUser,
+          state: {
+            columnVisibility: {
+              id: false,
+            },
+          },
+        }}
+        openDeleteConfirmModal={openDeleteConfirmModal}
+        isLoading={isLoadingStaff}
+        error={isGettingStaffError}
+      />
     </SideMenu>
   );
 }

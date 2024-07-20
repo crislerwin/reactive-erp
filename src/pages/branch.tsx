@@ -10,7 +10,7 @@ import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
-import CustomTable from "@/components/Table";
+import { Table } from "@/design-system";
 import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
@@ -136,29 +136,25 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
 
   return (
     <SideMenu role={role}>
-      <Skeleton height="80vh" radius="xl" visible={isLoadingBranches}>
-        {!isLoadingBranches && (
-          <CustomTable
-            addButtonLabel="Nova Filial"
-            createModalLabel="Nova Filial"
-            editModalLabel="Editar Filial"
-            branch_id={branch_id}
-            isLoading={isLoadingBranches}
-            openDeleteConfirmModal={openDeleteConfirmModal}
-            tableOptions={{
-              onCreatingRowSave: handleCreateBranch,
-              onEditingRowSave: handleSaveBranch,
-              state: {
-                columnVisibility: {
-                  branch_id: false,
-                },
-              },
-            }}
-            columns={columns}
-            data={branches}
-          />
-        )}
-      </Skeleton>
+      <Table
+        addButtonLabel="Nova Filial"
+        createModalLabel="Nova Filial"
+        editModalLabel="Editar Filial"
+        branch_id={branch_id}
+        isLoading={isLoadingBranches}
+        openDeleteConfirmModal={openDeleteConfirmModal}
+        tableOptions={{
+          onCreatingRowSave: handleCreateBranch,
+          onEditingRowSave: handleSaveBranch,
+          state: {
+            columnVisibility: {
+              branch_id: false,
+            },
+          },
+        }}
+        columns={columns}
+        data={branches}
+      />
     </SideMenu>
   );
 }

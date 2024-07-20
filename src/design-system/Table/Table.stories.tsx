@@ -1,18 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import CustomTable from ".";
+import { Table } from ".";
 import { faker } from "@faker-js/faker";
 import { ModalsProvider } from "@mantine/modals";
 import React from "react";
 
-const meta: Meta<typeof CustomTable> = {
+const meta: Meta<typeof Table> = {
   title: "Components/Table",
-  component: CustomTable,
+  component: Table,
   tags: ["autodocs"],
   argTypes: {},
 };
 
 export default meta;
-type Story = StoryObj<typeof CustomTable>;
+type Story = StoryObj<typeof Table>;
 
 export const Primary: Story = {
   decorators: [

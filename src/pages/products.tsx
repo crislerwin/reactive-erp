@@ -9,7 +9,7 @@ import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
-import CustomTable from "@/components/Table";
+import { Table } from "@/design-system";
 import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
@@ -19,7 +19,6 @@ import {
 } from "@/common/schemas";
 import { type z } from "zod";
 import { updateQueryData } from "@/lib";
-import { Skeleton } from "@mantine/core";
 import { createTRPCContext } from "@/server/api/trpc";
 
 type ProductsPageProps = DefaultPageProps;
@@ -232,28 +231,24 @@ export default function ProductsPage({ role }: ProductsPageProps) {
 
   return (
     <SideMenu role={role}>
-      <Skeleton height="80vh" radius="xl" visible={isLoadingProducts}>
-        {!isLoadingProducts && (
-          <CustomTable
-            addButtonLabel="Novo Produto"
-            createModalLabel="Novo Produto"
-            editModalLabel="Editar Produto"
-            isLoading={isLoadingProducts}
-            openDeleteConfirmModal={openDeleteConfirmModal}
-            tableOptions={{
-              onCreatingRowSave: handleCreateProduct,
-              onEditingRowSave: handleSaveProduct,
-              state: {
-                columnVisibility: {
-                  product_id: false,
-                },
-              },
-            }}
-            columns={columns}
-            data={products}
-          />
-        )}
-      </Skeleton>
+      <Table
+        addButtonLabel="Novo Produto"
+        createModalLabel="Novo Produto"
+        editModalLabel="Editar Produto"
+        isLoading={isLoadingProducts}
+        openDeleteConfirmModal={openDeleteConfirmModal}
+        tableOptions={{
+          onCreatingRowSave: handleCreateProduct,
+          onEditingRowSave: handleSaveProduct,
+          state: {
+            columnVisibility: {
+              product_id: false,
+            },
+          },
+        }}
+        columns={columns}
+        data={products}
+      />
     </SideMenu>
   );
 }

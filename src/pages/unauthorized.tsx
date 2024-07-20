@@ -2,7 +2,7 @@ import { useClerk } from "@clerk/nextjs";
 import { Button } from "@mantine/core";
 import React from "react";
 import { createTRPCContext } from "../server/api/trpc";
-import { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 export default function Unauthorized() {
   const { signOut } = useClerk();
