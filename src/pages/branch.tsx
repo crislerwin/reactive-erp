@@ -37,13 +37,12 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
         accessorKey: "branch_id",
         header: "Id",
         enableEditing: false,
-        size: 80,
       },
       {
         accessorKey: "name",
         header: "Nome",
         mantineEditTextInputProps: {
-          type: "email",
+          type: "text",
           required: true,
           error: validationErrors?.name,
           onFocus: () =>
@@ -149,6 +148,11 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
             tableOptions={{
               onCreatingRowSave: handleCreateBranch,
               onEditingRowSave: handleSaveBranch,
+              state: {
+                columnVisibility: {
+                  branch_id: false,
+                },
+              },
             }}
             columns={columns}
             data={branches}

@@ -142,6 +142,7 @@ export default function CustomTable<T extends Record<string, unknown>>({
       isSaving: isLoading,
       showAlertBanner: error,
       showProgressBars: isLoading,
+      ...tableOptions?.state,
     },
     ...tableOptions,
   });

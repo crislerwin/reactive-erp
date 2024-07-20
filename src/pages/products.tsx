@@ -42,7 +42,7 @@ export default function ProductsPage({ role }: ProductsPageProps) {
         accessorKey: "product_id",
         header: "Id do Produto",
         enableEditing: false,
-        size: 80,
+        size: 30,
       },
       {
         accessorKey: "name",
@@ -243,6 +243,11 @@ export default function ProductsPage({ role }: ProductsPageProps) {
             tableOptions={{
               onCreatingRowSave: handleCreateProduct,
               onEditingRowSave: handleSaveProduct,
+              state: {
+                columnVisibility: {
+                  product_id: false,
+                },
+              },
             }}
             columns={columns}
             data={products}

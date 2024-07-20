@@ -240,6 +240,11 @@ function Staff({ role }: StaffPageProps) {
             tableOptions={{
               onCreatingRowSave: handleCreateUser,
               onEditingRowSave: handleSaveUser,
+              state: {
+                columnVisibility: {
+                  id: false,
+                },
+              },
             }}
             openDeleteConfirmModal={openDeleteConfirmModal}
             isLoading={isLoadingStaff}
