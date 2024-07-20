@@ -117,7 +117,7 @@ describe.concurrent("Product Router", () => {
       });
       await expect(promisses).rejects.toThrowError("UNAUTHORIZED");
     });
-    it.only("should throw if try to create a product with invalid product_category_id", async () => {
+    it("should throw if try to create a product with invalid product_category_id", async () => {
       const { app } = await makeSut();
       const promisses = app.product.create({
         available: "true",
