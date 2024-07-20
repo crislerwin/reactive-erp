@@ -144,17 +144,7 @@ export default function ChartComponent() {
                 />
               }
             />
-            <Bar
-              dataKey={activeChart}
-              label={{
-                position: "top",
-                fill: "#fff",
-                fontSize: 14,
-                fontFamily: "inherit",
-                fontWeight: "bold",
-              }}
-              fill={`var(--color-${activeChart})`}
-            />
+            <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
           </BarChart>
         </ChartContainer>
       </CardContent>

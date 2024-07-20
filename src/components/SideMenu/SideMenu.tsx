@@ -143,7 +143,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
       </CommandPalette>
       <div className="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 px-10 dark:bg-gray-900 dark:text-slate-300">
         <div className={open ? "ml-12 md:ml-60" : "ml-12"}>
-          <span className="text-2xl font-bold">
+          <span className="font-bold sm:text-sm lg:text-2xl">
             {pageNameMap[pathname] ?? ""}
           </span>
         </div>
@@ -160,12 +160,6 @@ export function SideMenu({ children, role }: SideMenuProps) {
             <div className="flex flex-none justify-center">
               <div className="flex h-8 w-8 "></div>
             </div>
-            <Button
-              leftIcon={<IconSearch className="h-4 w-4" />}
-              onClick={() => setOpenSearch(true)}
-            >
-              Procurar (Ctrl + K)
-            </Button>
             <Menu width={240} position="bottom-end" shadow="md">
               <Menu.Target>
                 <div className="flex flex-none cursor-pointer justify-center">

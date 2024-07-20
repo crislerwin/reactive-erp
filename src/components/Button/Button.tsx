@@ -22,7 +22,7 @@ const button = tv({
   compoundVariants: [
     {
       size: ["sm", "md"],
-      class: "px-3 py-1",
+      class: "px-3 py-1 text-sm",
     },
   ],
   defaultVariants: {
