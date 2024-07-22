@@ -7,6 +7,7 @@ export const appRouter = createTRPCRouter({
   product: routers.productRouter,
   productCategory: routers.productCategory,
   customer: routers.customerRouter,
+  invoice: routers.invoicesRouter,
 });
 
 export type AppRouter = typeof appRouter;

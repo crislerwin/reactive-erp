@@ -3,6 +3,7 @@ export * from "./branch.schema";
 export * from "./product.schema";
 export * from "./common";
 export * from "./customer.schema";
+export * from "./invoices.schema";
 
 export type DefaultPageProps = {
   branch_id: number;
