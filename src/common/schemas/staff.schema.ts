@@ -2,7 +2,7 @@ import z from "zod";
 import { customBooleanValidator, customNumberValidator } from "./common";
 
 export const commonSchema = z.object({
-  branch_id: customNumberValidator,
+  branch_id: customNumberValidator.optional(),
 });
 
 export const createStaffMemberSchema = z.intersection(

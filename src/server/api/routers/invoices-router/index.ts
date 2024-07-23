@@ -14,9 +14,26 @@ export const invoicesRouter = createTRPCRouter({
         throw new TRPCError(ServerError.NOT_ALLOWED);
       if (!superUserRoles.includes(ctx.session.staffMember.role))
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      const total = input.items.reduce((acc, item) => {
-        return acc + item.quantity;
+      const products = await ctx.prisma.product.findMany({
+        where: {
+          product_id: {
+            in: input.items.map((item) => item.product_id),
+          },
+        },
+      });
+      const productMap = new Map(
+        products.map((product) => [product.product_id, product])
+      );
+      const total_price = input.items.reduce((acc, item) => {
+        const product = productMap.get(item.product_id);
+        if (!product) return acc;
+        return acc + product.price * item.quantity;
       }, 0);
+      const total_items = input.items.reduce(
+        (acc, item) => acc + item.quantity,
+        0
+      );
+
       return ctx.prisma.invoice.create({
         data: {
           branch_id: ctx.session.staffMember.branch_id,
@@ -24,7 +41,9 @@ export const invoicesRouter = createTRPCRouter({
           staff_id: input.staff_id,
           status: input.status,
           expires_at: input.expires_at,
-          total: total,
+          customer_id: input.customer_id,
+          total_items,
+          total_price,
         },
       });
     }),
