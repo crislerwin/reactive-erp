@@ -26,7 +26,7 @@ export const invoicesRouter = createTRPCRouter({
       );
       const total_price = input.items.reduce((acc, item) => {
         const product = productMap.get(item.product_id);
-        if (!product) return acc;
+        if (!product) throw new TRPCError(ServerError.PRODUCT_NOT_FOUND);
         return acc + product.price * item.quantity;
       }, 0);
       const total_items = input.items.reduce(

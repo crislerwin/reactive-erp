@@ -9,6 +9,7 @@ export enum ErrorType {
   BRANCH_NOT_EMPTY = "BRANCH_NOT_EMPTY",
   EMAIL_ADDRESS_NOT_FOUND = "EMAIL_ADDRESS_NOT_FOUND",
   PRODUCT_CATEGORY_NOT_FOUND = "PRODUCT_CATEGORY_NOT_FOUND",
+  PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND",
 }
 
 export type CustomErrorsValues = {
@@ -45,6 +46,10 @@ export const ServerError: Record<ErrorType, CustomErrorsValues> = {
     code: "NOT_FOUND",
     cause: ErrorType.PRODUCT_CATEGORY_NOT_FOUND,
   },
+  PRODUCT_NOT_FOUND: {
+    code: "NOT_FOUND",
+    cause: ErrorType.PRODUCT_NOT_FOUND,
+  },
 };
 
 export const ErrorTranslation: Record<ErrorType, string> = {
@@ -55,6 +60,7 @@ export const ErrorTranslation: Record<ErrorType, string> = {
   EMAIL_ADDRESS_NOT_FOUND: "E-mail não encontrado",
   PRODUCT_CATEGORY_NOT_FOUND: "Categoria de produto não encontrada",
   STAFF_MEMBER_NOT_FOUND: "Usuário não encontrado",
+  PRODUCT_NOT_FOUND: "Produto não encontrado",
 };
 
 export function customErrorHandler({
