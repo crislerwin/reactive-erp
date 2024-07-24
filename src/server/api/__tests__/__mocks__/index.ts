@@ -2,7 +2,7 @@ import { prisma } from "@/server/db";
 import { appRouter } from "../../root";
 import { createCaller } from "../../trpc";
 import { faker } from "@faker-js/faker";
-import { type Branch, type Staff } from "@prisma/client";
+import { ProductCategory, type Branch, type Staff } from "@prisma/client";
 import { type z } from "zod";
 import {
   type createStaffMemberSchema,

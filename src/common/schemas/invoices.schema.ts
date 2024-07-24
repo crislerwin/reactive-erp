@@ -18,14 +18,12 @@ export const updateInvoiceSchema = z.object({
   id: customNumberValidator,
   staff_id: customNumberValidator.optional(),
   customer_id: customNumberValidator.optional(),
-  items: z
-    .array(
-      z.object({
-        product_id: customNumberValidator,
-        quantity: customNumberValidator,
-      })
-    )
-    .optional(),
+  items: z.array(
+    z.object({
+      product_id: customNumberValidator,
+      quantity: customNumberValidator,
+    })
+  ),
   expires_at: z.string().optional(),
-  status: z.enum(["open", "closed", "draft"]).optional(),
+  status: z.enum(["pending", "paid", "draft"]).optional(),
 });
