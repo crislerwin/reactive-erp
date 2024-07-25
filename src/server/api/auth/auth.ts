@@ -15,6 +15,7 @@ export const getServerAuthSession = async (
 ): Promise<LoggedUser> => {
   const { userId } = getAuth(ctx.req);
   if (!userId) throw new TRPCError(ServerError.NOT_ALLOWED);
+  debugger;
   const { emailAddresses, firstName, lastName } =
     await clerkClient.users.getUser(userId);
   const [firstEmailAddress] = emailAddresses;
