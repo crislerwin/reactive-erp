@@ -8,7 +8,6 @@ import { Avatar, Menu } from "@mantine/core";
 import {
   IconSettings,
   IconLogout,
-  IconSearch,
   IconApiApp,
   IconHome,
   IconUsersGroup,
@@ -22,7 +21,6 @@ import CommandPalette, {
 } from "../SearchBar";
 import { PackageSearch, PersonStandingIcon, StoreIcon } from "lucide-react";
 import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
-import { Button } from "../Button/Button";
 
 type SideMenuProps = PropsWithChildren & {
   role: string;
@@ -186,7 +184,11 @@ export function SideMenu({ children, role }: SideMenuProps) {
                   Configurações da conta
                 </Menu.Item>
                 <Menu.Item
-                  onClick={() => signOut()}
+                  onClick={() =>
+                    signOut({
+                      redirectUrl: "/sign-in",
+                    })
+                  }
                   className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-gray-800 dark:text-slate-300 dark:hover:bg-gray-800"
                   icon={<IconLogout className="text-white" size={14} />}
                 >
