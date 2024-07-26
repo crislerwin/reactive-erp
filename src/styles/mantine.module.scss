@@ -1,0 +1,17 @@
+.mantine-Modal-body {
+    @apply bg-white dark:bg-gray-800;
+}
+
+.mantine-TextInput-input {
+    @apply bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700;
+}
+
+.mantine-Skeleton-visible {
+    ::before {
+        @apply bg-white dark:bg-gray-900;
+    }
+
+    ::after {
+        @apply bg-white dark:bg-gray-800;
+    }
+}
