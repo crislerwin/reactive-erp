@@ -15,7 +15,6 @@ import {
   updateProductSchema,
   type DefaultPageProps,
 } from "@/common/schemas";
-import { type z } from "zod";
 import { updateQueryData } from "@/lib";
 import { createTRPCContext } from "@/server/api/trpc";
 
