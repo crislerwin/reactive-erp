@@ -36,7 +36,8 @@
     "**/*.mjs",
     "**/*.config.ts",
     "**/*.spec.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "src/server/api/__tests__/invoices-router.test"
   ],
   "exclude": ["node_modules"]
 }

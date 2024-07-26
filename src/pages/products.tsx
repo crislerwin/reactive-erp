@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import {
   type MRT_ColumnDef,
   type MRT_Row,
@@ -10,23 +9,18 @@ import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
 import { Table } from "@/design-system";
-import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   createProductSchema,
   updateProductSchema,
   type DefaultPageProps,
 } from "@/common/schemas";
-import { type z } from "zod";
 import { updateQueryData } from "@/lib";
 import { createTRPCContext } from "@/server/api/trpc";
 
 type ProductsPageProps = DefaultPageProps;
 
 export default function ProductsPage({ role }: ProductsPageProps) {
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string | undefined>
-  >({});
   const { data: products = [], isLoading: isLoadingProducts } =
     trpc.product.findAll.useQuery();
   const { mutate: createProduct } = trpc.product.create.useMutation();
@@ -34,131 +28,90 @@ export default function ProductsPage({ role }: ProductsPageProps) {
   const { mutate: deleteProduct, isLoading: isDeletingProduct } =
     trpc.product.deleteProduct.useMutation();
   const { data: productCategory } = trpc.productCategory.findAll.useQuery();
-  const columns = useMemo<MRT_ColumnDef<Product>[]>(
-    () => [
-      {
-        accessorKey: "product_id",
-        header: "Id do Produto",
-        enableEditing: false,
-        size: 30,
+  const columns: MRT_ColumnDef<Product>[] = [
+    {
+      accessorKey: "product_id",
+      header: "Id do Produto",
+      enableEditing: false,
+      size: 30,
+    },
+    {
+      accessorKey: "name",
+      header: "Nome do Produto",
+      mantineEditTextInputProps: {
+        type: "email",
+        required: true,
       },
-      {
-        accessorKey: "name",
-        header: "Nome do Produto",
-        mantineEditTextInputProps: {
-          type: "email",
-          required: true,
-          error: validationErrors?.name,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              name: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "price",
+      header: "Preço",
+      mantineEditTextInputProps: {
+        type: "number",
+        required: true,
       },
-      {
-        accessorKey: "price",
-        header: "Preço",
-        mantineEditTextInputProps: {
-          type: "number",
-          required: true,
-          error: validationErrors?.price,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              price: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "stock",
+      header: "Quantidade em estoque",
+      mantineEditTextInputProps: {
+        type: "number",
       },
-      {
-        accessorKey: "stock",
-        header: "Quantidade em estoque",
-        mantineEditTextInputProps: {
-          type: "number",
-          error: validationErrors?.stock,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              stock: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "product_category_id",
+      header: "Categoria",
+      editVariant: "select",
+      Cell(props) {
+        const categoryMap = new Map(
+          productCategory?.map((category) => [category.id, category.name])
+        );
+        return (
+          <div>
+            {categoryMap.get(Number(props.row.original.product_category_id))}
+          </div>
+        );
       },
-      {
-        accessorKey: "product_category_id",
-        header: "Categoria",
-        editVariant: "select",
-        Cell(props) {
-          const categoryMap = new Map(
-            productCategory?.map((category) => [category.id, category.name])
-          );
-          return (
-            <div>
-              {categoryMap.get(Number(props.row.original.product_category_id))}
-            </div>
-          );
-        },
-        mantineEditSelectProps: {
-          required: true,
-          nothingFound: "Nenhuma categoria encontrada",
-          limit: 5,
-          data: productCategory?.map((category) => ({
-            value: String(category.id),
-            label: category.name,
-          })),
-          error: validationErrors?.product_category_id,
-        },
+      mantineEditSelectProps: {
+        required: true,
+        nothingFound: "Nenhuma categoria encontrada",
+        limit: 5,
+        data: productCategory?.map((category) => ({
+          value: String(category.id),
+          label: category.name,
+        })),
       },
-      {
-        accessorKey: "available",
-        header: "Disponível",
-        accessorFn: (row) =>
-          typeof row.available === "boolean" ? String(row.available) : "true",
-        Cell(props) {
-          return <div>{props.row.original.available ? "Sim" : "Não"}</div>;
-        },
-        editVariant: "select",
-        mantineEditSelectProps: {
-          data: [
-            { label: "Sim", value: "true" },
-            { label: "Não", value: "false" },
-          ],
-          error: validationErrors?.available,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              available: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "available",
+      header: "Disponível",
+      accessorFn: (row) =>
+        typeof row.available === "boolean" ? String(row.available) : "true",
+      Cell(props) {
+        return <div>{props.row.original.available ? "Sim" : "Não"}</div>;
       },
-      {
-        accessorKey: "description",
-        accessorFn: (row) => row.description ?? "",
-        header: "Descrição",
-        mantineEditTextInputProps: {
-          type: "email",
-          error: validationErrors?.description,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              description: undefined,
-            }),
-        },
+      editVariant: "select",
+      mantineEditSelectProps: {
+        data: [
+          { label: "Sim", value: "true" },
+          { label: "Não", value: "false" },
+        ],
       },
-    ],
-    [productCategory, validationErrors]
-  );
+    },
+    {
+      accessorKey: "description",
+      accessorFn: (row) => row.description ?? "",
+      header: "Descrição",
+      mantineEditTextInputProps: {
+        type: "email",
+      },
+    },
+  ];
 
   const handleCreateProduct: MRT_TableOptions<Product>["onCreatingRowSave"] = ({
     values,
     exitCreatingMode,
   }) => {
-    const newValidationErrors = validateData<
-      z.infer<typeof createProductSchema>
-    >(values, createProductSchema);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
     createProduct(values, {
       onSuccess: (data) => {
         updateQueryData<Product[]>(
@@ -168,7 +121,7 @@ export default function ProductsPage({ role }: ProductsPageProps) {
             return [...oldData, data];
           }
         );
-        setValidationErrors({});
+
         exitCreatingMode();
       },
     });
@@ -178,11 +131,6 @@ export default function ProductsPage({ role }: ProductsPageProps) {
     values,
     exitEditingMode,
   }) => {
-    const newValidationErrors = validateData(values, updateProductSchema);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
     updateProduct(values, {
       onSuccess: (data) => {
         updateQueryData<Product[]>(
@@ -194,7 +142,6 @@ export default function ProductsPage({ role }: ProductsPageProps) {
             );
           }
         );
-        setValidationErrors({});
         exitEditingMode();
       },
     });
@@ -238,11 +185,11 @@ export default function ProductsPage({ role }: ProductsPageProps) {
         createModalLabel="Novo Produto"
         editModalLabel="Editar Produto"
         isLoading={isLoadingProducts}
+        onCreatingRowSave={handleCreateProduct}
+        onEditingRowSave={handleSaveProduct}
+        creationSchema={createProductSchema}
+        updateSchema={updateProductSchema}
         openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateProduct,
-          onEditingRowSave: handleSaveProduct,
-        }}
         columns={columns}
         data={products}
       />

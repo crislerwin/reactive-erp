@@ -80,13 +80,14 @@ model Invoice {
   staff_id    Int
   customer_id Int
   items       Json
-  total       Float
-  status      String
+  total_items Float
+  total_price Float
+  status      String?   @default("draft")
   expires_at  DateTime
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at  DateTime?
-  customer    Customer? @relation(fields: [customer_id], references: [customer_id])
+  customer    Customer  @relation(fields: [customer_id], references: [customer_id])
 
   @@index([branch_id])
   @@index([staff_id])

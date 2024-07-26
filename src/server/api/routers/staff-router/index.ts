@@ -36,6 +36,8 @@ export const staffRouter = createTRPCRouter({
     .meta({ openapi: { method: "POST", path: "/staff" } })
     .input(createStaffMemberSchema)
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.session.staffMember)
+        throw new TRPCError(ServerError.NOT_ALLOWED);
       const branch = await ctx.prisma.branch.findUnique({
         where: { branch_id: input.branch_id },
       });
@@ -49,7 +51,7 @@ export const staffRouter = createTRPCRouter({
       return ctx.prisma.staff.create({
         data: {
           email: input.email,
-          branch_id: input.branch_id,
+          branch_id: input.branch_id ?? ctx.session.staffMember?.branch_id,
           role: input.role,
           first_name: input.first_name,
           last_name: input.last_name,

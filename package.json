@@ -10,13 +10,11 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "db:push": "prisma db push",
+    "generate": "prisma generate",
     "start": "next start",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "prepare": "husky"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed.mjs"
   },
   "dependencies": {
     "@clerk/localizations": "^1.26.13",
