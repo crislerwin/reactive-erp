@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import {
   type MRT_ColumnDef,
   type MRT_Row,
@@ -18,15 +17,12 @@ import {
 } from "@/common/schemas";
 import { updateQueryData } from "@/lib";
 import { managerRoles } from "@/common/constants";
-import { validateData } from "@/common/utils";
-import { Skeleton } from "@mantine/core";
 import { createTRPCContext } from "@/server/api/trpc";
+import { buttonVariant } from "@/design-system";
 
 type StaffPageProps = DefaultPageProps;
 
 function Staff({ role }: StaffPageProps) {
-  const [validationErrors, setValidationErrors] =
-    useState<Record<string, string | undefined>>();
   const {
     data: staffMembers = [],
     isLoading: isLoadingStaff,
@@ -43,122 +39,95 @@ function Staff({ role }: StaffPageProps) {
     refetchOnWindowFocus: false,
   });
 
-  const columns = useMemo<MRT_ColumnDef<StaffType>[]>(
-    () => [
-      {
-        accessorKey: "id",
-        accessorFn: (row) => String(row.id ?? ""),
-        header: "Id",
-        enableEditing: false,
-        size: 80,
+  const columns: MRT_ColumnDef<StaffType>[] = [
+    {
+      accessorKey: "id",
+      accessorFn: (row) => String(row.id ?? ""),
+      header: "Id",
+      enableEditing: false,
+      size: 80,
+    },
+    {
+      accessorKey: "first_name",
+      accessorFn: (row) => row.first_name ?? "",
+      header: "Nome",
+      mantineEditTextInputProps: {
+        type: "email",
+        required: true,
       },
-      {
-        accessorKey: "first_name",
-        accessorFn: (row) => row.first_name ?? "",
-        header: "Nome",
-        mantineEditTextInputProps: {
-          type: "email",
-          required: true,
-          error: validationErrors?.first_name,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              first_name: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: "last_name",
-        header: "Sobrenome",
+    },
+    {
+      accessorKey: "last_name",
+      header: "Sobrenome",
 
-        mantineEditTextInputProps: {
-          type: "text",
-          error: validationErrors?.last_name,
-        },
+      mantineEditTextInputProps: {
+        type: "text",
       },
-      {
-        accessorKey: "email",
-        header: "Email",
-        enableEditing: (row) => !row.original.email,
-        mantineEditTextInputProps: {
-          type: "email",
-          required: true,
-          error: validationErrors?.email,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              email: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+      enableEditing: (row) => !row.original.email,
+      mantineEditTextInputProps: {
+        type: "email",
+        required: true,
       },
-      {
-        accessorKey: "role",
-        header: "Função",
-        accessorFn: (row) => row.role ?? "",
-        editVariant: "select",
-        mantineEditSelectProps: {
-          required: true,
-          data: [
-            { value: "ADMIN", label: "Administrador" },
-            { value: "MANAGER", label: "Gerente" },
-            { value: "EMPLOYEE", label: "Funcionario" },
-          ],
-          error: validationErrors?.role,
-        },
+    },
+    {
+      accessorKey: "role",
+      header: "Função",
+      accessorFn: (row) => row.role ?? "",
+      editVariant: "select",
+      mantineEditSelectProps: {
+        required: true,
+        data: [
+          { value: "ADMIN", label: "Administrador" },
+          { value: "MANAGER", label: "Gerente" },
+          { value: "EMPLOYEE", label: "Funcionario" },
+        ],
       },
-      {
-        accessorKey: "branch_id",
-        header: "Filial",
-        accessorFn: (row) => String(row.branch_id ?? ""),
-        editVariant: "select",
-        Cell(props) {
-          const branch = branches.find(
-            (branch) =>
-              branch.branch_id === Number(props.row.original.branch_id)
-          );
-          return <div>{branch?.name}</div>;
-        },
-        mantineEditSelectProps: {
-          required: true,
-          error: validationErrors?.branch_id,
-          data: branches.map((branch) => ({
-            value: String(branch.branch_id),
-            label: branch.name,
-          })),
-        },
+    },
+    {
+      accessorKey: "branch_id",
+      header: "Filial",
+      accessorFn: (row) => String(row.branch_id ?? ""),
+      editVariant: "select",
+      Cell(props) {
+        const branch = branches.find(
+          (branch) => branch.branch_id === Number(props.row.original.branch_id)
+        );
+        return <div>{branch?.name}</div>;
       },
-      {
-        accessorKey: "active",
-        accessorFn: (row) => String(Boolean(row.active)),
-        header: "Status",
-        Cell(props) {
-          return <span>{props.row.original.active ? "Ativo" : "Inativo"}</span>;
-        },
-        editVariant: "select",
-        mantineEditSelectProps: {
-          required: true,
-          error: validationErrors?.active,
-          data: [
-            { value: "true", label: "Ativo" },
-            { value: "false", label: "Inativo" },
-          ],
-        },
+      mantineEditSelectProps: {
+        required: true,
+        data: branches.map((branch) => ({
+          value: String(branch.branch_id),
+          label: branch.name,
+        })),
       },
-    ],
-    [branches, validationErrors]
-  );
+    },
+    {
+      accessorKey: "active",
+      accessorFn: (row) => String(Boolean(row.active)),
+      header: "Status",
+      Cell(props) {
+        return <span>{props.row.original.active ? "Ativo" : "Inativo"}</span>;
+      },
+      editVariant: "select",
+      mantineEditSelectProps: {
+        required: true,
+        data: [
+          { value: "true", label: "Ativo" },
+          { value: "false", label: "Inativo" },
+        ],
+      },
+    },
+  ];
 
   const handleCreateUser: MRT_TableOptions<StaffType>["onCreatingRowSave"] = ({
     values,
     exitCreatingMode,
   }) => {
-    const newValidationErrors = validateData(values, createStaffMemberSchema);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
-
     createStaffMember(values, {
       onSuccess: (data) => {
         updateQueryData<StaffType[]>(
@@ -177,12 +146,6 @@ function Staff({ role }: StaffPageProps) {
     values,
     table,
   }) => {
-    const newValidationErrors = validateData(values, updateStaffMemberSchema);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
     updateStaffMember(values, {
       onSuccess: (data) => {
         updateQueryData<StaffType[]>(
@@ -207,8 +170,14 @@ function Staff({ role }: StaffPageProps) {
         row.original.first_name
       } ${row.original.last_name ?? ""}`,
       labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: { variant: "filled", color: "red" },
-      cancelProps: { variant: "outline" },
+      confirmProps: {
+        variant: "filled",
+        className: buttonVariant({ color: "danger" }),
+      },
+      cancelProps: {
+        variant: "outline",
+        className: buttonVariant(),
+      },
       onConfirm: () =>
         deleteStaffMember(
           { id: Number(row.original.id) },
@@ -235,10 +204,10 @@ function Staff({ role }: StaffPageProps) {
         editModalLabel="Editar Colaborador"
         columns={columns}
         data={staffMembers}
-        tableOptions={{
-          onCreatingRowSave: handleCreateUser,
-          onEditingRowSave: handleSaveUser,
-        }}
+        creationSchema={createStaffMemberSchema}
+        updateSchema={updateStaffMemberSchema}
+        onCreatingRowSave={handleCreateUser}
+        onEditingRowSave={handleSaveUser}
         openDeleteConfirmModal={openDeleteConfirmModal}
         isLoading={isLoadingStaff}
         error={isGettingStaffError}

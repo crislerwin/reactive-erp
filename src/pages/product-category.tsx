@@ -18,19 +18,15 @@ import {
   updateProductCategorySchema,
 } from "@/common/schemas/product-category.schema";
 import { updateQueryData } from "@/lib";
-import { Skeleton } from "@mantine/core";
 import { managerRoles } from "@/common/constants";
 import { createTRPCContext } from "@/server/api/trpc";
+import { buttonVariant } from "@/design-system";
 
 type ProductCategoryPageProps = DefaultPageProps;
 
 export default function ProductCategoryPage({
   role,
 }: ProductCategoryPageProps) {
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string | undefined>
-  >({});
-
   const { data: productCategories = [], isLoading: isLoadingProductCategory } =
     trpc.productCategory.findAll.useQuery();
   const { mutate: createProductCategory } =
@@ -42,81 +38,51 @@ export default function ProductCategoryPage({
     isLoading: isDeletingProductCategory,
   } = trpc.productCategory.deleteCategory.useMutation();
 
-  const columns = useMemo<MRT_ColumnDef<ProductCategory>[]>(
-    () => [
-      {
-        accessorKey: "id",
-        header: "Id",
-        enableEditing: false,
-        size: 80,
+  const columns: MRT_ColumnDef<ProductCategory>[] = [
+    {
+      accessorKey: "id",
+      header: "Id",
+      enableEditing: false,
+      size: 80,
+    },
+    {
+      accessorKey: "name",
+      accessorFn: (row) => row.name ?? "",
+      header: "Nome",
+      mantineEditTextInputProps: {
+        type: "email",
+        required: true,
       },
-      {
-        accessorKey: "name",
-        accessorFn: (row) => row.name ?? "",
-        header: "Nome",
-        mantineEditTextInputProps: {
-          type: "email",
-          required: true,
-          error: validationErrors?.name,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              name: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "description",
+      accessorFn: (row) => row.description ?? "",
+      header: "Descrição",
+      mantineEditTextInputProps: {
+        type: "text",
       },
-      {
-        accessorKey: "description",
-        accessorFn: (row) => row.description ?? "",
-        header: "Descrição",
-        mantineEditTextInputProps: {
-          type: "text",
-          error: validationErrors?.description,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              description: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "active",
+      accessorFn: (row) =>
+        String(Boolean(row.active)) === "true" ? "true" : "false",
+      header: "Ativo",
+      Cell({ row }) {
+        return <>{String(row.original.active) === "true" ? "Sim" : "Não"}</>;
       },
-      {
-        accessorKey: "active",
-        accessorFn: (row) =>
-          String(Boolean(row.active)) === "true" ? "true" : "false",
-        header: "Ativo",
-        Cell({ row }) {
-          return <>{String(row.original.active) === "true" ? "Sim" : "Não"}</>;
-        },
 
-        editVariant: "select",
-        mantineEditSelectProps: {
-          error: validationErrors?.active,
-
-          data: [
-            { label: "Sim", value: "true" },
-            { label: "Não", value: "false" },
-          ],
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              active: undefined,
-            }),
-        },
+      editVariant: "select",
+      mantineEditSelectProps: {
+        data: [
+          { label: "Sim", value: "true" },
+          { label: "Não", value: "false" },
+        ],
       },
-    ],
-    [validationErrors]
-  );
+    },
+  ];
 
   const handleCreateProduct: MRT_TableOptions<ProductCategory>["onCreatingRowSave"] =
     ({ values, exitCreatingMode }) => {
-      const newValidationErrors = validateData(
-        values,
-        createProductCategorySchema
-      );
-      if (Object.values(newValidationErrors).some((error) => error)) {
-        setValidationErrors(newValidationErrors);
-        return;
-      }
       createProductCategory(values, {
         onSuccess: (data) => {
           updateQueryData<ProductCategory[]>(
@@ -127,21 +93,12 @@ export default function ProductCategoryPage({
             }
           );
           exitCreatingMode();
-          setValidationErrors({});
         },
       });
     };
 
   const handleSaveProduct: MRT_TableOptions<ProductCategory>["onEditingRowSave"] =
     ({ values, exitEditingMode }) => {
-      const newValidationErrors = validateData(
-        values,
-        updateProductCategorySchema
-      );
-      if (Object.values(newValidationErrors).some((error) => error)) {
-        setValidationErrors(newValidationErrors);
-        return;
-      }
       updateProductCategory(values, {
         onSuccess: (data) => {
           updateQueryData<ProductCategory[]>(
@@ -153,7 +110,7 @@ export default function ProductCategoryPage({
               );
             }
           );
-          setValidationErrors({});
+
           exitEditingMode();
         },
       });
@@ -166,10 +123,13 @@ export default function ProductCategoryPage({
       labels: { confirm: "Deletar", cancel: "Cancelar" },
       confirmProps: {
         variant: "filled",
-        color: "red",
         disabled: isDeletingProductCategory,
+        className: buttonVariant({ color: "danger" }),
       },
-      cancelProps: { variant: "outline" },
+      cancelProps: {
+        variant: "outline",
+        className: buttonVariant(),
+      },
       onConfirm: () => {
         deleteProductCategory(
           { id: row.original.id },
@@ -198,10 +158,8 @@ export default function ProductCategoryPage({
         editModalLabel="Editar Categoria"
         isLoading={isLoadingProductCategory}
         openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateProduct,
-          onEditingRowSave: handleSaveProduct,
-        }}
+        onCreatingRowSave={handleCreateProduct}
+        onEditingRowSave={handleSaveProduct}
         columns={columns}
         data={productCategories}
       />

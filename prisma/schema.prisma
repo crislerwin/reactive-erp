@@ -48,12 +48,12 @@ model Product {
   stock               Int             @default(0)
   colors              Json?
   product_category_id Int
-  product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
-  branch              Branch          @relation(fields: [branch_id], references: [branch_id])
   available           Boolean         @default(true)
   created_at          DateTime        @default(now())
   updated_at          DateTime        @updatedAt
   deleted_at          DateTime?
+  product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
+  branch              Branch          @relation(fields: [branch_id], references: [branch_id])
 
   @@index([branch_id])
   @@index([product_category_id])
@@ -100,12 +100,12 @@ model Customer {
   first_name    String
   last_name     String?
   email         String    @unique
-  orders        Invoice[]
-  branch        Branch    @relation(fields: [branch_id], references: [branch_id])
   phone         String?
   created_at    DateTime  @default(now())
   updated_at    DateTime? @updatedAt
   deleted_at    DateTime?
+  orders        Invoice[]
+  branch        Branch    @relation(fields: [branch_id], references: [branch_id])
 
   @@index([branch_id])
 }
