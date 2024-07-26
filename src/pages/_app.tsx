@@ -2,7 +2,7 @@ import { type AppType } from "next/app";
 import { ptBR } from "@clerk/localizations";
 import { trpc } from "@/utils/api";
 import { ClerkProvider } from "@clerk/nextjs";
-import "@/styles/globals.css";
+import "@/styles/globals.scss";
 import { SideBarProvider } from "@/components/SideMenu";
 import { ThemeProvider } from "@/components/ThemeToggle";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";

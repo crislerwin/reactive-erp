@@ -6,7 +6,6 @@ import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { Avatar, Menu } from "@mantine/core";
 import {
-  IconSettings,
   IconLogout,
   IconApiApp,
   IconHome,
@@ -109,14 +108,6 @@ export function SideMenu({ children, role }: SideMenuProps) {
     search
   );
 
-  const handleRedirect = async () => {
-    if (!user) return;
-    await router.push({
-      pathname: "/account",
-      query: { userId: user.id },
-    });
-  };
-
   return (
     <>
       <CommandPalette
@@ -139,7 +130,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
           </CommandPalette.List>
         ))}
       </CommandPalette>
-      <div className="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 px-10 dark:bg-gray-900 dark:text-slate-300">
+      <div className="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 pl-8 dark:bg-gray-900 dark:text-slate-300">
         <div className={open ? "ml-12 md:ml-60" : "ml-12"}>
           <span className="font-bold sm:text-sm lg:text-2xl">
             {pageNameMap[pathname] ?? ""}
@@ -155,12 +146,9 @@ export function SideMenu({ children, role }: SideMenuProps) {
         </div>
         <div className="flex h-full">
           <div className="flex items-center space-x-3 px-3">
-            <div className="flex flex-none justify-center">
-              <div className="flex h-8 w-8 "></div>
-            </div>
             <Menu width={240} position="bottom-end" shadow="md">
               <Menu.Target>
-                <div className="flex flex-none cursor-pointer justify-center">
+                <div>
                   <Avatar
                     className="rounded-full"
                     alt={`${user?.username ?? "user"}'s profile picture`}
@@ -168,28 +156,18 @@ export function SideMenu({ children, role }: SideMenuProps) {
                   />
                 </div>
               </Menu.Target>
-              <Menu.Dropdown className="dark:bg-[#0F172A]  dark:hover:text-orange-400">
-                <Menu.Label className="text-md  dark:text-slate-300">
+              <Menu.Dropdown className="dark:bg-gray-800  dark:hover:text-orange-400">
+                <Menu.Label>
                   {user?.emailAddresses?.[0]?.emailAddress ?? ""}
                 </Menu.Label>
+
                 <Menu.Item
-                  onClick={handleRedirect}
-                  className={`bg-slate-100  hover:bg-slate-200  ${
-                    route.includes("account")
-                      ? "bg-slate-200 dark:bg-gray-800"
-                      : "bg-slate-100 dark:bg-[#0F172A]"
-                  } dark:text-slate-300 dark:hover:bg-[#1E293B]`}
-                  icon={<IconSettings className="text-amber-700" size={14} />}
-                >
-                  Configurações da conta
-                </Menu.Item>
-                <Menu.Item
+                  className="dark:text-slate-300 dark:hover:bg-gray-900"
                   onClick={() =>
                     signOut({
                       redirectUrl: "/sign-in",
                     })
                   }
-                  className="mt-2  bg-slate-100 hover:bg-slate-200  dark:bg-gray-800 dark:text-slate-300 dark:hover:bg-gray-800"
                   icon={<IconLogout className="text-white" size={14} />}
                 >
                   Sair
@@ -265,7 +243,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
       <div
         className={`content ${
           open ? "ml-12 md:ml-60" : "ml-12"
-        } h-screen px-2 pb-4 pt-20 duration-500 ease-in-out dark:bg-gray-900 md:px-5`}
+        } h-screen px-2 pb-4 pt-28 duration-500 ease-in-out dark:bg-gray-900 md:px-5`}
       >
         {children}
       </div>
