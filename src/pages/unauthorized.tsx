@@ -1,8 +1,8 @@
 import { useClerk } from "@clerk/nextjs";
-import { Button } from "@mantine/core";
 import React from "react";
 import { createTRPCContext } from "../server/api/trpc";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { Button } from "@/design-system";
 
 export default function Unauthorized() {
   const { signOut } = useClerk();
@@ -797,7 +797,7 @@ export default function Unauthorized() {
         <p className="text-center text-xl">
           Entre em contato com o administrador do sistema.
         </p>
-        <Button bg="" onClick={() => signOut()}>
+        <Button onClick={() => signOut({ redirectUrl: "/sign-in" })}>
           Voltar Para o Login
         </Button>
       </div>

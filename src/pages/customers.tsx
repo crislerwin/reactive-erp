@@ -10,16 +10,12 @@ import {
   type MRT_ColumnDef,
 } from "mantine-react-table";
 import { createCustomerSchema, updateCustomerSchema } from "../common/schemas";
-import { validateData } from "../common/utils";
 import { updateQueryData } from "../lib";
 import { getQueryKey } from "@trpc/react-query";
 import { modals } from "@mantine/modals";
-import { Table } from "../design-system";
+import { buttonVariant, Table } from "../design-system";
 
 export default function Customers({ role }: { role: string }) {
-  const [validationErrors, setValidationErrors] = React.useState<
-    Record<string, string | undefined>
-  >({});
   const { data: customers = [], isLoading: isLoadingProducts } =
     trpc.customer.findAll.useQuery();
   const { mutate: createCustomer } = trpc.customer.create.useMutation();
@@ -27,94 +23,55 @@ export default function Customers({ role }: { role: string }) {
   const { mutate: deleteCustomer, isLoading: isDeletingCustomer } =
     trpc.customer.delete.useMutation();
 
-  const columns = React.useMemo<MRT_ColumnDef<Customer>[]>(
-    () => [
-      {
-        accessorKey: "customer_id",
-        header: "Id",
-        enableEditing: false,
-        size: 30,
+  const columns: MRT_ColumnDef<Customer>[] = [
+    {
+      accessorKey: "customer_id",
+      header: "Id",
+      enableEditing: false,
+      size: 30,
+    },
+    {
+      accessorKey: "first_name",
+      header: "Nome",
+      mantineEditTextInputProps: {
+        type: "text",
+        required: true,
       },
-      {
-        accessorKey: "first_name",
-        header: "Nome",
-        mantineEditTextInputProps: {
-          type: "text",
-          required: true,
-          error: validationErrors?.first_name,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              first_name: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "last_name",
+      header: "Sobrenome",
+      mantineEditTextInputProps: {
+        type: "text",
       },
-      {
-        accessorKey: "last_name",
-        header: "Sobrenome",
-        mantineEditTextInputProps: {
-          type: "text",
-          error: validationErrors?.price,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              last_name: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+      mantineEditTextInputProps: {
+        type: "email",
       },
-      {
-        accessorKey: "email",
-        header: "Email",
-        mantineEditTextInputProps: {
-          type: "email",
-          error: validationErrors?.email,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              email: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "phone",
+      header: "Telefone",
+      mantineEditTextInputProps: {
+        type: "text",
       },
-      {
-        accessorKey: "phone",
-        header: "Telefone",
-        mantineEditTextInputProps: {
-          type: "text",
-          error: validationErrors?.phone,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              phone: undefined,
-            }),
-        },
+    },
+    {
+      accessorKey: "customer_code",
+      header: "Código do Cliente",
+      mantineEditTextInputProps: {
+        type: "email",
       },
-      {
-        accessorKey: "customer_code",
-        header: "Código do Cliente",
-        mantineEditTextInputProps: {
-          type: "email",
-          error: validationErrors?.description,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              description: undefined,
-            }),
-        },
-      },
-    ],
-    [validationErrors]
-  );
+    },
+  ];
 
   const handleCreateCustomer: MRT_TableOptions<Customer>["onCreatingRowSave"] =
     ({ values, exitCreatingMode }) => {
-      const newValidationErrors = validateData(values, createCustomerSchema);
-      if (Object.values(newValidationErrors).some((error) => error)) {
-        setValidationErrors(newValidationErrors);
-        return;
-      }
       createCustomer(values, {
         onSuccess: (data) => {
-          console.log("data", data);
           updateQueryData<Customer[]>(
             getQueryKey(trpc.customer.findAll, undefined, "query"),
             (oldData) => {
@@ -122,7 +79,7 @@ export default function Customers({ role }: { role: string }) {
               return [...oldData, data];
             }
           );
-          setValidationErrors({});
+
           exitCreatingMode();
         },
       });
@@ -130,11 +87,6 @@ export default function Customers({ role }: { role: string }) {
 
   const handleUpdateCustomer: MRT_TableOptions<Customer>["onEditingRowSave"] =
     ({ values, exitEditingMode }) => {
-      const newValidationErrors = validateData(values, updateCustomerSchema);
-      if (Object.values(newValidationErrors).some((error) => error)) {
-        setValidationErrors(newValidationErrors);
-        return;
-      }
       updateCustomer(values, {
         onSuccess: (data) => {
           updateQueryData<Customer[]>(
@@ -148,7 +100,6 @@ export default function Customers({ role }: { role: string }) {
               );
             }
           );
-          setValidationErrors({});
           exitEditingMode();
         },
       });
@@ -162,8 +113,12 @@ export default function Customers({ role }: { role: string }) {
       confirmProps: {
         variant: "filled",
         disabled: isDeletingCustomer,
+        className: buttonVariant({ color: "danger" }),
       },
-      cancelProps: { variant: "outline" },
+      cancelProps: {
+        variant: "outline",
+        className: buttonVariant(),
+      },
       onConfirm: () => {
         deleteCustomer(
           { customer_id: row.original.customer_id },
@@ -185,8 +140,6 @@ export default function Customers({ role }: { role: string }) {
     });
   };
 
-  console.log(validationErrors);
-
   return (
     <SideMenu role={role}>
       <Table
@@ -194,11 +147,11 @@ export default function Customers({ role }: { role: string }) {
         createModalLabel="Novo Cliente"
         editModalLabel="Editar Cliente"
         isLoading={isLoadingProducts}
+        onCreatingRowSave={handleCreateCustomer}
+        creationSchema={createCustomerSchema}
+        updateSchema={updateCustomerSchema}
         openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateCustomer,
-          onEditingRowSave: handleUpdateCustomer,
-        }}
+        onEditingRowSave={handleUpdateCustomer}
         columns={columns}
         data={customers}
       />

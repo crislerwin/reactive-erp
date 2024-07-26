@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   useMantineReactTable,
   type MRT_TableOptions,
   type MRT_Row,
+  type MRT_ColumnDef,
 } from "mantine-react-table";
-import { MantineReactTable, MRT_EditActionButtons } from "mantine-react-table";
+import { MantineReactTable } from "mantine-react-table";
 import {
-  Button,
   Tooltip,
   Stack,
   Title,
@@ -16,6 +16,9 @@ import {
 } from "@mantine/core";
 import { IconEdit, IconTrash, IconNews } from "@tabler/icons-react";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
+import { Button } from "../Button";
+import { type ZodSchema } from "zod";
+import { validateData } from "@/common/utils";
 
 interface TableProps<T extends Record<string, unknown>> {
   data: T[];
@@ -27,10 +30,18 @@ interface TableProps<T extends Record<string, unknown>> {
   isLoading?: boolean;
   error?: boolean;
   branch_id?: number;
+  creationSchema?: ZodSchema;
+  updateSchema?: ZodSchema;
+  onCreatingRowSave?: MRT_TableOptions<T>["onCreatingRowSave"];
+  onEditingRowSave?: MRT_TableOptions<T>["onEditingRowSave"];
+  onCreatingRowCancel?: MRT_TableOptions<T>["onCreatingRowCancel"];
+  onEditingRowCancel?: MRT_TableOptions<T>["onEditingRowCancel"];
   openDeleteConfirmModal: (row: MRT_Row<T>) => void;
   enableEditing?: boolean;
   className?: string;
 }
+
+export type AcessorkeyType = string | number;
 
 export function Table<T extends Record<string, unknown>>({
   data,
@@ -43,16 +54,53 @@ export function Table<T extends Record<string, unknown>>({
   editModalLabel = "Editar",
   createModalLabel = "Novo",
   addButtonLabel = "Novo",
+  onCreatingRowSave,
+  onEditingRowSave,
+  onCreatingRowCancel,
+  onEditingRowCancel,
+  creationSchema,
+  updateSchema,
   openDeleteConfirmModal,
   className = "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
 }: TableProps<T>) {
+  const [validationErrors, setValidationErrors] = React.useState<
+    Record<AcessorkeyType, string | undefined>
+  >({});
+
+  const tableColumns = useMemo<MRT_ColumnDef<T>[]>(() => {
+    return columns.map((column) => {
+      return {
+        ...column,
+        mantineEditSelectProps: {
+          ...column.mantineEditSelectProps,
+          error: validationErrors[column.accessorKey as AcessorkeyType],
+          onFocus: () => {
+            setValidationErrors({
+              ...validationErrors,
+              [column.accessorKey as AcessorkeyType]: undefined,
+            });
+          },
+        },
+        mantineEditTextInputProps: {
+          ...column.mantineEditTextInputProps,
+          error: validationErrors[column.accessorKey as AcessorkeyType],
+          onFocus: () => {
+            setValidationErrors({
+              ...validationErrors,
+              [column.accessorKey as AcessorkeyType]: undefined,
+            });
+          },
+        },
+      };
+    });
+  }, [columns, validationErrors]);
+
   const table = useMantineReactTable({
-    columns,
+    columns: tableColumns,
     data,
     localization: MRT_Localization_PT_BR,
-    createDisplayMode: "row",
-    editDisplayMode: "row",
-
+    createDisplayMode: "modal",
+    editDisplayMode: "modal",
     enableFullScreenToggle: false,
     enableEditing,
     mantineTableProps: {
@@ -91,11 +139,48 @@ export function Table<T extends Record<string, unknown>>({
       },
     },
     renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
-      <Stack>
-        <Title order={3}>{createModalLabel}</Title>
+      <Stack p={2}>
+        <Title order={4}>{createModalLabel}</Title>
         {internalEditComponents}
-        <Flex justify="flex-end" mt="xl">
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
+        <Flex justify="flex-end">
+          <Flex className="w-44" justify="space-around">
+            <Button
+              color="danger"
+              onClick={() => {
+                setValidationErrors({});
+                onCreatingRowCancel?.({ row, table });
+                table.setCreatingRow(null);
+              }}
+              variant="outline"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                if (creationSchema) {
+                  const newValidationErrors = validateData(
+                    row._valuesCache,
+                    creationSchema
+                  );
+                  if (
+                    Object.values(newValidationErrors).some((error) => error)
+                  ) {
+                    setValidationErrors(newValidationErrors);
+                    return;
+                  }
+                }
+                onCreatingRowSave?.({
+                  exitCreatingMode: () => table.setCreatingRow(null),
+                  row,
+                  table,
+                  values: row._valuesCache,
+                });
+              }}
+              variant="outline"
+            >
+              Salvar
+            </Button>
+          </Flex>
         </Flex>
       </Stack>
     ),
@@ -103,8 +188,46 @@ export function Table<T extends Record<string, unknown>>({
       <Stack>
         <Title order={3}>{editModalLabel}</Title>
         {internalEditComponents}
-        <Flex justify="flex-end" mt="xl">
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
+
+        <Flex justify="flex-end">
+          <Flex className="w-44" justify="space-around">
+            <Button
+              color="danger"
+              onClick={() => {
+                setValidationErrors({});
+                onEditingRowCancel?.({ row, table });
+                table.setEditingRow(null);
+              }}
+              variant="outline"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                if (updateSchema) {
+                  const newValidationErrors = validateData(
+                    row._valuesCache,
+                    updateSchema
+                  );
+                  if (
+                    Object.values(newValidationErrors).some((error) => error)
+                  ) {
+                    setValidationErrors(newValidationErrors);
+                    return;
+                  }
+                }
+                await onEditingRowSave?.({
+                  exitEditingMode: () => table.setEditingRow(null),
+                  row,
+                  table,
+                  values: row?._valuesCache,
+                });
+              }}
+              variant="outline"
+            >
+              Salvar
+            </Button>
+          </Flex>
         </Flex>
       </Stack>
     ),

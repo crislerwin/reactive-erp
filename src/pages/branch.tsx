@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import {
   type MRT_ColumnDef,
   type MRT_Row,
@@ -10,62 +9,45 @@ import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
-import { Table } from "@/design-system";
-import { validateData } from "@/common/utils";
+import { buttonVariant, Table } from "@/design-system";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { createBranchSchema, type DefaultPageProps } from "@/common/schemas";
+import {
+  createBranchSchema,
+  updateBranchSchema,
+  type DefaultPageProps,
+} from "@/common/schemas";
 import { updateQueryData } from "@/lib";
-import { Skeleton } from "@mantine/core";
 import { createTRPCContext } from "@/server/api/trpc";
 
 type BranchPageProps = DefaultPageProps;
 
 function BranchPage({ role, branch_id }: BranchPageProps) {
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string | undefined>
-  >({});
-
   const { data: branches = [], isLoading: isLoadingBranches } =
     trpc.branch.findAll.useQuery();
   const { mutate: createBranch } = trpc.branch.createBranch.useMutation();
   const { mutate: deleteBranch } = trpc.branch.deleteBranch.useMutation();
   const { mutate: updateBranch } = trpc.branch.updateBranch.useMutation();
 
-  const columns = useMemo<MRT_ColumnDef<Branch>[]>(
-    () => [
-      {
-        accessorKey: "branch_id",
-        header: "Id",
-        enableEditing: false,
+  const columns: MRT_ColumnDef<Branch>[] = [
+    {
+      accessorKey: "branch_id",
+      header: "Id",
+      enableEditing: false,
+    },
+    {
+      accessorKey: "name",
+      header: "Nome",
+      mantineEditTextInputProps: {
+        type: "text",
+        required: true,
       },
-      {
-        accessorKey: "name",
-        header: "Nome",
-        mantineEditTextInputProps: {
-          type: "text",
-          required: true,
-          error: validationErrors?.name,
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              name: undefined,
-            }),
-        },
-      },
-    ],
-    [validationErrors]
-  );
+    },
+  ];
 
   const handleCreateBranch: MRT_TableOptions<Branch>["onCreatingRowSave"] = ({
     values,
     exitCreatingMode,
   }) => {
-    const newValidationErrors = validateData(values, createBranchSchema);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
     createBranch(values, {
       onSuccess: (newData) => {
         updateQueryData<Branch[]>(
@@ -84,12 +66,6 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
     values,
     exitEditingMode,
   }) => {
-    const newValidationErrors = validateData(values, createBranchSchema);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
     updateBranch(values, {
       onSuccess: (newData, variables) => {
         updateQueryData<Branch[]>(
@@ -111,8 +87,14 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
       title: "Deletar Filial",
       children: `Vocé tem certeza que quer excluir a filial ${row.original.name}? Essa ação não pode ser desfeita.`,
       labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: { variant: "filled", color: "red" },
-      cancelProps: { variant: "outline" },
+      confirmProps: {
+        variant: "filled",
+        className: buttonVariant({ color: "danger" }),
+      },
+      cancelProps: {
+        variant: "outline",
+        className: buttonVariant(),
+      },
       onConfirm: () => {
         deleteBranch(
           { branch_id: row.original.branch_id },
@@ -142,11 +124,11 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
         editModalLabel="Editar Filial"
         branch_id={branch_id}
         isLoading={isLoadingBranches}
+        onCreatingRowSave={handleCreateBranch}
+        onEditingRowSave={handleSaveBranch}
+        creationSchema={createBranchSchema}
+        updateSchema={updateBranchSchema}
         openDeleteConfirmModal={openDeleteConfirmModal}
-        tableOptions={{
-          onCreatingRowSave: handleCreateBranch,
-          onEditingRowSave: handleSaveBranch,
-        }}
         columns={columns}
         data={branches}
       />
