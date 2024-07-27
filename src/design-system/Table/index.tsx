@@ -82,25 +82,26 @@ export function Table<T extends Record<string, unknown>>({
 
   const tableColumns = useMemo<MRT_ColumnDef<T>[]>(() => {
     return columns.map((column) => {
+      const columnkey = column.accessorKey as AcessorkeyType;
       return {
         ...column,
         mantineEditSelectProps: {
           ...column.mantineEditSelectProps,
-          error: validationErrors[column.accessorKey as AcessorkeyType],
+          error: validationErrors[columnkey],
           onFocus: () => {
             setValidationErrors({
               ...validationErrors,
-              [column.accessorKey as AcessorkeyType]: undefined,
+              [columnkey]: undefined,
             });
           },
         },
         mantineEditTextInputProps: {
           ...column.mantineEditTextInputProps,
-          error: validationErrors[column.accessorKey as AcessorkeyType],
+          error: validationErrors[columnkey],
           onFocus: () => {
             setValidationErrors({
               ...validationErrors,
-              [column.accessorKey as AcessorkeyType]: undefined,
+              [columnkey]: undefined,
             });
           },
         },
