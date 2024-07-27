@@ -21,7 +21,7 @@ import { createTRPCContext } from "@/server/api/trpc";
 
 type BranchPageProps = DefaultPageProps;
 
-function BranchPage({ role, branch_id }: BranchPageProps) {
+function BranchPage({ role }: BranchPageProps) {
   const { data: branches = [], isLoading: isLoadingBranches } =
     trpc.branch.findAll.useQuery();
   const { mutate: createBranch } = trpc.branch.createBranch.useMutation();

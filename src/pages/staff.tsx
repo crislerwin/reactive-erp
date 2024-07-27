@@ -204,6 +204,12 @@ function Staff({ role }: StaffPageProps) {
         editModalLabel="Editar Colaborador"
         columns={columns}
         data={staffMembers}
+        hideActions={(row, action) => {
+          if (action === "delete") {
+            return row.original.role === "OWNER";
+          }
+          return false;
+        }}
         creationSchema={createStaffMemberSchema}
         updateSchema={updateStaffMemberSchema}
         onCreatingRowSave={handleCreateUser}

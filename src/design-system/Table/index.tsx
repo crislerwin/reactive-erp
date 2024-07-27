@@ -51,6 +51,10 @@ interface TableProps<T extends Record<string, unknown>> {
   onEditingRowCancel?: MRT_TableOptions<T>["onEditingRowCancel"];
   openDeleteConfirmModal: (row: MRT_Row<T>) => void;
   enableEditing?: boolean;
+  hideActions?: (
+    row: MRT_Row<T>,
+    action: "delete" | "edit" | "both"
+  ) => boolean;
   classNames?: Record<keyof typeof defaultClassNames, string>;
   enableGrouping?: boolean;
 }
@@ -75,6 +79,7 @@ export function Table<T extends Record<string, unknown>>({
   openDeleteConfirmModal,
   classNames = defaultClassNames,
   enableGrouping = true,
+  hideActions,
 }: TableProps<T>) {
   const [validationErrors, setValidationErrors] = React.useState<
     Record<AcessorkeyType, string | undefined>
@@ -247,6 +252,39 @@ export function Table<T extends Record<string, unknown>>({
       </Stack>
     ),
     renderRowActions: ({ row, table }) => {
+      if (hideActions && hideActions(row, "edit")) {
+        return (
+          <Flex gap="md">
+            <Tooltip label="Excluir">
+              <ActionIcon
+                color="red"
+                onClick={() => openDeleteConfirmModal(row)}
+              >
+                <IconTrash />
+              </ActionIcon>
+            </Tooltip>
+          </Flex>
+        );
+      }
+      if (hideActions && hideActions(row, "delete")) {
+        return (
+          <Flex gap="md">
+            <Tooltip label="Editar">
+              <ActionIcon
+                onClick={() => {
+                  table.setEditingRow(row);
+                }}
+              >
+                <IconEdit />
+              </ActionIcon>
+            </Tooltip>
+          </Flex>
+        );
+      }
+      if (hideActions && hideActions(row, "both")) {
+        return null;
+      }
+
       return (
         <Flex gap="md">
           <Tooltip label="Salvar">

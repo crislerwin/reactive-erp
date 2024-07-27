@@ -2,6 +2,11 @@
     @apply bg-white dark:bg-gray-800;
 }
 
+.mantine-Modal-header {
+    @apply bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700;
+
+}
+
 .mantine-TextInput-input {
     @apply bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700;
 }
