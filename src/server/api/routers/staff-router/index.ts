@@ -68,6 +68,10 @@ export const staffRouter = createTRPCRouter({
       });
       if (!staffToUpdate)
         throw new TRPCError(ServerError.STAFF_MEMBER_NOT_FOUND);
+
+      if (staffToUpdate.role === "OWNER")
+        throw new TRPCError(ServerError.NOT_ALLOWED);
+
       return ctx.prisma.staff.update({
         where: {
           id: input.id,

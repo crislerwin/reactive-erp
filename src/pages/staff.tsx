@@ -187,9 +187,7 @@ function Staff({ role }: StaffPageProps) {
         columns={columns}
         data={staffMembers}
         hideActions={(row, action) => {
-          if (action === "delete") {
-            return row.original.role === "OWNER";
-          }
+          if (action === "both") return row.original.role === "OWNER";
           return false;
         }}
         creationSchema={createStaffMemberSchema}
@@ -198,7 +196,7 @@ function Staff({ role }: StaffPageProps) {
         deleteModalProps={(row) => ({
           title: "Deletar colaborador",
           labels: { confirm: "Deletar", cancel: "Cancelar" },
-          children: `Vocé tem certeza que quer deletar o colaborador ${
+          children: `Deseja mesmo deletar o colaborador ${
             row.original.first_name
           } ${row.original.last_name ?? ""}`,
         })}

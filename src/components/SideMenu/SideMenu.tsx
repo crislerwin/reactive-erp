@@ -22,11 +22,11 @@ import { PackageSearch, PersonStandingIcon, StoreIcon } from "lucide-react";
 import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
 
 type SideMenuProps = PropsWithChildren & {
-  role: string;
+  role?: string;
   branch?: string;
 };
 
-export function SideMenu({ children, role }: SideMenuProps) {
+export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
   const { user } = useClerk();
   const { open, setOpen } = useSideMenu();
   const { signOut } = useClerk();
@@ -130,7 +130,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
           </CommandPalette.List>
         ))}
       </CommandPalette>
-      <div className="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 pl-8 dark:bg-gray-900 dark:text-slate-300">
+      <div className="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 pl-8 dark:bg-inherit dark:text-slate-300">
         <div className={open ? "ml-12 md:ml-60" : "ml-12"}>
           <span className="font-bold sm:text-sm lg:text-2xl">
             {pageNameMap[pathname] ?? ""}
@@ -156,13 +156,12 @@ export function SideMenu({ children, role }: SideMenuProps) {
                   />
                 </div>
               </Menu.Target>
-              <Menu.Dropdown className="dark:bg-gray-800  dark:hover:text-orange-400">
+              <Menu.Dropdown>
                 <Menu.Label>
                   {user?.emailAddresses?.[0]?.emailAddress ?? ""}
                 </Menu.Label>
 
                 <Menu.Item
-                  className="dark:text-slate-300 dark:hover:bg-gray-900"
                   onClick={() =>
                     signOut({
                       redirectUrl: "/sign-in",
@@ -243,7 +242,7 @@ export function SideMenu({ children, role }: SideMenuProps) {
       <div
         className={`content ${
           open ? "ml-12 md:ml-60" : "ml-12"
-        } h-screen px-2 pb-4 pt-28 duration-500 ease-in-out dark:bg-gray-900 md:px-5`}
+        } h-screen px-2 pb-4 pt-20 duration-500 ease-in-out md:px-5`}
       >
         {children}
       </div>
