@@ -41,11 +41,12 @@ interface TableProps<T extends Record<string, unknown>> {
   editModalLabel?: string;
   createModalLabel?: string;
   addButtonLabel?: string;
-  tableOptions?: Partial<MRT_TableOptions<T>>;
   isLoading?: boolean;
   error?: boolean;
   creationSchema?: ZodSchema;
   updateSchema?: ZodSchema;
+  tableHeight?: string;
+  skeletonHeight?: string;
   onCreatingRowSave?: MRT_TableOptions<T>["onCreatingRowSave"];
   onEditingRowSave?: MRT_TableOptions<T>["onEditingRowSave"];
   onCreatingRowCancel?: MRT_TableOptions<T>["onCreatingRowCancel"];
@@ -91,6 +92,8 @@ export function CrudTable<T extends Record<string, unknown>>({
   classNames = defaultClassNames,
   enableGrouping = true,
   hideActions,
+  skeletonHeight = "84vh",
+  tableHeight = "72vh",
 }: TableProps<T>) {
   const [validationErrors, setValidationErrors] = React.useState<
     Record<AcessorkeyType, string | undefined>
@@ -166,7 +169,7 @@ export function CrudTable<T extends Record<string, unknown>>({
       : undefined,
     mantineTableContainerProps: {
       sx: {
-        maxHeight: "72vh",
+        height: tableHeight,
       },
     },
     renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
@@ -358,7 +361,7 @@ export function CrudTable<T extends Record<string, unknown>>({
   });
 
   return (
-    <Skeleton height="80vh" radius="xl" visible={isLoading}>
+    <Skeleton height={skeletonHeight} radius="xl" visible={isLoading}>
       {!isLoading && <MantineReactTable table={table} />}
     </Skeleton>
   );

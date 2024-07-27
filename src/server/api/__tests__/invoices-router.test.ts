@@ -265,4 +265,43 @@ describe("Invoices Router", () => {
       expect(updatedInvoice.status).toBe("pending");
     });
   });
+  describe("Delete invoice", () => {
+    test("should delete invoice successfully", async () => {
+      const { app, branch, productCategory } = await makeSut();
+      const customer = await app.customer.create({
+        email: faker.internet.email(),
+        first_name: faker.name.firstName(),
+        customer_code: 1,
+      });
+      const staff = await app.staff.createStaffMember({
+        email: faker.internet.email(),
+        branch_id: branch.branch_id,
+        first_name: faker.name.firstName(),
+        role: "EMPLOYEE",
+      });
+
+      const product = await app.product.create({
+        name: faker.commerce.productName(),
+        price: 10,
+        stock: 10,
+        product_category_id: productCategory.id,
+      });
+
+      const invoicePayload: z.infer<typeof createInvoiceSchema> = {
+        customer_id: customer.customer_id,
+        staff_id: staff.id,
+        expires_at: faker.date.future().toISOString(),
+        items: [
+          {
+            product_id: product.product_id,
+            quantity: 1,
+          },
+        ],
+      };
+      const createdInvoice = await app.invoice.create(invoicePayload);
+      await app.invoice.delete({ id: createdInvoice.id });
+      const invoices = await app.invoice.getAll();
+      expect(invoices).toHaveLength(0);
+    });
+  });
 });

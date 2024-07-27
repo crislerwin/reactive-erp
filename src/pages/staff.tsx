@@ -198,7 +198,7 @@ function Staff({ role }: StaffPageProps) {
         deleteModalProps={(row) => ({
           title: "Deletar colaborador",
           labels: { confirm: "Deletar", cancel: "Cancelar" },
-          children: `Vocé tem certeza que quer deletar o colaborador ${
+          children: `Deseja mesmo deletar o colaborador ${
             row.original.first_name
           } ${row.original.last_name ?? ""}`,
         })}

@@ -6,7 +6,6 @@ import {
 } from "@/common/schemas";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { get } from "http";
 import { z } from "zod";
 
 const superUserRoles = ["OWNER", "ADMIN", "MANAGER"];
@@ -122,6 +121,20 @@ export const invoicesRouter = createTRPCRouter({
           staff_id: input.staff_id,
           total_items,
           total_price,
+        },
+      });
+    }),
+  delete: protectedProcedure
+    .meta({ method: "DELETE", path: "/invoice/:id" })
+    .input(z.object({ id: customNumberValidator }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.session.staffMember)
+        throw new TRPCError(ServerError.NOT_ALLOWED);
+      if (!superUserRoles.includes(ctx.session.staffMember.role))
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      return ctx.prisma.invoice.delete({
+        where: {
+          id: input.id,
         },
       });
     }),
