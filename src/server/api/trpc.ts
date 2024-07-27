@@ -5,13 +5,14 @@ import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { type Staff, type PrismaClient } from "@prisma/client";
-import { getServerAuthSession, type LoggedUser } from "./auth";
+import { getServerAuthSession } from "./auth";
 import { type AppRouter } from "./root";
+import { type User } from "@clerk/nextjs/dist/types/server";
 
-type CreateContextOptions = {
+export type CreateContextOptions = {
   prisma?: PrismaClient;
   session: {
-    user: LoggedUser;
+    user: User | null;
     staffMember: Staff | null;
   };
 };
@@ -23,15 +24,25 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => ({
 
 export const createTRPCContext = async (ctx: CreateNextContextOptions) => {
   const user = await getServerAuthSession(ctx);
+  if (!user) {
+    return createInnerTRPCContext({
+      prisma,
+      session: { user: null, staffMember: null },
+    });
+  }
+  const [firstMail] = user.emailAddresses;
+
   const staffMember = await prisma.staff.findUnique({
     where: {
-      email: user.email,
+      email: firstMail?.emailAddress || "",
     },
     include: {
       branch: true,
     },
   });
+
   return createInnerTRPCContext({
+    prisma,
     session: { user, staffMember },
   });
 };

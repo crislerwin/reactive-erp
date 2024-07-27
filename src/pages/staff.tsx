@@ -6,9 +6,8 @@ import {
 import { SideMenu } from "@/components/SideMenu";
 import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
-import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
-import { Table } from "@/design-system/Table";
+import { CrudTable } from "@/design-system/Table";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   updateStaffMemberSchema,
@@ -18,7 +17,6 @@ import {
 import { updateQueryData } from "@/lib";
 import { managerRoles } from "@/common/constants";
 import { createTRPCContext } from "@/server/api/trpc";
-import { buttonVariant } from "@/design-system";
 
 type StaffPageProps = DefaultPageProps;
 
@@ -163,52 +161,49 @@ function Staff({ role }: StaffPageProps) {
     table.setEditingRow(null);
   };
 
-  const openDeleteConfirmModal = (row: MRT_Row<StaffType>) => {
-    modals.openConfirmModal({
-      title: "Deletar colaborador",
-      children: `Vocé tem certeza que quer deletar o colaborador ${
-        row.original.first_name
-      } ${row.original.last_name ?? ""}`,
-      labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: {
-        variant: "filled",
-        className: buttonVariant({ color: "danger" }),
-      },
-      cancelProps: {
-        variant: "outline",
-        className: buttonVariant(),
-      },
-      onConfirm: () =>
-        deleteStaffMember(
-          { id: Number(row.original.id) },
-          {
-            onSuccess: () => {
-              updateQueryData<StaffType[]>(
-                getQueryKey(trpc.staff.findAll, undefined, "query"),
-                (data) => {
-                  if (!data) return [];
-                  return data.filter((staff) => staff.id !== row.original.id);
-                }
-              );
-            },
-          }
-        ),
-    });
+  const handleDeleteStaff = (row: MRT_Row<StaffType>) => {
+    deleteStaffMember(
+      { id: Number(row.original.id) },
+      {
+        onSuccess: () => {
+          updateQueryData<StaffType[]>(
+            getQueryKey(trpc.staff.findAll, undefined, "query"),
+            (data) => {
+              if (!data) return [];
+              return data.filter((staff) => staff.id !== row.original.id);
+            }
+          );
+        },
+      }
+    );
   };
 
   return (
     <SideMenu role={role}>
-      <Table
+      <CrudTable
         addButtonLabel="Novo Colaborador"
         createModalLabel="Novo Colaborador"
         editModalLabel="Editar Colaborador"
         columns={columns}
         data={staffMembers}
+        hideActions={(row, action) => {
+          if (action === "delete") {
+            return row.original.role === "OWNER";
+          }
+          return false;
+        }}
         creationSchema={createStaffMemberSchema}
         updateSchema={updateStaffMemberSchema}
         onCreatingRowSave={handleCreateUser}
+        deleteModalProps={(row) => ({
+          title: "Deletar colaborador",
+          labels: { confirm: "Deletar", cancel: "Cancelar" },
+          children: `Vocé tem certeza que quer deletar o colaborador ${
+            row.original.first_name
+          } ${row.original.last_name ?? ""}`,
+        })}
         onEditingRowSave={handleSaveUser}
-        openDeleteConfirmModal={openDeleteConfirmModal}
+        onConfirmDelete={handleDeleteStaff}
         isLoading={isLoadingStaff}
         error={isGettingStaffError}
       />
