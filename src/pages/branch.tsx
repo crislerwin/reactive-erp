@@ -122,7 +122,6 @@ function BranchPage({ role, branch_id }: BranchPageProps) {
         addButtonLabel="Nova Filial"
         createModalLabel="Nova Filial"
         editModalLabel="Editar Filial"
-        branch_id={branch_id}
         isLoading={isLoadingBranches}
         onCreatingRowSave={handleCreateBranch}
         onEditingRowSave={handleSaveBranch}

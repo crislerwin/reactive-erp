@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import {
   type MRT_ColumnDef,
   type MRT_Row,
@@ -10,7 +9,6 @@ import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
 import { Table } from "@/design-system/Table";
-import { validateData } from "@/common/utils";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type DefaultPageProps } from "@/common/schemas";
 import {
@@ -160,6 +158,8 @@ export default function ProductCategoryPage({
         openDeleteConfirmModal={openDeleteConfirmModal}
         onCreatingRowSave={handleCreateProduct}
         onEditingRowSave={handleSaveProduct}
+        creationSchema={createProductCategorySchema}
+        updateSchema={updateProductCategorySchema}
         columns={columns}
         data={productCategories}
       />
