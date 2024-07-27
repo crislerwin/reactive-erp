@@ -181,6 +181,26 @@ describe("Staff member Router", () => {
       expect(result.first_name).toBe(memberToUpdate.first_name);
       expect(result.role).toBe(memberToUpdate.role);
     });
+    it("Should throw if try to update an OWNER", async () => {
+      const { app, branch } = await makeSut();
+      const staff = await prisma.staff.create({
+        data: {
+          branch_id: branch.branch_id,
+          email: faker.internet.email(),
+          first_name: faker.name.firstName(),
+          role: "OWNER",
+        },
+      });
+      const memberToUpdate: UpdateStaffMemberInput = {
+        branch_id: branch.branch_id,
+        id: staff.id,
+        active: true,
+        first_name: faker.name.firstName(),
+        role: "MANAGER",
+      };
+      const promise = app.staff.updateStaffMember(memberToUpdate);
+      await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
+    });
   });
   describe("Get staff member", () => {
     it("Should return staff member", async () => {
