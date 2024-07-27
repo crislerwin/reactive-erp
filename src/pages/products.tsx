@@ -4,11 +4,10 @@ import {
   type MRT_TableOptions,
 } from "mantine-react-table";
 import { type Product } from "@prisma/client";
-import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
-import { Table } from "@/design-system";
+import { CrudTable } from "@/design-system";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   createProductSchema,
@@ -147,49 +146,43 @@ export default function ProductsPage({ role }: ProductsPageProps) {
     });
   };
 
-  const openDeleteConfirmModal = (row: MRT_Row<Product>) => {
-    modals.openConfirmModal({
-      title: "Deletar Filial",
-      children: `Vocé tem certeza que quer excluir o produto ${row.original.name}?`,
-      labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: {
-        variant: "filled",
-        disabled: isDeletingProduct,
-      },
-      cancelProps: { variant: "outline" },
-      onConfirm: () => {
-        deleteProduct(
-          { product_id: row.original.product_id },
-          {
-            onSuccess: () => {
-              updateQueryData<Product[]>(
-                getQueryKey(trpc.product.findAll, undefined, "query"),
-                (oldData) => {
-                  if (!oldData) return [];
-                  return oldData.filter(
-                    (data) => data.product_id !== row.original.product_id
-                  );
-                }
+  const handleDeleteProduct = (row: MRT_Row<Product>) => {
+    deleteProduct(
+      { product_id: row.original.product_id },
+      {
+        onSuccess: () => {
+          updateQueryData<Product[]>(
+            getQueryKey(trpc.product.findAll, undefined, "query"),
+            (oldData) => {
+              if (!oldData) return [];
+              return oldData.filter(
+                (data) => data.product_id !== row.original.product_id
               );
-            },
-          }
-        );
-      },
-    });
+            }
+          );
+        },
+      }
+    );
   };
 
   return (
     <SideMenu role={role}>
-      <Table
+      <CrudTable
         addButtonLabel="Novo Produto"
         createModalLabel="Novo Produto"
         editModalLabel="Editar Produto"
+        deleteModalProps={(row) => ({
+          loading: isDeletingProduct,
+          title: "Deletar Produto",
+          children: `Vocé tem certeza que quer excluir o produto ${row.original.name}?`,
+          labels: { confirm: "Deletar", cancel: "Cancelar" },
+        })}
         isLoading={isLoadingProducts}
         onCreatingRowSave={handleCreateProduct}
         onEditingRowSave={handleSaveProduct}
         creationSchema={createProductSchema}
         updateSchema={updateProductSchema}
-        openDeleteConfirmModal={openDeleteConfirmModal}
+        onConfirmDelete={handleDeleteProduct}
         columns={columns}
         data={products}
       />

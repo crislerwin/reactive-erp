@@ -4,12 +4,10 @@ import {
   type MRT_TableOptions,
 } from "mantine-react-table";
 import { type Branch } from "@prisma/client";
-
-import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
-import { buttonVariant, Table } from "@/design-system";
+import { CrudTable } from "@/design-system";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
   createBranchSchema,
@@ -82,43 +80,28 @@ function BranchPage({ role }: BranchPageProps) {
     });
   };
 
-  const openDeleteConfirmModal = (row: MRT_Row<Branch>) => {
-    modals.openConfirmModal({
-      title: "Deletar Filial",
-      children: `Vocé tem certeza que quer excluir a filial ${row.original.name}? Essa ação não pode ser desfeita.`,
-      labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: {
-        variant: "filled",
-        className: buttonVariant({ color: "danger" }),
-      },
-      cancelProps: {
-        variant: "outline",
-        className: buttonVariant(),
-      },
-      onConfirm: () => {
-        deleteBranch(
-          { branch_id: row.original.branch_id },
-          {
-            onSuccess: () => {
-              updateQueryData<Branch[]>(
-                getQueryKey(trpc.branch.findAll, undefined, "query"),
-                (oldData) => {
-                  if (!oldData) return [];
-                  return oldData.filter(
-                    (branch) => branch.branch_id !== row.original.branch_id
-                  );
-                }
+  const handleDeleteBranch = (row: MRT_Row<Branch>) => {
+    deleteBranch(
+      { branch_id: row.original.branch_id },
+      {
+        onSuccess: () => {
+          updateQueryData<Branch[]>(
+            getQueryKey(trpc.branch.findAll, undefined, "query"),
+            (oldData) => {
+              if (!oldData) return [];
+              return oldData.filter(
+                (branch) => branch.branch_id !== row.original.branch_id
               );
-            },
-          }
-        );
-      },
-    });
+            }
+          );
+        },
+      }
+    );
   };
 
   return (
     <SideMenu role={role}>
-      <Table
+      <CrudTable
         addButtonLabel="Nova Filial"
         createModalLabel="Nova Filial"
         editModalLabel="Editar Filial"
@@ -127,7 +110,12 @@ function BranchPage({ role }: BranchPageProps) {
         onEditingRowSave={handleSaveBranch}
         creationSchema={createBranchSchema}
         updateSchema={updateBranchSchema}
-        openDeleteConfirmModal={openDeleteConfirmModal}
+        deleteModalProps={(row) => ({
+          title: "Deletar Filial",
+          children: `Vocé tem certeza que quer excluir a filial ${row.original.name}? Essa ação não pode ser desfeita.`,
+          labels: { confirm: "Deletar", cancel: "Cancelar" },
+        })}
+        onConfirmDelete={handleDeleteBranch}
         columns={columns}
         data={branches}
       />

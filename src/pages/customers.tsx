@@ -12,8 +12,7 @@ import {
 import { createCustomerSchema, updateCustomerSchema } from "../common/schemas";
 import { updateQueryData } from "../lib";
 import { getQueryKey } from "@trpc/react-query";
-import { modals } from "@mantine/modals";
-import { buttonVariant, Table } from "../design-system";
+import { CrudTable } from "@/design-system";
 
 export default function Customers({ role }: { role: string }) {
   const { data: customers = [], isLoading: isLoadingProducts } =
@@ -105,52 +104,42 @@ export default function Customers({ role }: { role: string }) {
       });
     };
 
-  const openDeleteConfirmModal = (row: MRT_Row<Customer>) => {
-    modals.openConfirmModal({
-      title: "Deletar Cliente",
-      children: `Vocé tem certeza que quer excluir o cliente ${row.original.first_name}?`,
-      labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: {
-        variant: "filled",
-        disabled: isDeletingCustomer,
-        className: buttonVariant({ color: "danger" }),
-      },
-      cancelProps: {
-        variant: "outline",
-        className: buttonVariant(),
-      },
-      onConfirm: () => {
-        deleteCustomer(
-          { customer_id: row.original.customer_id },
-          {
-            onSuccess: () => {
-              updateQueryData<Customer[]>(
-                getQueryKey(trpc.customer.findAll, undefined, "query"),
-                (oldData) => {
-                  if (!oldData) return [];
-                  return oldData.filter(
-                    (data) => data.customer_id !== row.original.customer_id
-                  );
-                }
+  const handleDeleteCustomer = (row: MRT_Row<Customer>) => {
+    deleteCustomer(
+      { customer_id: row.original.customer_id },
+      {
+        onSuccess: () => {
+          updateQueryData<Customer[]>(
+            getQueryKey(trpc.customer.findAll, undefined, "query"),
+            (oldData) => {
+              if (!oldData) return [];
+              return oldData.filter(
+                (data) => data.customer_id !== row.original.customer_id
               );
-            },
-          }
-        );
-      },
-    });
+            }
+          );
+        },
+      }
+    );
   };
 
   return (
     <SideMenu role={role}>
-      <Table
+      <CrudTable
         addButtonLabel="Novo Cliente"
         createModalLabel="Novo Cliente"
         editModalLabel="Editar Cliente"
         isLoading={isLoadingProducts}
+        deleteModalProps={(row) => ({
+          loading: isDeletingCustomer,
+          title: "Deletar Cliente",
+          children: `Vocé tem certeza que quer excluir o cliente ${row.original.first_name}?`,
+          labels: { confirm: "Deletar", cancel: "Cancelar" },
+        })}
         onCreatingRowSave={handleCreateCustomer}
         creationSchema={createCustomerSchema}
         updateSchema={updateCustomerSchema}
-        openDeleteConfirmModal={openDeleteConfirmModal}
+        onConfirmDelete={handleDeleteCustomer}
         onEditingRowSave={handleUpdateCustomer}
         columns={columns}
         data={customers}

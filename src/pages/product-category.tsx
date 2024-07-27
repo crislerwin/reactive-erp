@@ -4,11 +4,10 @@ import {
   type MRT_TableOptions,
 } from "mantine-react-table";
 import { type ProductCategory } from "@prisma/client";
-import { modals } from "@mantine/modals";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
 import { SideMenu } from "@/components/SideMenu";
-import { Table } from "@/design-system/Table";
+import { CrudTable } from "@/design-system/Table";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type DefaultPageProps } from "@/common/schemas";
 import {
@@ -18,7 +17,6 @@ import {
 import { updateQueryData } from "@/lib";
 import { managerRoles } from "@/common/constants";
 import { createTRPCContext } from "@/server/api/trpc";
-import { buttonVariant } from "@/design-system";
 
 type ProductCategoryPageProps = DefaultPageProps;
 
@@ -114,50 +112,40 @@ export default function ProductCategoryPage({
       });
     };
 
-  const openDeleteConfirmModal = (row: MRT_Row<ProductCategory>) => {
-    modals.openConfirmModal({
-      title: "Deletar Filial",
-      children: `Vocé tem certeza que quer excluir o produto ${row.original.name}?`,
-      labels: { confirm: "Deletar", cancel: "Cancelar" },
-      confirmProps: {
-        variant: "filled",
-        disabled: isDeletingProductCategory,
-        className: buttonVariant({ color: "danger" }),
-      },
-      cancelProps: {
-        variant: "outline",
-        className: buttonVariant(),
-      },
-      onConfirm: () => {
-        deleteProductCategory(
-          { id: row.original.id },
-          {
-            onSuccess: () => {
-              updateQueryData<ProductCategory[]>(
-                getQueryKey(trpc.productCategory.findAll, undefined, "query"),
-                (oldData) => {
-                  if (!oldData) return [];
-                  return oldData.filter(
-                    (productCategory) => productCategory.id !== row.original.id
-                  );
-                }
+  const handleDeleteProductCategory = (row: MRT_Row<ProductCategory>) => {
+    deleteProductCategory(
+      { id: row.original.id },
+      {
+        onSuccess: () => {
+          updateQueryData<ProductCategory[]>(
+            getQueryKey(trpc.productCategory.findAll, undefined, "query"),
+            (oldData) => {
+              if (!oldData) return [];
+              return oldData.filter(
+                (productCategory) => productCategory.id !== row.original.id
               );
-            },
-          }
-        );
-      },
-    });
+            }
+          );
+        },
+      }
+    );
   };
   return (
     <SideMenu role={role}>
-      <Table
+      <CrudTable
         addButtonLabel="Nova Categoria"
         createModalLabel="Nova Categoria"
         editModalLabel="Editar Categoria"
         isLoading={isLoadingProductCategory}
-        openDeleteConfirmModal={openDeleteConfirmModal}
+        onConfirmDelete={handleDeleteProductCategory}
         onCreatingRowSave={handleCreateProduct}
         onEditingRowSave={handleSaveProduct}
+        deleteModalProps={(row) => ({
+          loading: isDeletingProductCategory,
+          title: "Deletar Filial",
+          children: `Vocé tem certeza que quer excluir o produto ${row.original.name}?`,
+          labels: { confirm: "Deletar", cancel: "Cancelar" },
+        })}
         creationSchema={createProductCategorySchema}
         updateSchema={updateProductCategorySchema}
         columns={columns}

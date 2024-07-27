@@ -16,9 +16,10 @@ import {
 } from "@mantine/core";
 import { IconEdit, IconTrash, IconNews } from "@tabler/icons-react";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
-import { Button } from "../Button";
+import { Button, buttonVariant } from "../Button";
 import { type ZodSchema } from "zod";
 import { validateData } from "@/common/utils";
+import { modals } from "@mantine/modals";
 
 const defaultClassNames = {
   mantineTableBodyCellProps:
@@ -49,7 +50,16 @@ interface TableProps<T extends Record<string, unknown>> {
   onEditingRowSave?: MRT_TableOptions<T>["onEditingRowSave"];
   onCreatingRowCancel?: MRT_TableOptions<T>["onCreatingRowCancel"];
   onEditingRowCancel?: MRT_TableOptions<T>["onEditingRowCancel"];
-  openDeleteConfirmModal: (row: MRT_Row<T>) => void;
+  deleteModalProps?(row: MRT_Row<T>): {
+    title: string;
+    children: string | React.ReactNode;
+    loading?: boolean;
+    labels: {
+      confirm: string;
+      cancel: string;
+    };
+  };
+  onConfirmDelete: (row: MRT_Row<T>) => void;
   enableEditing?: boolean;
   hideActions?: (
     row: MRT_Row<T>,
@@ -61,7 +71,7 @@ interface TableProps<T extends Record<string, unknown>> {
 
 export type AcessorkeyType = string | number;
 
-export function Table<T extends Record<string, unknown>>({
+export function CrudTable<T extends Record<string, unknown>>({
   data,
   columns,
   isLoading = false,
@@ -72,11 +82,12 @@ export function Table<T extends Record<string, unknown>>({
   addButtonLabel = "Novo",
   onCreatingRowSave,
   onEditingRowSave,
+  deleteModalProps,
   onCreatingRowCancel,
   onEditingRowCancel,
   creationSchema,
   updateSchema,
-  openDeleteConfirmModal,
+  onConfirmDelete: openDeleteConfirmModal,
   classNames = defaultClassNames,
   enableGrouping = true,
   hideActions,
@@ -252,13 +263,33 @@ export function Table<T extends Record<string, unknown>>({
       </Stack>
     ),
     renderRowActions: ({ row, table }) => {
+      const props = deleteModalProps?.(row);
+      const handleDelete = () => {
+        modals.openConfirmModal({
+          title: props?.title,
+          labels: props?.labels,
+          children: props?.children,
+          confirmProps: {
+            variant: "filled",
+            className: buttonVariant({ color: "danger" }),
+          },
+          cancelProps: {
+            variant: "outline",
+            className: buttonVariant(),
+          },
+          onConfirm: () => {
+            openDeleteConfirmModal(row);
+          },
+        });
+      };
       if (hideActions && hideActions(row, "edit")) {
         return (
           <Flex gap="md">
             <Tooltip label="Excluir">
               <ActionIcon
                 color="red"
-                onClick={() => openDeleteConfirmModal(row)}
+                disabled={props?.loading}
+                onClick={handleDelete}
               >
                 <IconTrash />
               </ActionIcon>
@@ -298,7 +329,7 @@ export function Table<T extends Record<string, unknown>>({
           </Tooltip>
 
           <Tooltip label="Excluir">
-            <ActionIcon color="red" onClick={() => openDeleteConfirmModal(row)}>
+            <ActionIcon color="red" onClick={handleDelete}>
               <IconTrash />
             </ActionIcon>
           </Tooltip>
