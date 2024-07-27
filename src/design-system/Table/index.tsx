@@ -20,6 +20,20 @@ import { Button } from "../Button";
 import { type ZodSchema } from "zod";
 import { validateData } from "@/common/utils";
 
+const defaultClassNames = {
+  mantineTableBodyCellProps:
+    "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
+  mantinePaperProps: "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
+  mantineBottomToolbarProps:
+    "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
+  mantineTableHeadCellProps:
+    "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
+  mantineTopToolbarProps:
+    "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
+  mantinePaginationProps:
+    "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
+};
+
 interface TableProps<T extends Record<string, unknown>> {
   data: T[];
   columns: MRT_TableOptions<T>["columns"];
@@ -29,7 +43,6 @@ interface TableProps<T extends Record<string, unknown>> {
   tableOptions?: Partial<MRT_TableOptions<T>>;
   isLoading?: boolean;
   error?: boolean;
-  branch_id?: number;
   creationSchema?: ZodSchema;
   updateSchema?: ZodSchema;
   onCreatingRowSave?: MRT_TableOptions<T>["onCreatingRowSave"];
@@ -38,7 +51,8 @@ interface TableProps<T extends Record<string, unknown>> {
   onEditingRowCancel?: MRT_TableOptions<T>["onEditingRowCancel"];
   openDeleteConfirmModal: (row: MRT_Row<T>) => void;
   enableEditing?: boolean;
-  className?: string;
+  classNames?: Record<keyof typeof defaultClassNames, string>;
+  enableGrouping?: boolean;
 }
 
 export type AcessorkeyType = string | number;
@@ -46,9 +60,7 @@ export type AcessorkeyType = string | number;
 export function Table<T extends Record<string, unknown>>({
   data,
   columns,
-  tableOptions,
   isLoading = false,
-  branch_id,
   error = false,
   enableEditing = true,
   editModalLabel = "Editar",
@@ -61,7 +73,8 @@ export function Table<T extends Record<string, unknown>>({
   creationSchema,
   updateSchema,
   openDeleteConfirmModal,
-  className = "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
+  classNames = defaultClassNames,
+  enableGrouping = true,
 }: TableProps<T>) {
   const [validationErrors, setValidationErrors] = React.useState<
     Record<AcessorkeyType, string | undefined>
@@ -98,6 +111,7 @@ export function Table<T extends Record<string, unknown>>({
   const table = useMantineReactTable({
     columns: tableColumns,
     data,
+    enableGrouping,
     localization: MRT_Localization_PT_BR,
     createDisplayMode: "modal",
     editDisplayMode: "modal",
@@ -108,22 +122,22 @@ export function Table<T extends Record<string, unknown>>({
       withBorder: true,
     },
     mantineTableBodyCellProps: {
-      className,
+      className: classNames.mantineTableBodyCellProps,
     },
     mantinePaperProps: {
-      className,
+      className: classNames.mantinePaperProps,
     },
     mantineBottomToolbarProps: {
-      className,
+      className: classNames.mantineBottomToolbarProps,
     },
     mantineTableHeadCellProps: {
-      className,
+      className: classNames.mantineTableHeadCellProps,
     },
     mantineTopToolbarProps: {
-      className,
+      className: classNames.mantineTopToolbarProps,
     },
     mantinePaginationProps: {
-      className,
+      className: classNames.mantinePaginationProps,
     },
 
     getRowId: ({ id }) => String(id),
@@ -232,10 +246,6 @@ export function Table<T extends Record<string, unknown>>({
       </Stack>
     ),
     renderRowActions: ({ row, table }) => {
-      const isOwner = row.original?.role && row.original.role === "OWNER";
-      const isSameBranch =
-        row.original?.branch_id && row.original.branch_id === branch_id;
-      const isNotAllowedToDelete = isOwner || isSameBranch;
       return (
         <Flex gap="md">
           <Tooltip label="Salvar">
@@ -247,16 +257,12 @@ export function Table<T extends Record<string, unknown>>({
               <IconEdit />
             </ActionIcon>
           </Tooltip>
-          {isNotAllowedToDelete ? null : (
-            <Tooltip label="Excluir">
-              <ActionIcon
-                color="red"
-                onClick={() => openDeleteConfirmModal(row)}
-              >
-                <IconTrash />
-              </ActionIcon>
-            </Tooltip>
-          )}
+
+          <Tooltip label="Excluir">
+            <ActionIcon color="red" onClick={() => openDeleteConfirmModal(row)}>
+              <IconTrash />
+            </ActionIcon>
+          </Tooltip>
         </Flex>
       );
     },
@@ -278,9 +284,7 @@ export function Table<T extends Record<string, unknown>>({
       isSaving: isLoading,
       showAlertBanner: error,
       showProgressBars: isLoading,
-      ...tableOptions?.state,
     },
-    ...tableOptions,
   });
 
   return (
