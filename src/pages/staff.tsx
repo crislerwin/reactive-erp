@@ -187,9 +187,7 @@ function Staff({ role }: StaffPageProps) {
         columns={columns}
         data={staffMembers}
         hideActions={(row, action) => {
-          if (action === "delete") {
-            return row.original.role === "OWNER";
-          }
+          if (action === "both") return row.original.role === "OWNER";
           return false;
         }}
         creationSchema={createStaffMemberSchema}
