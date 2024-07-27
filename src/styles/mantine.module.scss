@@ -11,6 +11,18 @@
     @apply bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700;
 }
 
+.mantine-Select-dropdown {
+    @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md;
+}
+
+.mantine-Menu-dropdown {
+    @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700;
+}
+
+.mantine-Select-input {
+    @apply bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700;
+}
+
 .mantine-Skeleton-visible {
     ::before {
         @apply bg-white dark:bg-gray-900;
