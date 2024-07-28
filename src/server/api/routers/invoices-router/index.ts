@@ -2,6 +2,7 @@ import { ServerError } from "@/common/errors";
 import {
   createInvoiceSchema,
   customNumberValidator,
+  InvoiceItem,
   updateInvoiceSchema,
 } from "@/common/schemas";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -59,11 +60,13 @@ export const invoicesRouter = createTRPCRouter({
         throw new TRPCError(ServerError.NOT_ALLOWED);
       if (!superUserRoles.includes(ctx.session.staffMember.role))
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      return ctx.prisma.invoice.findMany({
+      const invoices = await ctx.prisma.invoice.findMany({
         where: {
           branch_id: ctx.session.staffMember.branch_id,
         },
       });
+
+      return invoices;
     }),
   getOne: protectedProcedure
     .meta({ method: "GET", path: "/invoice/:id" })
@@ -73,11 +76,12 @@ export const invoicesRouter = createTRPCRouter({
         throw new TRPCError(ServerError.NOT_ALLOWED);
       if (!superUserRoles.includes(ctx.session.staffMember.role))
         throw new TRPCError({ code: "UNAUTHORIZED" });
-      return ctx.prisma.invoice.findUnique({
+      const invoice = await ctx.prisma.invoice.findUnique({
         where: {
           id: input.id,
         },
       });
+      return { ...invoice, items: invoice?.items ?? ([] as InvoiceItem[]) };
     }),
   update: protectedProcedure
     .meta({ method: "PUT", path: "/invoice/:id" })

@@ -11,6 +11,7 @@ import {
   IconHome,
   IconUsersGroup,
   IconCategory,
+  IconMoneybag,
 } from "@tabler/icons-react";
 
 import CommandPalette, {
@@ -205,7 +206,7 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
           items={[
             {
               icon: <IconHome className="h-4 w-4" />,
-              label: "Pagina Inicial",
+              label: "Painel de Controle",
               href: PageRoute.HOME,
             },
             {
@@ -234,6 +235,11 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
               icon: <IconCategory className="h-4 w-4" />,
               label: "Categoria de Produtos",
               href: PageRoute.PRODUCT_CATEGORY,
+            },
+            {
+              icon: <IconMoneybag className="h-4 w-4" />,
+              label: "Pedidos",
+              href: PageRoute.INVOICES,
             },
           ]}
           open={open}
