@@ -15,7 +15,7 @@ export const pageNameMap: Record<PageRoute, string> = {
   [PageRoute.PRODUCTS]: "Produtos",
   [PageRoute.PRODUCT_CATEGORY]: "Categorias de Produtos",
   [PageRoute.CUSTOMERS]: "Clientes",
-  [PageRoute.INVOICES]: "Pedidos",
+  [PageRoute.INVOICES]: "Faturas",
 };
 
 export const managerRoles = ["OWNER", "ADMIN", "MANAGER"];

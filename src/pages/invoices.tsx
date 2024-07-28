@@ -28,7 +28,6 @@ type InvoicesFormFields = {
   expires_at: string | undefined;
   status: string;
   total_items: number;
-  total_price: number;
   items: InvoiceItem[];
 };
 
@@ -153,28 +152,49 @@ const CreateInvoiceModalContent: CrudTableProps<InvoicesFormFields>["CustomCreat
             }))}
           />
           <Input.TextField label="Expira em" type="date" name="expires_at" />
-          <Input.Select
-            label="Status"
-            name="status"
-            data={[
-              {
-                value: "draft",
-                label: "Rascunho",
-              },
-              {
-                value: "pending",
-                label: "Aguardando Pagamento",
-              },
-              {
-                value: "paid",
-                label: "Pago",
-              },
-              {
-                value: "canceled",
-                label: "Cancelado",
-              },
-            ]}
-          />
+          <Grid>
+            <Grid.Col span={6}>
+              <Input.Select
+                label="Status"
+                name="status"
+                data={[
+                  {
+                    value: "draft",
+                    label: "Rascunho",
+                  },
+                  {
+                    value: "pending",
+                    label: "Aguardando Pagamento",
+                  },
+                  {
+                    value: "paid",
+                    label: "Pago",
+                  },
+                  {
+                    value: "canceled",
+                    label: "Cancelado",
+                  },
+                ]}
+              />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Input.Select
+                label="Tipo"
+                name="type"
+                data={[
+                  {
+                    value: "sale",
+                    label: "Venda",
+                  },
+                  {
+                    value: "purchase",
+                    label: "Compra",
+                  },
+                ]}
+              />
+            </Grid.Col>
+          </Grid>
+          <Title order={5}>Produtos</Title>
           <ProductForm />
           <Flex justify="flex-end">
             <Flex className="w-44" justify="space-around">
@@ -200,8 +220,9 @@ const CreateInvoiceModalContent: CrudTableProps<InvoicesFormFields>["CustomCreat
   };
 
 export default function InvoicesPage({ role }: { role: string }) {
-  const { data: products = [], isLoading: isLoadingProducts } =
+  const { data: invoices = [], isLoading: isLoadingInvoices } =
     trpc.invoice.getAll.useQuery();
+  const { data: products = [] } = trpc.product.findAll.useQuery();
   const { mutate: createInvoice } = trpc.invoice.create.useMutation();
   const { mutate: updateInvoice } = trpc.invoice.update.useMutation();
   const { mutate: deleteInvoice, isLoading: isDeletingProduct } =
@@ -251,9 +272,20 @@ export default function InvoicesPage({ role }: { role: string }) {
       accessorKey: "total_price",
       header: "Valor Total",
       Cell: ({ row }: { row: MRT_Row<InvoicesFormFields> }) => {
+        const productMap = new Map(
+          products.map((product) => [product.product_id, product])
+        );
+        const invoiceItems = (invoices.find(
+          (invoice) => invoice.id === row.original.id
+        )?.items || []) as InvoiceItem[];
+        const total_price = invoiceItems.reduce((acc, item) => {
+          const product = productMap.get(item.product_id);
+          if (!product) return acc;
+          return acc + product.price * item.quantity;
+        }, 0);
         return (
           <span>
-            {row.original.total_price.toLocaleString("pt-BR", {
+            {total_price.toLocaleString("pt-BR", {
               style: "currency",
               currency: "BRL",
             })}
@@ -357,7 +389,7 @@ export default function InvoicesPage({ role }: { role: string }) {
           children: `Vocé tem certeza que quer excluír a fatura ${row.original.id}?`,
           labels: { confirm: "Deletar", cancel: "Cancelar" },
         })}
-        isLoading={isLoadingProducts}
+        isLoading={isLoadingInvoices}
         onCreatingRowSave={handleCreateInvoice}
         onEditingRowSave={handleSaveInvoice}
         creationSchema={createInvoiceSchema}
@@ -365,14 +397,13 @@ export default function InvoicesPage({ role }: { role: string }) {
         onConfirmDelete={handleDeleteInvoice}
         columns={columns}
         CustomCreateRowModalContent={CreateInvoiceModalContent}
-        data={products.map((product) => ({
+        data={invoices.map((product) => ({
           customer_id: product.customer_id,
           staff_id: product.staff_id,
           id: product.id,
           expires_at: product.expires_at.toISOString().split("T")[0],
           status: product.status || "",
           total_items: product.total_items,
-          total_price: product.total_price,
           items: product.items as InvoiceItem[],
         }))}
       />

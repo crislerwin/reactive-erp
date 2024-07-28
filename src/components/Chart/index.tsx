@@ -18,42 +18,43 @@ import React from "react";
 
 export const description = "An interactive bar chart";
 
-const chartData: { date: string; desktop: number; mobile: number }[] = [
-  { date: "2024-04-01", desktop: 222, mobile: 150 },
-  { date: "2024-04-02", desktop: 97, mobile: 180 },
-  { date: "2024-04-03", desktop: 167, mobile: 120 },
-  { date: "2024-04-04", desktop: 242, mobile: 260 },
-  { date: "2024-04-05", desktop: 373, mobile: 290 },
-  { date: "2024-04-06", desktop: 301, mobile: 340 },
-  { date: "2024-04-07", desktop: 245, mobile: 180 },
-  { date: "2024-04-08", desktop: 409, mobile: 320 },
-  { date: "2024-04-09", desktop: 59, mobile: 110 },
-  { date: "2024-04-10", desktop: 261, mobile: 190 },
-  { date: "2024-04-11", desktop: 327, mobile: 350 },
-  { date: "2024-04-12", desktop: 292, mobile: 210 },
-  { date: "2024-04-13", desktop: 342, mobile: 380 },
-  { date: "2024-04-14", desktop: 137, mobile: 220 },
-  { date: "2024-04-15", desktop: 120, mobile: 170 },
-  { date: "2024-04-16", desktop: 138, mobile: 190 },
-  { date: "2024-04-17", desktop: 446, mobile: 360 },
-  { date: "2024-04-18", desktop: 364, mobile: 410 },
-  { date: "2024-04-19", desktop: 243, mobile: 180 },
+const chartData: {
+  date: string;
+  purchase: number;
+  sale: number;
+  customers: number;
+}[] = [
+  { date: "2024-04-01", purchase: 222, sale: 150, customers: 100 },
+  { date: "2024-04-02", purchase: 97, sale: 180, customers: 100 },
+  { date: "2024-04-03", purchase: 167, sale: 120, customers: 2 },
+  { date: "2024-04-04", purchase: 242, sale: 260, customers: 100 },
+  { date: "2024-04-05", purchase: 373, sale: 290, customers: 100 },
+  { date: "2024-04-06", purchase: 301, sale: 340, customers: 100 },
+  { date: "2024-04-07", purchase: 245, sale: 180, customers: 100 },
+  { date: "2024-04-08", purchase: 409, sale: 320, customers: 100 },
+  { date: "2024-04-09", purchase: 59, sale: 110, customers: 100 },
+  { date: "2024-04-10", purchase: 261, sale: 190, customers: 100 },
 ];
 
 const chartConfig = {
-  views: {
-    label: "Vendas",
-  },
-  desktop: {
-    label: "Faturadas",
+  purchase: {
+    label: "Compras",
     color: "hsl(var(--chart-1))",
     theme: {
       light: "hsl(var(--chart-1))",
       dark: "hsl(var(--chart-1))",
     },
   },
-  mobile: {
-    label: "Recebidas",
+  sale: {
+    label: "Vendas",
+    color: "hsl(var(--chart-2))",
+    theme: {
+      light: "hsl(var(--chart-2))",
+      dark: "hsl(var(--chart-2))",
+    },
+  },
+  customers: {
+    label: "Clientes",
     color: "hsl(var(--chart-2))",
     theme: {
       light: "hsl(var(--chart-2))",
@@ -64,12 +65,13 @@ const chartConfig = {
 
 export default function ChartComponent() {
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>("desktop");
+    React.useState<keyof typeof chartConfig>("purchase");
 
   const total = React.useMemo(
     () => ({
-      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
-      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
+      purchase: chartData.reduce((acc, curr) => acc + curr.purchase, 0),
+      sale: chartData.reduce((acc, curr) => acc + curr.sale, 0),
+      customers: chartData.reduce((acc, curr) => acc + curr.customers, 0),
     }),
     []
   );
@@ -78,11 +80,13 @@ export default function ChartComponent() {
     <Card>
       <CardHeader className=" flex flex-col items-stretch space-y-0 border-b p-0  dark:border-gray-600 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Vendas - Trimestre</CardTitle>
-          <CardDescription>Total de vendas dos últimos 3 meses</CardDescription>
+          <CardTitle>Desempenho de vendas</CardTitle>
+          <CardDescription>
+            Visualize o desempenho de vendas e clientes
+          </CardDescription>
         </div>
         <div className="flex">
-          {["desktop", "mobile"].map((key) => {
+          {Object.keys(chartConfig).map((key) => {
             const chart = key as keyof typeof chartConfig;
             return (
               <button

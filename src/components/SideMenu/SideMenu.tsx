@@ -53,6 +53,30 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
         ],
       },
       {
+        heading: "Clientes",
+        id: PageRoute.CUSTOMERS,
+        items: [
+          {
+            id: "customers",
+            children: "Clientes",
+            icon: "IconUsers",
+            href: PageRoute.CUSTOMERS,
+          },
+        ],
+      },
+      {
+        heading: "Faturas",
+        id: PageRoute.INVOICES,
+        items: [
+          {
+            id: "invoices",
+            children: "Faturas",
+            icon: "IconMoneybag",
+            href: PageRoute.INVOICES,
+          },
+        ],
+      },
+      {
         heading: "Equipes",
         id: PageRoute.STAFF,
         items: [
@@ -215,6 +239,11 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
               href: PageRoute.CUSTOMERS,
             },
             {
+              icon: <IconMoneybag className="h-4 w-4" />,
+              label: "Faturas",
+              href: PageRoute.INVOICES,
+            },
+            {
               icon: <IconUsersGroup className="h-4 w-4" />,
               label: "Equipe",
               href: PageRoute.STAFF,
@@ -235,11 +264,6 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
               icon: <IconCategory className="h-4 w-4" />,
               label: "Categoria de Produtos",
               href: PageRoute.PRODUCT_CATEGORY,
-            },
-            {
-              icon: <IconMoneybag className="h-4 w-4" />,
-              label: "Pedidos",
-              href: PageRoute.INVOICES,
             },
           ]}
           open={open}
