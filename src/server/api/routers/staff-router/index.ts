@@ -12,7 +12,7 @@ const allowedRoles = ["ADMIN", "MANAGER"];
 
 export const staffRouter = createTRPCRouter({
   findAll: protectedProcedure
-    .meta({ method: "GET", path: "/staff" })
+    .meta({ method: "GET", path: "/report" })
     .query(async ({ ctx }) => {
       if (!ctx.session.staffMember)
         throw new TRPCError(ServerError.NOT_ALLOWED);

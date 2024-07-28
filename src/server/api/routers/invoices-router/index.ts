@@ -47,11 +47,7 @@ export const invoicesRouter = createTRPCRouter({
       if (!superUserRoles.includes(ctx.session.staffMember.role))
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      const invoices = await ctx.prisma.invoice.findMany({
-        where: {
-          branch_id: ctx.session.staffMember.branch_id,
-        },
-      });
+      const invoices = await ctx.prisma.invoice.findMany();
 
       return invoices;
     }),
