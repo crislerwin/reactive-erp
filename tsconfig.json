@@ -18,6 +18,7 @@
     "incremental": true,
     "noUncheckedIndexedAccess": true,
     "baseUrl": "src",
+    "typeRoots": ["./node_modules/@types", "prisma/types.ts"],
     "paths": {
       "@/*": ["*"]
     },
@@ -37,7 +38,8 @@
     "**/*.config.ts",
     "**/*.spec.ts",
     ".next/types/**/*.ts",
-    "src/server/api/__tests__/invoices-router.test"
+    "src/server/api/__tests__/invoices-router.test",
+    "prisma/types.dts"
   ],
   "exclude": ["node_modules"]
 }

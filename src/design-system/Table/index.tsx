@@ -1,9 +1,10 @@
-import React, { useMemo } from "react";
+import React, { type ReactNode, useMemo } from "react";
 import {
   useMantineReactTable,
   type MRT_TableOptions,
   type MRT_Row,
   type MRT_ColumnDef,
+  type MRT_TableInstance,
 } from "mantine-react-table";
 import { MantineReactTable } from "mantine-react-table";
 import {
@@ -17,7 +18,7 @@ import {
 import { IconEdit, IconTrash, IconNews } from "@tabler/icons-react";
 import { MRT_Localization_PT_BR } from "mantine-react-table/locales/pt-BR";
 import { Button, buttonVariant } from "../Button";
-import { type ZodSchema } from "zod";
+import { type z, type ZodSchema } from "zod";
 import { validateData } from "@/common/utils";
 import { modals } from "@mantine/modals";
 
@@ -35,7 +36,7 @@ const defaultClassNames = {
     "dark:bg-gray-800 dark:text-white text-black bg-slate-10",
 };
 
-interface TableProps<T extends Record<string, unknown>> {
+export interface CrudTableProps<T extends Record<string, unknown>> {
   data: T[];
   columns: MRT_TableOptions<T>["columns"];
   editModalLabel?: string;
@@ -47,8 +48,18 @@ interface TableProps<T extends Record<string, unknown>> {
   updateSchema?: ZodSchema;
   tableHeight?: string;
   skeletonHeight?: string;
-  onCreatingRowSave?: MRT_TableOptions<T>["onCreatingRowSave"];
-  onEditingRowSave?: MRT_TableOptions<T>["onEditingRowSave"];
+  onCreatingRowSave?: (props: {
+    exitCreatingMode: () => void;
+    row: MRT_Row<T>;
+    table: MRT_TableInstance<T>;
+    values: z.infer<ZodSchema>;
+  }) => void;
+  onEditingRowSave?: (props: {
+    exitEditingMode: () => void;
+    row: MRT_Row<T>;
+    table: MRT_TableInstance<T>;
+    values: z.infer<ZodSchema>;
+  }) => Promise<void> | void;
   onCreatingRowCancel?: MRT_TableOptions<T>["onCreatingRowCancel"];
   onEditingRowCancel?: MRT_TableOptions<T>["onEditingRowCancel"];
   deleteModalProps?(row: MRT_Row<T>): {
@@ -61,6 +72,17 @@ interface TableProps<T extends Record<string, unknown>> {
     };
   };
   onConfirmDelete: (row: MRT_Row<T>) => void;
+  CustomCreateRowModalContent?: (props: {
+    row: MRT_Row<T>;
+    table: MRT_TableInstance<T>;
+    data: T[];
+    onSave?: (props: {
+      exitOnSave: () => void;
+      row: MRT_Row<T>;
+      table: MRT_TableInstance<T>;
+      values: Record<string, unknown>;
+    }) => void;
+  }) => ReactNode;
   enableEditing?: boolean;
   hideActions?: (
     row: MRT_Row<T>,
@@ -93,8 +115,9 @@ export function CrudTable<T extends Record<string, unknown>>({
   enableGrouping = true,
   hideActions,
   skeletonHeight = "84vh",
-  tableHeight = "72vh",
-}: TableProps<T>) {
+  tableHeight = "70vh",
+  CustomCreateRowModalContent,
+}: CrudTableProps<T>) {
   const [validationErrors, setValidationErrors] = React.useState<
     Record<AcessorkeyType, string | undefined>
   >({});
@@ -172,99 +195,132 @@ export function CrudTable<T extends Record<string, unknown>>({
         height: tableHeight,
       },
     },
-    renderCreateRowModalContent: ({ table, row, internalEditComponents }) => (
-      <Stack p={2}>
-        <Title order={4}>{createModalLabel}</Title>
-        {internalEditComponents}
-        <Flex justify="flex-end">
-          <Flex className="w-44" justify="space-around">
-            <Button
-              color="danger"
-              onClick={() => {
-                setValidationErrors({});
-                onCreatingRowCancel?.({ row, table });
-                table.setCreatingRow(null);
-              }}
-              variant="outline"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={() => {
-                if (creationSchema) {
-                  const newValidationErrors = validateData(
-                    row._valuesCache,
-                    creationSchema
-                  );
-                  if (
-                    Object.values(newValidationErrors).some((error) => error)
-                  ) {
-                    setValidationErrors(newValidationErrors);
-                    return;
-                  }
-                }
-                onCreatingRowSave?.({
-                  exitCreatingMode: () => table.setCreatingRow(null),
-                  row,
-                  table,
-                  values: row._valuesCache,
-                });
-              }}
-              variant="outline"
-            >
-              Salvar
-            </Button>
-          </Flex>
-        </Flex>
-      </Stack>
-    ),
-    renderEditRowModalContent: ({ table, row, internalEditComponents }) => (
-      <Stack>
-        <Title order={3}>{editModalLabel}</Title>
-        {internalEditComponents}
+    renderCreateRowModalContent: ({ table, row, internalEditComponents }) => {
+      if (CustomCreateRowModalContent)
+        return CustomCreateRowModalContent({
+          table,
+          row,
+          data,
+          onSave: (props) => {
+            onCreatingRowSave?.({
+              exitCreatingMode: props.exitOnSave,
+              row,
+              table,
+              values: props.values,
+            });
+          },
+        });
 
-        <Flex justify="flex-end">
-          <Flex className="w-44" justify="space-around">
-            <Button
-              color="danger"
-              onClick={() => {
-                setValidationErrors({});
-                onEditingRowCancel?.({ row, table });
-                table.setEditingRow(null);
-              }}
-              variant="outline"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={async () => {
-                if (updateSchema) {
-                  const newValidationErrors = validateData(
-                    row._valuesCache,
-                    updateSchema
-                  );
-                  if (
-                    Object.values(newValidationErrors).some((error) => error)
-                  ) {
-                    setValidationErrors(newValidationErrors);
-                    return;
+      return (
+        <Stack p={2}>
+          <Title order={4}>{createModalLabel}</Title>
+          {internalEditComponents}
+          <Flex justify="flex-end">
+            <Flex className="w-44" justify="space-around">
+              <Button
+                color="danger"
+                onClick={() => {
+                  setValidationErrors({});
+                  onCreatingRowCancel?.({ row, table });
+                  table.setCreatingRow(null);
+                }}
+                variant="outline"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={() => {
+                  if (creationSchema) {
+                    const newValidationErrors = validateData(
+                      row._valuesCache,
+                      creationSchema
+                    );
+                    if (
+                      Object.values(newValidationErrors).some((error) => error)
+                    ) {
+                      setValidationErrors(newValidationErrors);
+                      return;
+                    }
                   }
-                }
-                await onEditingRowSave?.({
-                  exitEditingMode: () => table.setEditingRow(null),
-                  row,
-                  table,
-                  values: row?._valuesCache,
-                });
-              }}
-              variant="outline"
-            >
-              Salvar
-            </Button>
+                  onCreatingRowSave?.({
+                    exitCreatingMode: () => table.setCreatingRow(null),
+                    row,
+                    table,
+                    values: row._valuesCache,
+                  });
+                }}
+                variant="outline"
+              >
+                Salvar
+              </Button>
+            </Flex>
           </Flex>
-        </Flex>
-      </Stack>
-    ),
+        </Stack>
+      );
+    },
+    renderEditRowModalContent: ({ table, row, internalEditComponents }) => {
+      if (CustomCreateRowModalContent)
+        return CustomCreateRowModalContent({
+          table,
+          row,
+          data,
+          onSave: async (props) => {
+            await onEditingRowSave?.({
+              exitEditingMode: props.exitOnSave,
+              row,
+              table,
+              values: props.values,
+            });
+          },
+        });
+      return (
+        <Stack>
+          <Title order={3}>{editModalLabel}</Title>
+          {internalEditComponents}
+
+          <Flex justify="flex-end">
+            <Flex className="w-44" justify="space-around">
+              <Button
+                color="danger"
+                onClick={() => {
+                  setValidationErrors({});
+                  onEditingRowCancel?.({ row, table });
+                  table.setEditingRow(null);
+                }}
+                variant="outline"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={async () => {
+                  if (updateSchema) {
+                    const newValidationErrors = validateData(
+                      row._valuesCache,
+                      updateSchema
+                    );
+                    if (
+                      Object.values(newValidationErrors).some((error) => error)
+                    ) {
+                      setValidationErrors(newValidationErrors);
+                      return;
+                    }
+                  }
+                  await onEditingRowSave?.({
+                    exitEditingMode: () => table.setEditingRow(null),
+                    row,
+                    table,
+                    values: row?._valuesCache,
+                  });
+                }}
+                variant="outline"
+              >
+                Salvar
+              </Button>
+            </Flex>
+          </Flex>
+        </Stack>
+      );
+    },
     renderRowActions: ({ row, table }) => {
       const props = deleteModalProps?.(row);
       const handleDelete = () => {

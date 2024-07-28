@@ -15,8 +15,15 @@ export const pageNameMap: Record<PageRoute, string> = {
   [PageRoute.PRODUCTS]: "Produtos",
   [PageRoute.PRODUCT_CATEGORY]: "Categorias de Produtos",
   [PageRoute.CUSTOMERS]: "Clientes",
-  [PageRoute.INVOICES]: "Faturas",
+  [PageRoute.INVOICES]: "Pedidos",
 };
 
 export const managerRoles = ["OWNER", "ADMIN", "MANAGER"];
 export const superUserRoles = ["ADMIN", "OWNER"];
+
+export const statusMap = {
+  pending: "Pendente",
+  paid: "Pago",
+  draft: "Rascunho",
+  canceled: "Cancelado",
+};
