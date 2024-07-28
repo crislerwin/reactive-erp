@@ -18,6 +18,7 @@ const invoiceItemSchema = z.object({
 export const createInvoiceSchema = z.object({
   staff_id: customNumberValidator,
   customer_id: customNumberValidator,
+  type: z.enum(["sale", "purchase"]),
   items: z.array(invoiceItemSchema),
   expires_at: customDateValidator,
   status: z.enum(["pending", "paid", "draft", "canceled"]).optional(),
@@ -26,6 +27,7 @@ export const createInvoiceSchema = z.object({
 export const updateInvoiceSchema = z.object({
   id: customNumberValidator,
   staff_id: customNumberValidator.optional(),
+  type: z.enum(["sale", "purchase"]).optional(),
   customer_id: customNumberValidator.optional(),
   items: z.array(invoiceItemSchema),
   expires_at: customDateValidator.optional(),

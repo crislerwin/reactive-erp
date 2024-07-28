@@ -38,6 +38,8 @@ describe("Invoices Router", () => {
       const invoicePayload: z.infer<typeof createInvoiceSchema> = {
         customer_id: customer.customer_id,
         staff_id: staff.id,
+        type: "sale",
+        status: "draft",
         expires_at: faker.date.future().toISOString(),
         items: [
           {
@@ -76,6 +78,8 @@ describe("Invoices Router", () => {
         customer_id: customer.customer_id,
         staff_id: staff.id,
         expires_at: faker.date.future().toISOString(),
+        type: "sale",
+        status: "draft",
         items: [
           {
             product_id: product.product_id,
@@ -125,6 +129,8 @@ describe("Invoices Router", () => {
           customer_id: customer.customer_id,
           staff_id: staff.id,
           expires_at: faker.date.future().toISOString(),
+          type: "sale",
+          status: "draft",
           items: [
             {
               product_id: product1.product_id,
@@ -187,6 +193,7 @@ describe("Invoices Router", () => {
         const invoicePayload: z.infer<typeof createInvoiceSchema> = {
           customer_id: customer.customer_id,
           staff_id: staff.id,
+          type: "sale",
           expires_at: faker.date.future().toISOString(),
           items: [
             {
@@ -247,6 +254,8 @@ describe("Invoices Router", () => {
       const invoicePayload: z.infer<typeof createInvoiceSchema> = {
         customer_id: customer.customer_id,
         staff_id: staff.id,
+        type: "sale",
+        status: "draft",
         expires_at: faker.date.future().toISOString(),
         items: [
           {
@@ -289,6 +298,8 @@ describe("Invoices Router", () => {
       const invoicePayload: z.infer<typeof createInvoiceSchema> = {
         customer_id: customer.customer_id,
         staff_id: staff.id,
+        type: "sale",
+        status: "draft",
         expires_at: faker.date.future().toISOString(),
         items: [
           {

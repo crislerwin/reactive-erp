@@ -81,6 +81,7 @@ model Invoice {
   customer_id Int
   items       Json
   total_items Float
+  type        String?   @default("sale")
   status      String?   @default("draft")
   expires_at  DateTime
   created_at  DateTime  @default(now())

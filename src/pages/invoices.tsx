@@ -152,28 +152,49 @@ const CreateInvoiceModalContent: CrudTableProps<InvoicesFormFields>["CustomCreat
             }))}
           />
           <Input.TextField label="Expira em" type="date" name="expires_at" />
-          <Input.Select
-            label="Status"
-            name="status"
-            data={[
-              {
-                value: "draft",
-                label: "Rascunho",
-              },
-              {
-                value: "pending",
-                label: "Aguardando Pagamento",
-              },
-              {
-                value: "paid",
-                label: "Pago",
-              },
-              {
-                value: "canceled",
-                label: "Cancelado",
-              },
-            ]}
-          />
+          <Grid>
+            <Grid.Col span={6}>
+              <Input.Select
+                label="Status"
+                name="status"
+                data={[
+                  {
+                    value: "draft",
+                    label: "Rascunho",
+                  },
+                  {
+                    value: "pending",
+                    label: "Aguardando Pagamento",
+                  },
+                  {
+                    value: "paid",
+                    label: "Pago",
+                  },
+                  {
+                    value: "canceled",
+                    label: "Cancelado",
+                  },
+                ]}
+              />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Input.Select
+                label="Tipo"
+                name="type"
+                data={[
+                  {
+                    value: "sale",
+                    label: "Venda",
+                  },
+                  {
+                    value: "purchase",
+                    label: "Compra",
+                  },
+                ]}
+              />
+            </Grid.Col>
+          </Grid>
+          <Title order={5}>Produtos</Title>
           <ProductForm />
           <Flex justify="flex-end">
             <Flex className="w-44" justify="space-around">

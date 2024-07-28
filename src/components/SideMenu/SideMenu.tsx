@@ -65,12 +65,12 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
         ],
       },
       {
-        heading: "Pedidos",
+        heading: "Faturas",
         id: PageRoute.INVOICES,
         items: [
           {
             id: "invoices",
-            children: "Pedidos",
+            children: "Faturas",
             icon: "IconMoneybag",
             href: PageRoute.INVOICES,
           },
@@ -240,7 +240,7 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
             },
             {
               icon: <IconMoneybag className="h-4 w-4" />,
-              label: "Pedidos",
+              label: "Faturas",
               href: PageRoute.INVOICES,
             },
             {
