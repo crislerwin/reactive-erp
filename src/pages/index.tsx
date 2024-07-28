@@ -4,17 +4,34 @@ import dynamic from "next/dynamic";
 import { SideMenu } from "@/components/SideMenu";
 import { type DefaultPageProps } from "@/common/schemas";
 import { createTRPCContext } from "@/server/api/trpc";
+import { trpc } from "@/utils/api";
+import { Box, Skeleton } from "@mantine/core";
 
-const ChartComponent = dynamic(() => import("@/components/Chart"), {
+const AreaChartComponent = dynamic(
+  () => import("@/components/Charts/AreaChartComponent"),
+  {
+    ssr: false,
+  }
+);
+
+const ChartComponent = dynamic(() => import("@/components/Charts/Chart"), {
   ssr: false,
 });
 
 type HomeProps = DefaultPageProps;
 
 export default function Home({ role }: HomeProps) {
+  const { data: chartData = [], isLoading } = trpc.report.getReports.useQuery();
   return (
     <SideMenu role={role}>
-      <ChartComponent />
+      <Box mb={4}>
+        {isLoading ? (
+          <Skeleton height={300} />
+        ) : (
+          <ChartComponent data={chartData} />
+        )}
+      </Box>
+      {/* <AreaChartComponent /> */}
     </SideMenu>
   );
 }

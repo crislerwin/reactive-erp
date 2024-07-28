@@ -16,26 +16,6 @@ import {
 } from "@/components/ui/chart";
 import React from "react";
 
-export const description = "An interactive bar chart";
-
-const chartData: {
-  date: string;
-  purchase: number;
-  sale: number;
-  customers: number;
-}[] = [
-  { date: "2024-04-01", purchase: 222, sale: 150, customers: 100 },
-  { date: "2024-04-02", purchase: 97, sale: 180, customers: 100 },
-  { date: "2024-04-03", purchase: 167, sale: 120, customers: 2 },
-  { date: "2024-04-04", purchase: 242, sale: 260, customers: 100 },
-  { date: "2024-04-05", purchase: 373, sale: 290, customers: 100 },
-  { date: "2024-04-06", purchase: 301, sale: 340, customers: 100 },
-  { date: "2024-04-07", purchase: 245, sale: 180, customers: 100 },
-  { date: "2024-04-08", purchase: 409, sale: 320, customers: 100 },
-  { date: "2024-04-09", purchase: 59, sale: 110, customers: 100 },
-  { date: "2024-04-10", purchase: 261, sale: 190, customers: 100 },
-];
-
 const chartConfig = {
   purchase: {
     label: "Compras",
@@ -63,7 +43,16 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function ChartComponent() {
+export default function ChartComponent({
+  data: chartData,
+}: {
+  data: {
+    date: string;
+    purchase: number;
+    sale: number;
+    customers: number;
+  }[];
+}) {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>("purchase");
 
@@ -73,16 +62,16 @@ export default function ChartComponent() {
       sale: chartData.reduce((acc, curr) => acc + curr.sale, 0),
       customers: chartData.reduce((acc, curr) => acc + curr.customers, 0),
     }),
-    []
+    [chartData]
   );
 
   return (
     <Card>
       <CardHeader className=" flex flex-col items-stretch space-y-0 border-b p-0  dark:border-gray-600 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Desempenho de vendas</CardTitle>
+          <CardTitle>Total</CardTitle>
           <CardDescription>
-            Visualize o desempenho de vendas e clientes
+            Visualize o desempenho de compra, vendas e clientes
           </CardDescription>
         </div>
         <div className="flex">

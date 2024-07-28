@@ -30,7 +30,7 @@ export const customerRouter = createTRPCRouter({
       });
       if (!branch) throw new TRPCError(ServerError.BRANCH_NOT_FOUND);
       return ctx.prisma.customer.findMany({
-        where: { branch_id: staffMember.branch_id, deleted_at: null },
+        where: { deleted_at: null },
       });
     }),
   create: protectedProcedure
