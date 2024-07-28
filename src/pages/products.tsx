@@ -45,6 +45,16 @@ export default function ProductsPage({ role }: ProductsPageProps) {
     {
       accessorKey: "price",
       header: "Preço",
+      Cell(props) {
+        return (
+          <span>
+            {props.row.original.price.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </span>
+        );
+      },
       mantineEditTextInputProps: {
         type: "number",
         required: true,
