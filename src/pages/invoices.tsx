@@ -210,7 +210,7 @@ export default function InvoicesPage({ role }: { role: string }) {
   const columns = [
     {
       accessorKey: "id",
-      header: "Id da Fatura",
+      header: "ID",
       enableEditing: false,
       size: 30,
     },
