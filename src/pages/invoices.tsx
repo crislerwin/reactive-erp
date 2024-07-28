@@ -1,4 +1,4 @@
-import { managerRoles, statusMap } from "@/common/constants";
+import { managerRoles } from "@/common/constants";
 import {
   createInvoiceSchema,
   type InvoiceItem,
@@ -16,7 +16,7 @@ import { type Invoice } from "@prisma/client";
 import { getQueryKey } from "@trpc/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type MRT_Row } from "mantine-react-table";
+import { type MRT_ColumnDef, type MRT_Row } from "mantine-react-table";
 import { useFieldArray } from "react-hook-form";
 import { IconX } from "@tabler/icons-react";
 import { type z } from "zod";
@@ -69,14 +69,16 @@ const ProductForm = () => {
           </Grid.Col>
         </Grid>
       ))}
+
       <Button
+        className="w-full"
+        variant="outline"
         onClick={() =>
           insert(fields.length, {
             product_id: 0,
             quantity: 0,
           })
         }
-        variant="outline"
       >
         Adicionar Produto
       </Button>
@@ -207,7 +209,14 @@ export default function InvoicesPage({ role }: { role: string }) {
   const { data: customers = [] } = trpc.customer.findAll.useQuery();
   const { data: staffs = [] } = trpc.staff.findAll.useQuery();
 
-  const columns = [
+  const statusMap = {
+    pending: "Aguardando Pagamento",
+    paid: "Pago",
+    draft: "Rascunho",
+    canceled: "Cancelado",
+  };
+
+  const columns: MRT_ColumnDef<InvoicesFormFields>[] = [
     {
       accessorKey: "id",
       header: "ID",
@@ -223,10 +232,6 @@ export default function InvoicesPage({ role }: { role: string }) {
         );
         return <span>{customer?.first_name}</span>;
       },
-      mantineEditTextInputProps: {
-        type: "text",
-        required: true,
-      },
     },
     {
       accessorKey: "staff_id",
@@ -237,17 +242,10 @@ export default function InvoicesPage({ role }: { role: string }) {
         );
         return <span>{staff?.first_name}</span>;
       },
-      mantineEditTextInputProps: {
-        type: "text",
-        required: true,
-      },
     },
     {
       accessorKey: "total_items",
       header: "Quantidade",
-      mantineEditTextInputProps: {
-        type: "number",
-      },
     },
     {
       accessorKey: "total_price",
@@ -262,18 +260,12 @@ export default function InvoicesPage({ role }: { role: string }) {
           </span>
         );
       },
-      mantineEditTextInputProps: {
-        type: "number",
-      },
     },
     {
       accessorKey: "status",
       header: "Status",
       Cell: ({ row }: { row: MRT_Row<InvoicesFormFields> }) => {
         return <span>{statusMap[row.original.status]}</span>;
-      },
-      mantineEditTextInputProps: {
-        type: "text",
       },
     },
     {

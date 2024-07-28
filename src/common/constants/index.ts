@@ -20,10 +20,3 @@ export const pageNameMap: Record<PageRoute, string> = {
 
 export const managerRoles = ["OWNER", "ADMIN", "MANAGER"];
 export const superUserRoles = ["ADMIN", "OWNER"];
-
-export const statusMap = {
-  pending: "Pendente",
-  paid: "Pago",
-  draft: "Rascunho",
-  canceled: "Cancelado",
-};
