@@ -27,7 +27,7 @@ export default function Home({ role }: HomeProps) {
       <Box mb={4}>
         <ChartComponent data={chartData} />
       </Box>
-      <AreaChartComponent />
+      {/* <AreaChartComponent /> */}
     </SideMenu>
   );
 }

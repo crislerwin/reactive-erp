@@ -6,29 +6,37 @@ export const reportRouter = createTRPCRouter({
   getReports: protectedProcedure
     .meta({ method: "GET", path: "/report" })
     .query(async ({ ctx }) => {
-      if (!ctx.session.staffMember)
+      if (!ctx.session.staffMember) {
         throw new TRPCError(ServerError.NOT_ALLOWED);
+      }
 
       const invoices = await ctx.prisma.invoice.findMany();
       const customers = await ctx.prisma.customer.findMany();
 
-      const reportData = invoices.map((invoice) => {
-        const date = invoice.created_at.toISOString().split("T")[0] as string;
-        let invoiceCount = 0;
-        let purchaseCount = 0;
+      const aggregatedData = invoices.reduce((acc, invoice) => {
+        const date = invoice.created_at.toISOString().split("T")[0];
+        if (!date) return acc;
+        if (!acc[date]) {
+          acc[date] = { purchase: new Set(), sale: new Set() };
+        }
         if (invoice.type === "sale") {
-          invoiceCount += 1;
+          acc[date].sale.add(invoice.id);
         }
         if (invoice.type === "purchase") {
-          purchaseCount += 1;
+          acc[date].purchase.add(invoice.id);
         }
-        return {
+        return acc;
+      }, {} as Record<string, { purchase: Set<number>; sale: Set<number> }>);
+
+      // Convert aggregated data to the desired format
+      const reportData = Object.entries(aggregatedData).map(
+        ([date, counts]) => ({
           date,
-          purchase: purchaseCount,
-          sale: invoiceCount,
+          purchase: counts.purchase.size,
+          sale: counts.sale.size,
           customers: customers.length,
-        };
-      }, 0);
+        })
+      );
 
       return reportData;
     }),

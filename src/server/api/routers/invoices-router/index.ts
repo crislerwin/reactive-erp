@@ -2,7 +2,6 @@ import { ServerError } from "@/common/errors";
 import {
   createInvoiceSchema,
   customNumberValidator,
-  type InvoiceItem,
   updateInvoiceSchema,
 } from "@/common/schemas";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
@@ -18,8 +17,6 @@ export const invoicesRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session.staffMember)
         throw new TRPCError(ServerError.NOT_ALLOWED);
-      if (!superUserRoles.includes(ctx.session.staffMember.role))
-        throw new TRPCError({ code: "UNAUTHORIZED" });
 
       const total_items = input.items.reduce(
         (acc, item) => acc + item.quantity,
@@ -44,36 +41,25 @@ export const invoicesRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       if (!ctx.session.staffMember)
         throw new TRPCError(ServerError.NOT_ALLOWED);
-      if (!superUserRoles.includes(ctx.session.staffMember.role))
-        throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      const invoices = await ctx.prisma.invoice.findMany();
+      if (ctx.session.staffMember.role === "OWNER") {
+        return ctx.prisma.invoice.findMany();
+      }
 
-      return invoices;
-    }),
-  getOne: protectedProcedure
-    .meta({ method: "GET", path: "/invoice/:id" })
-    .input(z.object({ id: customNumberValidator }))
-    .query(async ({ ctx, input }) => {
-      if (!ctx.session.staffMember)
-        throw new TRPCError(ServerError.NOT_ALLOWED);
-      if (!superUserRoles.includes(ctx.session.staffMember.role))
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      const invoice = await ctx.prisma.invoice.findUnique({
+      return ctx.prisma.invoice.findMany({
         where: {
-          id: input.id,
+          branch_id: ctx.session.staffMember.branch_id,
         },
       });
-      return { ...invoice, items: invoice?.items ?? ([] as InvoiceItem[]) };
     }),
+
   update: protectedProcedure
     .meta({ method: "PUT", path: "/invoice/:id" })
     .input(updateInvoiceSchema)
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session.staffMember)
         throw new TRPCError(ServerError.NOT_ALLOWED);
-      if (!superUserRoles.includes(ctx.session.staffMember.role))
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+
       const total_items = input.items.reduce(
         (acc, item) => acc + item.quantity,
         0
