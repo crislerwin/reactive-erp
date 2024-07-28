@@ -24,7 +24,7 @@ export const reportRouter = createTRPCRouter({
         if (!acc[date]) {
           acc[date] = { purchase: new Set(), sale: new Set() };
         }
-        if (invoice.type === "sale") {
+        if (invoice.type === "sale" && invoice.status === "paid") {
           acc[date]?.sale.add(invoice.id);
         }
         if (invoice.type === "purchase") {
