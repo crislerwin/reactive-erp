@@ -256,7 +256,7 @@ describe("Staff member Router", () => {
       expect(createdStaff).toHaveProperty("first_name");
       expect(createdStaff?.deleted_at).toBeNull();
 
-      const result = await app.staff.softDeletedStaffMember({ id: staff.id });
+      const result = await app.staff.softDeleteStaff({ id: staff.id });
 
       expect(result).toBeDefined();
       expect(result).toHaveProperty("id");
@@ -281,7 +281,7 @@ describe("Staff member Router", () => {
     it("Should throw if staff member not found", async () => {
       const { app } = await makeSut();
       const id = faker.datatype.number();
-      const promise = app.staff.softDeletedStaffMember({ id });
+      const promise = app.staff.softDeleteStaff({ id });
       await expect(promise).rejects.toThrowError(
         ErrorType.STAFF_MEMBER_NOT_FOUND
       );
@@ -299,8 +299,10 @@ describe("Staff member Router", () => {
           active: false,
         },
       });
-      const promise = app.staff.softDeletedStaffMember({ id: staff.id });
-      await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
+      const promise = app.staff.softDeleteStaff({ id: staff.id });
+      await expect(promise).rejects.toThrowError(
+        ErrorType.STAFF_MEMBER_NOT_FOUND
+      );
     });
     it("Should throw if staff member is owner", async () => {
       const { branch } = await makeSut();
@@ -323,7 +325,7 @@ describe("Staff member Router", () => {
           role: "OWNER",
         },
       });
-      const promise = app.staff.softDeletedStaffMember({
+      const promise = app.staff.softDeleteStaff({
         id: anotherStaffOwner.id,
       });
       await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
@@ -350,7 +352,7 @@ describe("Staff member Router", () => {
           role: "ADMIN",
         },
       });
-      const promise = app.staff.softDeletedStaffMember({ id: staff.id });
+      const promise = app.staff.softDeleteStaff({ id: staff.id });
       await expect(promise).rejects.toThrowError(ErrorType.NOT_ALLOWED);
     });
   });

@@ -2,7 +2,7 @@ import { prisma } from "@/server/db";
 import { appRouter } from "../../root";
 import { createCaller } from "../../trpc";
 import { faker } from "@faker-js/faker";
-import { ProductCategory, type Branch, type Staff } from "@prisma/client";
+import { type Branch, type Staff } from "@prisma/client";
 import { type z } from "zod";
 import {
   type createStaffMemberSchema,
@@ -11,11 +11,12 @@ import {
 import { randomUUID } from "crypto";
 
 export const makeStaffRequest = (
-  branch_id: number
+  branch_id: number,
+  role?: "OWNER" | "ADMIN" | "EMPLOYEE"
 ): z.infer<typeof createStaffMemberSchema> => ({
   active: true,
   branch_id,
-  role: "ADMIN",
+  role: role || "OWNER",
   email: faker.internet.email(),
   last_name: faker.name.lastName(),
   first_name: faker.name.firstName(),
@@ -56,9 +57,9 @@ export const makeApp = async ({
     session: {
       user: {
         email: staff.email,
-        first_name: staff.first_name,
-        last_name: staff.last_name || "",
+        full_name: staff.first_name,
         user_id: randomUUID(),
+        image_url: faker.image.imageUrl(),
       },
       staffMember: staff,
     },

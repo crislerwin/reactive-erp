@@ -108,7 +108,7 @@ describe("Invoices Router", () => {
             branch_id: branch.branch_id,
             email: faker.internet.email(),
             first_name: faker.name.firstName(),
-            role: "ADMIN",
+            role: "ADMINd",
           },
         });
         const productCategory = await prisma.productCategory.create({

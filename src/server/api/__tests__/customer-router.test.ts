@@ -1,19 +1,44 @@
 import { prisma } from "@/server/db";
-import { makeApp, makeSut } from "./__mocks__";
+import {
+  createBranch,
+  createStaffMember,
+  makeApp,
+  makeStaffRequest,
+  makeSut,
+} from "./__mocks__";
 import { describe, it, expect } from "vitest";
 import { faker } from "@faker-js/faker";
-import { z } from "zod";
-import { createCustomerSchema } from "../../../common/schemas";
+import { type z } from "zod";
+import { type createCustomerSchema } from "../../../common/schemas";
 
 describe("Customer Router", () => {
   describe("List all routers", () => {
     it("should return empty if no customer is saved", async () => {
-      const { app } = await makeSut();
+      const branch = await createBranch();
+      const staff = await prisma.staff.create({
+        data: {
+          ...makeStaffRequest(branch.branch_id),
+          role: "EMPLOYEE",
+        },
+      });
+      const app = await makeApp({ branch_id: branch.branch_id, staff });
       const customers = await app.customer.findAll();
       expect(customers).toEqual([]);
     });
     it("should return saved customers", async () => {
-      const { app, branch } = await makeSut();
+      const branch = await prisma.branch.create({
+        data: {
+          name: faker.company.name(),
+        },
+      });
+
+      const staff = await prisma.staff.create({
+        data: {
+          ...makeStaffRequest(branch.branch_id),
+          role: "EMPLOYEE",
+        },
+      });
+      const app = await makeApp({ branch_id: branch.branch_id, staff });
       const customersData = Array.from({ length: 5 }, () => ({
         branch_id: branch.branch_id,
         customer_code: faker.datatype.number(),

@@ -85,12 +85,12 @@ export const staffRouter = createTRPCRouter({
         },
       });
     }),
-  softDeletedStaffMember: protectedProcedure
+  softDeleteStaff: protectedProcedure
     .meta({ openapi: { method: "DELETE", path: "/staff/:id" } })
     .input(z.object({ id: customNumberValidator }))
     .mutation(async ({ ctx, input }) => {
       const staffToDelete = await ctx.prisma.staff.findUnique({
-        where: { id: input.id },
+        where: { id: input.id, deleted_at: null },
       });
       if (!staffToDelete)
         throw new TRPCError(ServerError.STAFF_MEMBER_NOT_FOUND);

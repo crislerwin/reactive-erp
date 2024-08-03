@@ -13,7 +13,6 @@ export const reportRouter = createTRPCRouter({
       const invoices = await ctx.prisma.invoice.findMany();
       const customers = await ctx.prisma.customer.findMany();
 
-      // Aggregate invoices by date
       const aggregatedData = invoices.reduce((acc, invoice) => {
         const date = invoice.created_at
           ? invoice.created_at.toISOString().split("T")[0]
