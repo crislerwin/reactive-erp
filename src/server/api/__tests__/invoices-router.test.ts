@@ -100,7 +100,7 @@ describe("Invoices Router", () => {
       test("should get all invoices successfully", async () => {
         const branch = await prisma.branch.create({
           data: {
-            name: faker.company.companyName(),
+            name: faker.company.name(),
           },
         });
         const staff = await prisma.staff.create({
@@ -108,7 +108,7 @@ describe("Invoices Router", () => {
             branch_id: branch.branch_id,
             email: faker.internet.email(),
             first_name: faker.name.firstName(),
-            role: "ADMINd",
+            role: "ADMIN",
           },
         });
         const productCategory = await prisma.productCategory.create({
