@@ -8,50 +8,105 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Provider {
-  id              Int       @unique @default(autoincrement())
-  email           String    @unique
-  first_name      String
-  last_name       String
-  institution_ids Json?
-  bio             Json?
-  active          Boolean?  @default(true)
-  patients        Patient[]
-  created_at      DateTime  @default(now())
-  updated_at      DateTime? @updatedAt
-  deleted_at      DateTime?
+model Branch {
+  branch_id     Int        @id @default(autoincrement())
+  name          String
+  attributes    Json?
+  created_at    DateTime   @default(now())
+  updated_at    DateTime?  @updatedAt
+  deleted_at    DateTime?
+  products      Product[]
+  customer      Customer[]
+  staff_members Staff[]
 
+  @@index([branch_id])
+}
+
+model Staff {
+  id         Int       @id @default(autoincrement())
+  branch_id  Int
+  first_name String
+  last_name  String?
+  email      String    @unique
+  role       String
+  active     Boolean   @default(true)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  branch     Branch    @relation(fields: [branch_id], references: [branch_id])
+
+  @@index([branch_id])
   @@index([email])
 }
 
-model Institution {
-  institution_id  Int       @unique @default(autoincrement())
-  email           String
-  name            String
-  attributes      Json?
-  static_logo_url String?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime? @updatedAt
-  additional_info Json?
+model Product {
+  product_id          Int             @id @default(autoincrement())
+  branch_id           Int
+  name                String
+  description         String?
+  price               Float
+  stock               Int             @default(0)
+  colors              Json?
+  product_category_id Int
+  available           Boolean         @default(true)
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
+  deleted_at          DateTime?
+  product_category    ProductCategory @relation(fields: [product_category_id], references: [id])
+  branch              Branch          @relation(fields: [branch_id], references: [branch_id])
 
-  @@index([institution_id])
-  @@index([email])
+  @@index([branch_id])
+  @@index([product_category_id])
+  @@index([deleted_at])
 }
 
-model Patient {
-  id          Int       @unique @default(autoincrement())
-  email       String    @unique
-  first_name  String
-  last_name   String
-  bio         Json
-  is_guardian Boolean?
-  ward        Json?
+model ProductCategory {
+  id          Int       @id @default(autoincrement())
+  branch_id   Int
+  name        String
+  description String?
+  active      Boolean   @default(true)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime? @updatedAt
+  deleted_at  DateTime?
+  products    Product[]
+
+  @@index([branch_id])
+}
+
+model Invoice {
+  id          Int       @id @default(autoincrement())
+  branch_id   Int
+  staff_id    Int
+  customer_id Int
+  items       Json
+  total_items Float
+  type        String?   @default("sale")
+  status      String?   @default("draft")
+  expires_at  DateTime
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at  DateTime?
-  provider_id Int
-  provider    Provider  @relation(fields: [provider_id], references: [id])
+  customer    Customer  @relation(fields: [customer_id], references: [customer_id])
 
-  @@index([provider_id])
-  @@index([email])
+  @@index([branch_id])
+  @@index([staff_id])
+  @@index([customer_id])
+}
+
+model Customer {
+  customer_id   Int       @id @default(autoincrement())
+  branch_id     Int
+  customer_code Int
+  first_name    String
+  last_name     String?
+  email         String    @unique
+  phone         String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime? @updatedAt
+  deleted_at    DateTime?
+  orders        Invoice[]
+  branch        Branch    @relation(fields: [branch_id], references: [branch_id])
+
+  @@index([branch_id])
 }

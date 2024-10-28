@@ -1,6 +1,6 @@
 import type { Preview } from "@storybook/react";
 import { withThemeByDataAttribute } from "@storybook/addon-styling";
-import "../src/styles/globals.css";
+import "../src/styles/globals.scss";
 const preview: Preview = {
   parameters: {
     actions: { argTypesRegex: "^on[A-Z].*" },
@@ -11,6 +11,8 @@ const preview: Preview = {
       },
     },
   },
+
+  tags: ["autodocs"],
 };
 
 export const decorators = [
