@@ -8,7 +8,7 @@ const config = {
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
       ],
       files: ["*.ts", "*.tsx"],
-      excludedFiles: ["*.cjs", "*.config.*"],
+      excludedFiles: ["*.cjs", "*.config.js"],
       parserOptions: {
         project: path.join(__dirname, "tsconfig.json"),
       },
