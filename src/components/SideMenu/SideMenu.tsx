@@ -1,7 +1,7 @@
-import React, { type PropsWithChildren, useState } from "react";
+import React, { type PropsWithChildren, useEffect, useState } from "react";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/router";
-import { useSideMenu } from "./hooks";
+
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { Avatar, Menu } from "@mantine/core";
@@ -21,6 +21,7 @@ import CommandPalette, {
 } from "../SearchBar";
 import { PackageSearch, PersonStandingIcon, StoreIcon } from "lucide-react";
 import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
+import { parseCookies } from "nookies";
 
 type SideMenuProps = PropsWithChildren & {
   role?: string;
@@ -29,7 +30,7 @@ type SideMenuProps = PropsWithChildren & {
 
 export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
   const { user } = useClerk();
-  const { open, setOpen } = useSideMenu();
+  const [open, setOpen] = useState<boolean>(true);
   const { signOut } = useClerk();
   const [openSearch, setOpenSearch] = useState<boolean>(false);
   const router = useRouter();
@@ -38,17 +39,24 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
 
   useHandleOpenCommandPalette(setOpenSearch);
 
+  useEffect(() => {
+    const { sideBarPrefs } = parseCookies();
+    if (sideBarPrefs) {
+      setOpen(sideBarPrefs === "true");
+    }
+  }, []);
+
   const searchItems = filterItems(
     [
       {
         heading: "Home",
-        id: PageRoute.HOME,
+        id: PageRoute.DASHBOARD,
         items: [
           {
             id: "home",
             children: "Home",
             icon: "IconHome",
-            href: PageRoute.HOME,
+            href: PageRoute.DASHBOARD,
           },
         ],
       },
@@ -231,7 +239,7 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
             {
               icon: <IconHome className="h-4 w-4" />,
               label: "Painel de Controle",
-              href: PageRoute.HOME,
+              href: PageRoute.DASHBOARD,
             },
             {
               icon: <PersonStandingIcon className="h-4 w-4" />,

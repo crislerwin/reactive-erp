@@ -1,5 +1,5 @@
 export enum PageRoute {
-  HOME = "/",
+  DASHBOARD = "/dashboard",
   STAFF = "/staff",
   BRANCH = "/branch",
   PRODUCTS = "/products",
@@ -9,7 +9,7 @@ export enum PageRoute {
 }
 
 export const pageNameMap: Record<PageRoute, string> = {
-  [PageRoute.HOME]: "Visão Geral",
+  [PageRoute.DASHBOARD]: "Visão Geral",
   [PageRoute.STAFF]: "Equipes",
   [PageRoute.BRANCH]: "Filiais",
   [PageRoute.PRODUCTS]: "Produtos",
