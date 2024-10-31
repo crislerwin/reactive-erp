@@ -22,6 +22,15 @@ export const invoicesRouter = createTRPCRouter({
         (acc, item) => acc + item.quantity,
         0
       );
+      const product = await ctx.prisma.product.findMany({
+        where: {
+          product_id: {
+            in: input.items.map((item) => item.product_id),
+          },
+        },
+      });
+      if (product.length !== input.items.length)
+        throw new TRPCError(ServerError.PRODUCT_QUANTITY_MISMATCH);
 
       return ctx.prisma.invoice.create({
         data: {

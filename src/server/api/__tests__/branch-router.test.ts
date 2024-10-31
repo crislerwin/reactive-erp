@@ -4,7 +4,7 @@ import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 import { ErrorType } from "@/common/errors/customErrors";
 
-describe.concurrent("Branch router", () => {
+describe("Branch router", () => {
   describe("List all branches", () => {
     it("should return all branches", async () => {
       const { app } = await makeSut();

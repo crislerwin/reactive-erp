@@ -8,30 +8,42 @@ import {
 import { z } from "zod";
 import { ServerError } from "@/common/errors/customErrors";
 
-const allowedRoles = ["ADMIN", "MANAGER"];
+const allowedRoles = ["ADMIN", "EMPLOYEE", "OWNER"];
 
 export const staffRouter = createTRPCRouter({
   findAll: protectedProcedure
     .meta({ method: "GET", path: "/report" })
     .query(async ({ ctx }) => {
-      if (!ctx.session.staffMember)
-        throw new TRPCError(ServerError.NOT_ALLOWED);
-      if (ctx.session.staffMember.role === "OWNER")
-        return ctx.prisma.staff.findMany();
-
-      if (!allowedRoles.includes(ctx.session.staffMember.role))
-        throw new TRPCError(ServerError.NOT_ALLOWED);
+      const { staffMember } = ctx.session;
+      if (!staffMember) throw new TRPCError(ServerError.NOT_ALLOWED);
+      const { role, id, branch_id } = staffMember;
       const branch = await ctx.prisma.branch.findUnique({
-        where: { branch_id: ctx.session.staffMember.branch_id },
+        where: { branch_id },
       });
       if (!branch) throw new TRPCError(ServerError.BRANCH_NOT_FOUND);
-      return ctx.prisma.staff.findMany({
-        where: {
-          branch_id: ctx.session.staffMember.branch_id,
-          role: { in: allowedRoles },
-        },
-      });
+      switch (role) {
+        case "EMPLOYEE":
+          return ctx.prisma.staff.findMany({
+            where: { id },
+          });
+        case "ADMIN":
+          return ctx.prisma.staff.findMany({
+            where: { branch_id },
+          });
+        case "OWNER":
+          return ctx.prisma.staff.findMany();
+        default:
+          if (!allowedRoles.includes(role))
+            throw new TRPCError(ServerError.NOT_ALLOWED);
+          return ctx.prisma.staff.findMany({
+            where: {
+              branch_id,
+              role: { in: allowedRoles },
+            },
+          });
+      }
     }),
+
   createStaffMember: protectedProcedure
     .meta({ openapi: { method: "POST", path: "/staff" } })
     .input(createStaffMemberSchema)
@@ -114,7 +126,7 @@ export const staffRouter = createTRPCRouter({
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const staffMember = await ctx.prisma.staff.findUnique({
-        where: { id: input.id, active: true },
+        where: { id: input.id, active: true, deleted_at: null },
       });
       if (!staffMember) throw new TRPCError(ServerError.STAFF_MEMBER_NOT_FOUND);
       return staffMember;

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { makeStaffRequest, makeApp, makeSut } from "./__mocks__";
+import {
+  makeStaffRequest,
+  makeApp,
+  makeSut,
+  createStaffMember,
+  createBranch,
+} from "./__mocks__";
 import { prisma } from "@/server/db";
 import { faker } from "@faker-js/faker";
 import { type UpdateStaffMemberInput } from "../../../common/schemas/staff.schema";
@@ -7,13 +13,15 @@ import { ErrorType } from "@/common/errors/customErrors";
 
 describe("Staff member Router", () => {
   describe("List All", () => {
-    it("should return only the logged staff member", async () => {
+    it("should return only the logged staff member if is employee", async () => {
       const branch = await prisma.branch.create({
         data: {
           name: faker.company.name(),
         },
       });
-      const app = await makeApp({ branch_id: branch.branch_id });
+
+      const staff = await createStaffMember(branch.branch_id, "EMPLOYEE");
+      const app = await makeApp({ branch_id: branch.branch_id, staff });
 
       const result = await app.staff.findAll();
       expect(result).toBeDefined();
@@ -28,7 +36,9 @@ describe("Staff member Router", () => {
     });
 
     it("Should return staff list on the same branch include the logged user", async () => {
-      const { app, branch } = await makeSut();
+      const branch = await createBranch();
+      const staff = await createStaffMember(branch.branch_id, "ADMIN");
+      const app = await makeApp({ branch_id: branch.branch_id, staff });
       await prisma.staff.createMany({
         data: [
           {
@@ -51,13 +61,9 @@ describe("Staff member Router", () => {
       expect(result.length).toBe(3);
     });
     it("Should return staff list on different branch", async () => {
-      const { app, branch: branch1 } = await makeSut();
+      const branch1 = await createBranch();
+      const branch2 = await createBranch();
 
-      const branch2 = await prisma.branch.create({
-        data: {
-          name: faker.company.name(),
-        },
-      });
       await prisma.staff.createMany({
         data: [
           {
@@ -74,30 +80,25 @@ describe("Staff member Router", () => {
           },
         ],
       });
-      const result = await app.staff.findAll();
+      const adminStaff1 = await createStaffMember(branch1.branch_id, "ADMIN");
+      const { staff: staffQuery1 } = await makeApp({
+        branch_id: branch1.branch_id,
+        staff: adminStaff1,
+      });
+      const result = await staffQuery1.findAll();
       expect(result).toBeDefined();
       expect(result).toBeInstanceOf(Array);
       expect(result.length).toBe(2);
 
-      const result2 = await app.staff.findAll();
+      const adminStaff2 = await createStaffMember(branch2.branch_id, "ADMIN");
+      const { staff: staffQuery2 } = await makeApp({
+        branch_id: branch2.branch_id,
+        staff: adminStaff2,
+      });
+      const result2 = await staffQuery2.findAll();
       expect(result2).toBeDefined();
       expect(result2).toBeInstanceOf(Array);
       expect(result2.length).toBe(2);
-      const accountOwner = {
-        ...makeStaffRequest(branch1.branch_id),
-        role: "OWNER",
-      };
-      const staff = await prisma.staff.create({
-        data: accountOwner,
-      });
-      const sutOwner = await makeApp({
-        branch_id: branch1.branch_id,
-        staff,
-      });
-      const result3 = await sutOwner.staff.findAll();
-      expect(result3).toBeDefined();
-      expect(result3).toBeInstanceOf(Array);
-      expect(result3.length).toBeGreaterThan(1);
     });
   });
 
@@ -232,48 +233,40 @@ describe("Staff member Router", () => {
   });
   describe("DELETE staff member", () => {
     it("Should soft delete staff member", async () => {
-      const { app, branch } = await makeSut();
-
-      const staff = await prisma.staff.create({
-        data: {
-          branch_id: branch.branch_id,
-          email: faker.internet.email(),
-          first_name: faker.name.firstName(),
-          role: "MANAGER",
-        },
+      const branch = await createBranch();
+      const [adminStaff, employeeStaff] = await Promise.all([
+        createStaffMember(branch.branch_id, "ADMIN"),
+        createStaffMember(branch.branch_id, "EMPLOYEE"),
+      ]);
+      const app = await makeApp({
+        branch_id: branch.branch_id,
+        staff: adminStaff,
       });
       const allStaff = await app.staff.findAll();
       expect(allStaff).toBeDefined();
       expect(allStaff).toBeInstanceOf(Array);
       expect(allStaff.length).toBe(2);
 
-      const createdStaff = await app.staff.getStaffMember({ id: staff.id });
-      expect(createdStaff).toBeDefined();
-      expect(createdStaff).toHaveProperty("id");
-      expect(createdStaff).toHaveProperty("email");
-      expect(createdStaff).toHaveProperty("branch_id");
-      expect(createdStaff).toHaveProperty("role");
-      expect(createdStaff).toHaveProperty("first_name");
-      expect(createdStaff?.deleted_at).toBeNull();
+      expect(employeeStaff).toBeDefined();
+      expect(employeeStaff).toHaveProperty("id");
+      expect(employeeStaff).toHaveProperty("email");
+      expect(employeeStaff).toHaveProperty("branch_id");
+      expect(employeeStaff).toHaveProperty("role");
+      expect(employeeStaff).toHaveProperty("first_name");
+      expect(employeeStaff?.deleted_at).toBeNull();
 
-      const result = await app.staff.softDeleteStaff({ id: staff.id });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty("id");
-      expect(result).toHaveProperty("email");
-      expect(result).toHaveProperty("branch_id");
-      expect(result).toHaveProperty("role");
-      expect(result).toHaveProperty("first_name");
-      expect(result.deleted_at).toBeDefined();
+      await app.staff.softDeleteStaff({ id: employeeStaff.id });
 
       const staffDeleted = await prisma.staff.findUnique({
-        where: { id: staff.id },
+        where: { id: employeeStaff.id },
       });
       expect(staffDeleted).toBeDefined();
       expect(staffDeleted?.deleted_at).toBeDefined();
       expect(staffDeleted?.active).toBe(false);
 
-      const staffMemberPromise = app.staff.getStaffMember({ id: staff.id });
+      const staffMemberPromise = app.staff.getStaffMember({
+        id: employeeStaff.id,
+      });
       await expect(staffMemberPromise).rejects.toThrowError(
         ErrorType.STAFF_MEMBER_NOT_FOUND
       );

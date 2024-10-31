@@ -1,10 +1,11 @@
 import { type z } from "zod";
 import { type createInvoiceSchema } from "@/common/schemas";
-
 import { describe, expect, test } from "vitest";
-import { makeApp, makeSut } from "./__mocks__";
+import { createBranch, createStaffMember, makeApp, makeSut } from "./__mocks__";
 import { faker } from "@faker-js/faker";
 import { prisma } from "../../db";
+import { ErrorType } from "@/common/errors";
+
 describe("Invoices Router", () => {
   describe("Invoices creation", () => {
     test("Should create a invoice", async () => {
@@ -55,7 +56,7 @@ describe("Invoices Router", () => {
       const response = await app.invoice.create(invoicePayload);
       expect(response.total_items).toBe(3);
     });
-    test.skip("should throw if try to create with invalid products", async () => {
+    test("should throw if try to create invoice with invalid products", async () => {
       const { app, productCategory, branch } = await makeSut();
       const customer = await app.customer.create({
         email: faker.internet.email(),
@@ -92,7 +93,9 @@ describe("Invoices Router", () => {
         ],
       };
       const response = app.invoice.create(invoicePayload);
-      await expect(response).rejects.toThrow();
+      await expect(response).rejects.toThrowError(
+        ErrorType.PRODUCT_QUANTITY_MISMATCH
+      );
     });
   });
   describe("GET invoices", () => {
@@ -223,17 +226,26 @@ describe("Invoices Router", () => {
   });
   describe("Delete invoice", () => {
     test("should delete invoice successfully", async () => {
-      const { app, branch, productCategory } = await makeSut();
+      const branch = await createBranch();
+      const [adminStaff, employeeStaff] = await Promise.all([
+        createStaffMember(branch.branch_id, "ADMIN"),
+        createStaffMember(branch.branch_id, "EMPLOYEE"),
+      ]);
+      const app = await makeApp({
+        branch_id: branch.branch_id,
+        staff: adminStaff,
+      });
+
+      const productCategory = await prisma.productCategory.create({
+        data: {
+          name: faker.commerce.department(),
+          branch_id: branch.branch_id,
+        },
+      });
       const customer = await app.customer.create({
         email: faker.internet.email(),
         first_name: faker.name.firstName(),
         customer_code: 1,
-      });
-      const staff = await app.staff.createStaffMember({
-        email: faker.internet.email(),
-        branch_id: branch.branch_id,
-        first_name: faker.name.firstName(),
-        role: "EMPLOYEE",
       });
 
       const product = await app.product.create({
@@ -245,7 +257,7 @@ describe("Invoices Router", () => {
 
       const invoicePayload: z.infer<typeof createInvoiceSchema> = {
         customer_id: customer.customer_id,
-        staff_id: staff.id,
+        staff_id: employeeStaff.id,
         type: "sale",
         status: "draft",
         expires_at: faker.date.future().toISOString(),
