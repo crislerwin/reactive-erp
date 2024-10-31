@@ -20,17 +20,18 @@ export const customerRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       if (!ctx.session.staffMember)
         throw new TRPCError(ServerError.NOT_ALLOWED);
-      validateRole(ctx.session.staffMember.role);
-      const { staffMember } = ctx.session;
-      const branch = await ctx.prisma.branch.findUnique({
-        where: {
-          branch_id: staffMember.branch_id,
-        },
-        include: { staff_members: true },
+      const branch = await ctx.prisma.branch.findUniqueOrThrow({
+        where: { branch_id: ctx.session.staffMember.branch_id },
       });
-      if (!branch) throw new TRPCError(ServerError.BRANCH_NOT_FOUND);
+
+      const { role } = ctx.session.staffMember;
+      if (allowedRoles.includes(role))
+        return ctx.prisma.customer.findMany({
+          where: { deleted_at: null },
+        });
+
       return ctx.prisma.customer.findMany({
-        where: { deleted_at: null },
+        where: { deleted_at: null, branch_id: branch.branch_id },
       });
     }),
   create: protectedProcedure

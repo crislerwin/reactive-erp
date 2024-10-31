@@ -31,7 +31,7 @@ function Staff({ role }: StaffPageProps) {
   const { mutate: updateStaffMember } =
     trpc.staff.updateStaffMember.useMutation();
   const { mutate: deleteStaffMember } =
-    trpc.staff.softDeletedStaffMember.useMutation();
+    trpc.staff.softDeleteStaff.useMutation();
 
   const { data: branches = [] } = trpc.branch.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
