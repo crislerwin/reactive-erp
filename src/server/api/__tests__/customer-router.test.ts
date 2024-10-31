@@ -1,11 +1,5 @@
 import { prisma } from "@/server/db";
-import {
-  createBranch,
-  createStaffMember,
-  makeApp,
-  makeStaffRequest,
-  makeSut,
-} from "./__mocks__";
+import { createBranch, makeApp, makeStaffRequest, makeSut } from "./__mocks__";
 import { describe, it, expect } from "vitest";
 import { faker } from "@faker-js/faker";
 import { type z } from "zod";
