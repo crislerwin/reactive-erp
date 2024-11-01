@@ -5,21 +5,13 @@ import { useRouter } from "next/router";
 import { ThemeToggle } from "../ThemeToggle";
 import { MenuItems } from "../MenuItems";
 import { Avatar, Menu } from "@mantine/core";
-import {
-  IconLogout,
-  IconApiApp,
-  IconHome,
-  IconUsersGroup,
-  IconCategory,
-  IconMoneybag,
-} from "@tabler/icons-react";
+import { IconLogout, IconApiApp } from "@tabler/icons-react";
 
 import CommandPalette, {
   filterItems,
   getItemIndex,
   useHandleOpenCommandPalette,
 } from "../SearchBar";
-import { PackageSearch, PersonStandingIcon, StoreIcon } from "lucide-react";
 import { pageNameMap, PageRoute, managerRoles } from "@/common/constants";
 import { parseCookies } from "nookies";
 
@@ -49,13 +41,13 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
   const searchItems = filterItems(
     [
       {
-        heading: "Home",
+        heading: "Dashboard",
         id: PageRoute.DASHBOARD,
         items: [
           {
-            id: "home",
-            children: "Home",
-            icon: "IconHome",
+            id: "dashboard",
+            children: "Dashboard",
+            icon: "IconDashboard",
             href: PageRoute.DASHBOARD,
           },
         ],
@@ -237,39 +229,39 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
         <MenuItems
           items={[
             {
-              icon: <IconHome className="h-4 w-4" />,
+              icon: "IconDashboard",
               label: "Painel de Controle",
               href: PageRoute.DASHBOARD,
             },
             {
-              icon: <PersonStandingIcon className="h-4 w-4" />,
+              icon: "IconUsers",
               label: "Clientes",
               href: PageRoute.CUSTOMERS,
             },
             {
-              icon: <IconMoneybag className="h-4 w-4" />,
+              icon: "IconMoneybag",
               label: "Faturas",
               href: PageRoute.INVOICES,
             },
             {
-              icon: <IconUsersGroup className="h-4 w-4" />,
+              icon: "IconUsersGroup",
               label: "Equipe",
               href: PageRoute.STAFF,
               visible: managerRoles.includes(role),
             },
             {
-              icon: <StoreIcon className="h-4 w-4" />,
+              icon: "IconScriptPlus",
               label: "Filiais",
               href: PageRoute.BRANCH,
               visible: managerRoles.includes(role),
             },
             {
-              icon: <PackageSearch className="h-4 w-4" />,
+              icon: "IconPackage",
               label: "Produtos",
               href: PageRoute.PRODUCTS,
             },
             {
-              icon: <IconCategory className="h-4 w-4" />,
+              icon: "IconCategory",
               label: "Categoria de Produtos",
               href: PageRoute.PRODUCT_CATEGORY,
             },

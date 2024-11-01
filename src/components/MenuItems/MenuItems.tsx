@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
+import { CustomIcon, type IconName } from "../Icons";
 
 type MenuItemProps = {
   open: boolean;
@@ -10,7 +11,7 @@ type MenuItemProps = {
 export type MenuItemType = {
   label?: string;
   visible?: boolean;
-  icon: React.ReactNode;
+  icon: IconName;
   href: string;
 };
 
@@ -36,7 +37,7 @@ export const MenuOpenedItems = ({ open, items }: MenuItemProps) => {
                 : "hover:ml-2 hover:text-purple-600"
             }   dark:bg-gray-800 dark:text-slate-200  dark:hover:text-blue-500`}
           >
-            {icon}
+            <CustomIcon className="h-4 w-4" iconName={icon} />
             <div className="text-slate-700 dark:text-slate-200">{label}</div>
           </Link>
         );

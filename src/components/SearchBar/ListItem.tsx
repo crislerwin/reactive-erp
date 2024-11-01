@@ -3,6 +3,7 @@ import React, {
   type ButtonHTMLAttributes,
   type DetailedHTMLProps,
   type FC,
+  FunctionComponent,
   type ReactNode,
   useContext,
 } from "react";
@@ -27,7 +28,7 @@ const getListItemWrapperStyles = (selected: boolean, disabled?: boolean) => {
 
 interface ListItemBaseProps {
   closeOnSelect?: boolean;
-  icon?: FC | IconName;
+  icon?: FunctionComponent | IconName;
   showType?: boolean;
   disabled?: boolean;
   keywords?: string[];
