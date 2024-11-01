@@ -3,7 +3,6 @@ import { ptBR } from "@clerk/localizations";
 import { trpc } from "@/utils/api";
 import { ClerkProvider } from "@clerk/nextjs";
 import "@/styles/globals.scss";
-import { SideBarProvider } from "@/components/SideMenu";
 import { ThemeProvider } from "@/components/ThemeToggle";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ModalsProvider } from "@mantine/modals";
@@ -16,11 +15,8 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
       <ModalsProvider>
         <QueryClientProvider client={queryClient}>
           <ClerkProvider localization={ptBR} {...pageProps}>
-            <SideBarProvider>
-              <Component {...pageProps} />
-            </SideBarProvider>
+            <Component {...pageProps} />
           </ClerkProvider>
-
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </ModalsProvider>
