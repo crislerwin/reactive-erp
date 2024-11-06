@@ -25,7 +25,6 @@ const SignInPage: NextPage = () => {
                   <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
                 </div>
                 <svg
-                  title="Decorative dots pattern"
                   viewBox="0 0 91 91"
                   className="absolute left-0 top-0 z-0 -ml-12 -mt-12 h-32 w-32 fill-current
               text-yellow-300"
