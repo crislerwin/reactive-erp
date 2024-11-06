@@ -3,7 +3,7 @@ import React, {
   type ButtonHTMLAttributes,
   type DetailedHTMLProps,
   type FC,
-  FunctionComponent,
+  type FunctionComponent,
   type ReactNode,
   useContext,
 } from "react";
@@ -11,6 +11,15 @@ import { OpenContext, SelectContext } from "./lib/context";
 import { classNames } from "./lib/utils";
 import { type TablerIconsProps } from "@tabler/icons-react";
 import Link, { type LinkProps } from "next/link";
+
+export interface ListItemBaseProps {
+  closeOnSelect?: boolean;
+  icon?: FunctionComponent | IconName;
+  showType?: boolean;
+  disabled?: boolean;
+  keywords?: string[];
+  index: number;
+}
 
 export type ListItemType = "Link" | "Ação";
 
@@ -25,15 +34,6 @@ const getListItemWrapperStyles = (selected: boolean, disabled?: boolean) => {
       : "cursor-pointer"
   );
 };
-
-interface ListItemBaseProps {
-  closeOnSelect?: boolean;
-  icon?: FunctionComponent | IconName;
-  showType?: boolean;
-  disabled?: boolean;
-  keywords?: string[];
-  index: number;
-}
 
 export interface SearchLinkProps extends ListItemBaseProps, LinkProps {
   className?: string;
