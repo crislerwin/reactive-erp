@@ -222,6 +222,7 @@ export function SideMenu({ children, role = "EMPLOYEE" }: SideMenuProps) {
         </div>
         <div
           onClick={() => setOpen(!open)}
+          onKeyUp={() => setOpen(!open)}
           className="absolute -right-6 top-2 flex transform rounded-full  border-4 border-white bg-slate-200 p-3 text-slate-700 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-blue-500"
         >
           <IconApiApp width={24} height={24} />
