@@ -66,8 +66,8 @@ importers:
         specifier: ^1.3.7
         version: 1.3.7(@types/react-dom@18.2.18)(@types/react@18.2.48)(less@4.2.0)(postcss@8.4.33)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.77.8)(typescript@5.3.3)(webpack@5.93.0(esbuild@0.18.20))
       '@tabler/icons-react':
-        specifier: ^2.46.0
-        version: 2.46.0(react@18.2.0)
+        specifier: ^3.23.0
+        version: 3.23.0(react@18.2.0)
       '@tanstack/react-query':
         specifier: ^4.36.1
         version: 4.36.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -112,7 +112,7 @@ importers:
         version: 0.403.0(react@18.2.0)
       mantine-react-table:
         specifier: ^1.3.4
-        version: 1.3.4(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/dates@6.0.21(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(dayjs@1.11.10)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@tabler/icons-react@2.46.0(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 1.3.4(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/dates@6.0.21(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(dayjs@1.11.10)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@tabler/icons-react@3.23.0(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       next:
         specifier: ^14.2.5
         version: 14.2.5(@babel/core@7.24.9)(@playwright/test@1.45.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.77.8)
@@ -2935,13 +2935,13 @@ packages:
   '@swc/helpers@0.5.5':
     resolution: {integrity: sha512-KGYxvIOXcceOAbEk4bi/dVLEK9z8sZ0uBB3Il5b1rhfClSpcX0yfRO0KmTkqR2cnQDymwLB+25ZyMzICg/cm/A==}
 
-  '@tabler/icons-react@2.46.0':
-    resolution: {integrity: sha512-X8MRxuslIOFqMjAo+GvUZDpjlOwNYNJTuOsHXf/NBvVI6ygqUf0FUNsDLLA5fQ6k6KtRwxMlgGB+eR8ZG1UP0g==}
+  '@tabler/icons-react@3.23.0':
+    resolution: {integrity: sha512-uSJfu1Tnhk6AAkerNCOBL3KL3aPpb/bnB4UjTbV3jItTJKitEgr4a98ted67qu5FHB3/tG1bxs32pqy5OL7NGw==}
     peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+      react: '>= 16'
 
-  '@tabler/icons@2.46.0':
-    resolution: {integrity: sha512-Q5G8Pj5IO+Uhc6pszpu5/hGYY018JwEzzvmuqr+gKJtfIvAHA3umpwUilMRLEy89p+WCP+YsDhicMhfBCCv1qA==}
+  '@tabler/icons@3.23.0':
+    resolution: {integrity: sha512-Cz+X58jfRm0g/KcupXXuPw5knj671lNR054AnmLXvCjudiQBWI0wZulDDSsqDoGezvBzMTNPQtNcjLkZs82ZxQ==}
 
   '@tanstack/match-sorter-utils@8.11.7':
     resolution: {integrity: sha512-4PUKgaaFpiB7MK406N5VAiLu2VUhDumojGWhEC8kNQ767RGU2vsJDI7Xp4D8lMBzijqswRWz3U8ioa2zUKnFeQ==}
@@ -10302,13 +10302,12 @@ snapshots:
       '@swc/counter': 0.1.3
       tslib: 2.6.3
 
-  '@tabler/icons-react@2.46.0(react@18.2.0)':
+  '@tabler/icons-react@3.23.0(react@18.2.0)':
     dependencies:
-      '@tabler/icons': 2.46.0
-      prop-types: 15.8.1
+      '@tabler/icons': 3.23.0
       react: 18.2.0
 
-  '@tabler/icons@2.46.0': {}
+  '@tabler/icons@3.23.0': {}
 
   '@tanstack/match-sorter-utils@8.11.7':
     dependencies:
@@ -11942,7 +11941,7 @@ snapshots:
       debug: 4.3.4
       enhanced-resolve: 5.15.0
       eslint: 8.56.0
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0))(eslint@8.56.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.2
@@ -11954,7 +11953,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0))(eslint@8.56.0):
+  eslint-module-utils@2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -11975,7 +11974,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0))(eslint@8.56.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -12966,13 +12965,13 @@ snapshots:
 
   make-error@1.3.6: {}
 
-  mantine-react-table@1.3.4(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/dates@6.0.21(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(dayjs@1.11.10)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@tabler/icons-react@2.46.0(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  mantine-react-table@1.3.4(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/dates@6.0.21(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(dayjs@1.11.10)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@tabler/icons-react@3.23.0(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@emotion/react': 11.11.3(@types/react@18.2.48)(react@18.2.0)
       '@mantine/core': 6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mantine/dates': 6.0.21(@mantine/core@6.0.21(@emotion/react@11.11.3(@types/react@18.2.48)(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@mantine/hooks@6.0.21(react@18.2.0))(dayjs@1.11.10)(react@18.2.0)
       '@mantine/hooks': 6.0.21(react@18.2.0)
-      '@tabler/icons-react': 2.46.0(react@18.2.0)
+      '@tabler/icons-react': 3.23.0(react@18.2.0)
       '@tanstack/match-sorter-utils': 8.8.4
       '@tanstack/react-table': 8.10.6(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@tanstack/react-virtual': 3.0.0-beta.63(react@18.2.0)
