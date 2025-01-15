@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { parseToStringArray, validateData } from "./utils";
+import {
+  normalizeString,
+  parseToStringArray,
+  stringToBool,
+  validateData,
+} from "./utils";
 describe("Utils", () => {
   describe("validateData", () => {
     it("should return an empty object for valid data", () => {
@@ -109,6 +114,60 @@ describe("Utils", () => {
           age: "25",
         },
       ]);
+    });
+  });
+
+  describe("normalizeString", () => {
+    it("should handle undefined input", () => {
+      expect(normalizeString(undefined)).toBe("");
+    });
+
+    it("should normalize accented characters", () => {
+      expect(normalizeString("áéíóú")).toBe("aeiou");
+    });
+
+    it("should convert to lowercase and trim", () => {
+      expect(normalizeString("  HELLO WORLD  ")).toBe("hello world");
+    });
+
+    it("should handle mixed case and accents", () => {
+      expect(normalizeString("  OLÁ MUNDO  ")).toBe("ola mundo");
+    });
+  });
+
+  describe("stringToBool", () => {
+    it("should convert common true values", () => {
+      expect(stringToBool("sim")).toBe(true);
+      expect(stringToBool("yes")).toBe(true);
+      expect(stringToBool("true")).toBe(true);
+      expect(stringToBool("verdadeiro")).toBe(true);
+    });
+
+    it("should convert common false values", () => {
+      expect(stringToBool("nao")).toBe(false);
+      expect(stringToBool("no")).toBe(false);
+      expect(stringToBool("false")).toBe(false);
+      expect(stringToBool("falso")).toBe(false);
+    });
+
+    it("should handle case-insensitive input", () => {
+      expect(stringToBool("SIM")).toBe(true);
+      expect(stringToBool("NAO")).toBe(false);
+    });
+
+    it("should handle accented input", () => {
+      expect(stringToBool("não")).toBe(false);
+    });
+
+    it("should use custom dictionary when provided", () => {
+      const customDict = { "custom-true": true, "custom-false": false };
+      expect(stringToBool("custom-true", true, true, customDict)).toBe(true);
+      expect(stringToBool("custom-false", true, true, customDict)).toBe(false);
+    });
+
+    it("should respect dictOnly parameter", () => {
+      expect(stringToBool("any-string", false)).toBe(true);
+      expect(stringToBool("", false)).toBe(false);
     });
   });
 });
