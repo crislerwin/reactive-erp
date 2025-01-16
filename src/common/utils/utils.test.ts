@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { parseToStringArray, validateData } from "./utils";
+import {
+  parseToStringArray,
+  validateData,
+  normalizeString,
+  stringToBool,
+} from "./utils";
 describe("Utils", () => {
   describe("validateData", () => {
     it("should return an empty object for valid data", () => {
@@ -109,6 +114,50 @@ describe("Utils", () => {
           age: "25",
         },
       ]);
+    });
+  });
+
+  describe("normalizeString", () => {
+    it("should handle undefined input", () => {
+      expect(normalizeString(undefined)).toBe("");
+    });
+
+    it("should trim whitespace", () => {
+      expect(normalizeString("  Hello  ")).toBe("hello");
+    });
+
+    it("should convert to lowercase", () => {
+      expect(normalizeString("HELLO")).toBe("hello");
+    });
+
+    it("should remove accents", () => {
+      expect(normalizeString("São Paulo")).toBe("sao paulo");
+    });
+  });
+
+  describe("stringToBool", () => {
+    it("should convert truthy values to true", () => {
+      expect(stringToBool("sim")).toBe(true);
+      expect(stringToBool("yes")).toBe(true);
+      expect(stringToBool("true")).toBe(true);
+      expect(stringToBool("1")).toBe(true);
+    });
+
+    it("should convert falsy values to false", () => {
+      expect(stringToBool("no")).toBe(false);
+      expect(stringToBool("false")).toBe(false);
+      expect(stringToBool("0")).toBe(false);
+    });
+
+    it("should handle custom dictionary", () => {
+      const customDict = { maybe: true, nope: false };
+      expect(stringToBool("maybe", true, true, customDict)).toBe(true);
+      expect(stringToBool("nope", true, true, customDict)).toBe(false);
+    });
+
+    it("should handle non-dictionary values when dictOnly is false", () => {
+      expect(stringToBool("something", false)).toBe(true);
+      expect(stringToBool("", false)).toBe(false);
     });
   });
 });
