@@ -4,8 +4,8 @@ services:
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: k2j3k4l5m
-      MYSQL_DATABASE: health_ops
-      MYSQL_USER: health_ops_user
+      MYSQL_DATABASE: reactive-erp
+      MYSQL_USER: reactive_erp_user
       MYSQL_PASSWORD: 1k2j3k4l5m
     ports:
-      - "3306:3306"
+      - "3307:3306"
