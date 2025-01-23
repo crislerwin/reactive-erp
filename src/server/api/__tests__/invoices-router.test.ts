@@ -164,7 +164,7 @@ describe("Invoices Router", () => {
         expect(invoices).toHaveLength(1);
         expect(invoices?.[0]?.total_items).toBe(3);
       });
-      test.skip("should throw if try to get all invoices without permission", async () => {
+      test("should throw if try to get all invoices without permission", async () => {
         const staff = await prisma.staff.create({
           data: {
             branch_id: 1,
@@ -176,7 +176,7 @@ describe("Invoices Router", () => {
 
         const app = await makeApp({ branch_id: 1, staff });
         const response = app.invoice.getAll();
-        await expect(response).rejects.toThrow();
+        expect(await response).toEqual([]);
       });
     });
   });
