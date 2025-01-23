@@ -107,6 +107,7 @@
     "typescript": "^5.3.3",
     "vite": "^5.4.10"
   },
+  "packageManager": "pnpm@9.15.4",
   "ct3aMetadata": {
     "initVersion": "7.12.0"
   }
