@@ -6,7 +6,7 @@ import { z } from "zod";
  */
 const server = z.object({
   DATABASE_URL: z.string().url(),
-  DATABASE_PROVIDER: z.enum(["mysql", "sqlite"]),
+  DATABASE_PROVIDER: z.enum(["mysql", "sqlite"]).default("mysql"),
   NODE_ENV: z.enum(["development", "test", "production"]),
 });
 

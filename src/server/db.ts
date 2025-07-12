@@ -28,6 +28,7 @@ const getDatabaseConfig = () => {
 
   // SQLite-specific configuration for development
   if (env.DATABASE_PROVIDER === "sqlite") {
+    console.log("Using SQLite configuration");
     return {
       ...baseConfig,
       datasources: {
@@ -38,8 +39,16 @@ const getDatabaseConfig = () => {
     };
   }
 
-  // MySQL configuration for production
-  return baseConfig;
+  // MySQL configuration for production (default)
+  console.log("Using MySQL configuration");
+  return {
+    ...baseConfig,
+    datasources: {
+      db: {
+        url: env.DATABASE_URL,
+      },
+    },
+  };
 };
 
 export const prisma =
