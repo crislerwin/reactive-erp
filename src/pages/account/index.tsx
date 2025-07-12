@@ -1,16 +1,12 @@
 import { type NextPage } from "next";
-import { SideMenu } from "@/components/SideMenu";
+
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import AccountPage from "./[userId]";
 import { type DefaultPageProps } from "@/common/schemas";
 import { createTRPCContext } from "@/server/api/trpc";
 
 const Profile: NextPage<DefaultPageProps> = ({ role }) => {
-  return (
-    <SideMenu role={role}>
-      <AccountPage />
-    </SideMenu>
-  );
+  return <AccountPage />;
 };
 
 export default Profile;

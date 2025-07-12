@@ -2,7 +2,7 @@ import * as React from "react";
 import { trpc } from "@/utils/api";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { createTRPCContext } from "../server/api/trpc";
-import { SideMenu } from "../components/SideMenu";
+
 import { type Customer } from "@prisma/client";
 import {
   type MRT_Row,
@@ -124,27 +124,25 @@ export default function Customers({ role }: { role: string }) {
   };
 
   return (
-    <SideMenu role={role}>
-      <CrudTable
-        addButtonLabel="Novo Cliente"
-        createModalLabel="Novo Cliente"
-        editModalLabel="Editar Cliente"
-        isLoading={isLoadingProducts}
-        deleteModalProps={(row) => ({
-          loading: isDeletingCustomer,
-          title: "Deletar Cliente",
-          children: `Vocé tem certeza que quer excluir o cliente ${row.original.first_name}?`,
-          labels: { confirm: "Deletar", cancel: "Cancelar" },
-        })}
-        onCreatingRowSave={handleCreateCustomer}
-        creationSchema={createCustomerSchema}
-        updateSchema={updateCustomerSchema}
-        onConfirmDelete={handleDeleteCustomer}
-        onEditingRowSave={handleUpdateCustomer}
-        columns={columns}
-        data={customers}
-      />
-    </SideMenu>
+    <CrudTable
+      addButtonLabel="Novo Cliente"
+      createModalLabel="Novo Cliente"
+      editModalLabel="Editar Cliente"
+      isLoading={isLoadingProducts}
+      deleteModalProps={(row) => ({
+        loading: isDeletingCustomer,
+        title: "Deletar Cliente",
+        children: `Vocé tem certeza que quer excluir o cliente ${row.original.first_name}?`,
+        labels: { confirm: "Deletar", cancel: "Cancelar" },
+      })}
+      onCreatingRowSave={handleCreateCustomer}
+      creationSchema={createCustomerSchema}
+      updateSchema={updateCustomerSchema}
+      onConfirmDelete={handleDeleteCustomer}
+      onEditingRowSave={handleUpdateCustomer}
+      columns={columns}
+      data={customers}
+    />
   );
 }
 

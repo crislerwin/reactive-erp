@@ -3,7 +3,7 @@ import {
   type MRT_Row,
   type MRT_TableOptions,
 } from "mantine-react-table";
-import { SideMenu } from "@/components/SideMenu";
+
 import { type Staff as StaffType } from "@prisma/client";
 import { trpc } from "@/utils/api";
 import { getQueryKey } from "@trpc/react-query";
@@ -179,33 +179,31 @@ function Staff({ role }: StaffPageProps) {
   };
 
   return (
-    <SideMenu role={role}>
-      <CrudTable
-        addButtonLabel="Novo Colaborador"
-        createModalLabel="Novo Colaborador"
-        editModalLabel="Editar Colaborador"
-        columns={columns}
-        data={staffMembers}
-        hideActions={(row, action) => {
-          if (action === "both") return row.original.role === "OWNER";
-          return false;
-        }}
-        creationSchema={createStaffMemberSchema}
-        updateSchema={updateStaffMemberSchema}
-        onCreatingRowSave={handleCreateUser}
-        deleteModalProps={(row) => ({
-          title: "Deletar colaborador",
-          labels: { confirm: "Deletar", cancel: "Cancelar" },
-          children: `Deseja mesmo deletar o colaborador ${
-            row.original.first_name
-          } ${row.original.last_name ?? ""}`,
-        })}
-        onEditingRowSave={handleSaveUser}
-        onConfirmDelete={handleDeleteStaff}
-        isLoading={isLoadingStaff}
-        error={isGettingStaffError}
-      />
-    </SideMenu>
+    <CrudTable
+      addButtonLabel="Novo Colaborador"
+      createModalLabel="Novo Colaborador"
+      editModalLabel="Editar Colaborador"
+      columns={columns}
+      data={staffMembers}
+      hideActions={(row, action) => {
+        if (action === "both") return row.original.role === "OWNER";
+        return false;
+      }}
+      creationSchema={createStaffMemberSchema}
+      updateSchema={updateStaffMemberSchema}
+      onCreatingRowSave={handleCreateUser}
+      deleteModalProps={(row) => ({
+        title: "Deletar colaborador",
+        labels: { confirm: "Deletar", cancel: "Cancelar" },
+        children: `Deseja mesmo deletar o colaborador ${
+          row.original.first_name
+        } ${row.original.last_name ?? ""}`,
+      })}
+      onEditingRowSave={handleSaveUser}
+      onConfirmDelete={handleDeleteStaff}
+      isLoading={isLoadingStaff}
+      error={isGettingStaffError}
+    />
   );
 }
 
