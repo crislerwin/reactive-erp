@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { makeApp, makeSut } from "./__mocks__";
 import { faker } from "@faker-js/faker";
 import { ErrorType } from "@/common/errors/customErrors";
-import { prepareJsonForTest } from "./__mocks__/test-helpers";
 
 describe("Branch router", () => {
   describe("List all branches", () => {

@@ -57,7 +57,7 @@ export const productRouter = createTRPCRouter({
           available: input.available,
           product_category_id: input.product_category_id,
           stock: input.stock,
-          colors: prepareJsonField(input.colors),
+          colors: prepareJsonField(input.colors) as string | null,
         },
       });
     }),
@@ -82,7 +82,7 @@ export const productRouter = createTRPCRouter({
           product_id: input.product_id,
           product_category_id: input.product_category_id,
           stock: input.stock,
-          colors: prepareJsonField(input.colors),
+          colors: prepareJsonField(input.colors) as string | null,
         },
       });
     }),

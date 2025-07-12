@@ -21,6 +21,11 @@ import { useFieldArray } from "react-hook-form";
 import { IconX } from "@tabler/icons-react";
 import { type z } from "zod";
 
+// Extend Invoice type to have properly typed items field
+type ParsedInvoice = Omit<Invoice, "items"> & {
+  items: InvoiceItem[];
+};
+
 type InvoicesFormFields = {
   id: number;
   customer_id: number;
@@ -324,11 +329,11 @@ export default function InvoicesPage({ role }: { role: string }) {
   }) => {
     createInvoice(values, {
       onSuccess: (data) => {
-        updateQueryData<Invoice[]>(
+        updateQueryData<ParsedInvoice[]>(
           getQueryKey(trpc.invoice.getAll, undefined, "query"),
           (oldData) => {
             if (!oldData) return [];
-            return [...oldData, data];
+            return [...oldData, data as unknown as ParsedInvoice];
           }
         );
 
@@ -346,12 +351,14 @@ export default function InvoicesPage({ role }: { role: string }) {
   }) => {
     updateInvoice(values, {
       onSuccess: (data) => {
-        updateQueryData<Invoice[]>(
+        updateQueryData<ParsedInvoice[]>(
           getQueryKey(trpc.invoice.getAll, undefined, "query"),
           (oldData) => {
             if (!oldData) return [];
             return oldData.map((invoice) =>
-              invoice.id === data.id ? data : invoice
+              invoice.id === data.id
+                ? (data as unknown as ParsedInvoice)
+                : invoice
             );
           }
         );
@@ -365,7 +372,7 @@ export default function InvoicesPage({ role }: { role: string }) {
       { id: row.original.id },
       {
         onSuccess: () => {
-          updateQueryData<Invoice[]>(
+          updateQueryData<ParsedInvoice[]>(
             getQueryKey(trpc.invoice.getAll, undefined, "query"),
             (oldData) => {
               if (!oldData) return [];
@@ -397,14 +404,14 @@ export default function InvoicesPage({ role }: { role: string }) {
         onConfirmDelete={handleDeleteInvoice}
         columns={columns}
         CustomCreateRowModalContent={CreateInvoiceModalContent}
-        data={invoices.map((product) => ({
+        data={(invoices as unknown as ParsedInvoice[]).map((product) => ({
           customer_id: product.customer_id,
           staff_id: product.staff_id,
           id: product.id,
           expires_at: product.expires_at.toISOString().split("T")[0],
           status: product.status || "",
           total_items: product.total_items,
-          items: product.items as InvoiceItem[],
+          items: product.items as unknown as InvoiceItem[],
         }))}
       />
     </SideMenu>

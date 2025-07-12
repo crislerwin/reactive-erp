@@ -7,7 +7,7 @@ import {
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { prepareJsonField } from "@/lib/db-helpers";
+import { prepareJsonField, ModelHelpers } from "@/lib/db-helpers";
 
 const superUserRoles = ["OWNER", "ADMIN", "MANAGER"];
 
@@ -33,10 +33,10 @@ export const invoicesRouter = createTRPCRouter({
       if (product.length !== input.items.length)
         throw new TRPCError(ServerError.PRODUCT_QUANTITY_MISMATCH);
 
-      return ctx.prisma.invoice.create({
+      const invoice = await ctx.prisma.invoice.create({
         data: {
           branch_id: ctx.session.staffMember.branch_id,
-          items: prepareJsonField(input.items),
+          items: prepareJsonField(input.items) as string,
           staff_id: input.staff_id,
           status: input.status,
           expires_at: input.expires_at,
@@ -45,6 +45,7 @@ export const invoicesRouter = createTRPCRouter({
           total_items,
         },
       });
+      return ModelHelpers.processInvoice(invoice);
     }),
   getAll: protectedProcedure
     .meta({ method: "GET", path: "/invoices" })
@@ -53,14 +54,16 @@ export const invoicesRouter = createTRPCRouter({
         throw new TRPCError(ServerError.NOT_ALLOWED);
 
       if (ctx.session.staffMember.role === "OWNER") {
-        return ctx.prisma.invoice.findMany();
+        const invoices = await ctx.prisma.invoice.findMany();
+        return invoices.map((invoice) => ModelHelpers.processInvoice(invoice));
       }
 
-      return ctx.prisma.invoice.findMany({
+      const invoices = await ctx.prisma.invoice.findMany({
         where: {
           branch_id: ctx.session.staffMember.branch_id,
         },
       });
+      return invoices.map((invoice) => ModelHelpers.processInvoice(invoice));
     }),
 
   update: protectedProcedure
@@ -75,14 +78,14 @@ export const invoicesRouter = createTRPCRouter({
         0
       );
 
-      return ctx.prisma.invoice.update({
+      const invoice = await ctx.prisma.invoice.update({
         where: {
           id: input.id,
         },
         data: {
           status: input.status,
           expires_at: input.expires_at,
-          items: prepareJsonField(input.items),
+          items: prepareJsonField(input.items) as string,
           type: input.type,
           branch_id: ctx.session.staffMember.branch_id,
           customer_id: input.customer_id,
@@ -90,6 +93,7 @@ export const invoicesRouter = createTRPCRouter({
           total_items,
         },
       });
+      return ModelHelpers.processInvoice(invoice);
     }),
   delete: protectedProcedure
     .meta({ method: "DELETE", path: "/invoice/:id" })

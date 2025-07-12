@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Prisma } from "@prisma/client";
 import { env } from "@/env.mjs";
 
 const globalForPrisma = globalThis as unknown as {
@@ -21,10 +21,10 @@ const parseJson = (value: string | null): unknown => {
 
 // Database configuration based on environment
 const getDatabaseConfig = () => {
-  const baseConfig = {
+  const baseConfig: Prisma.PrismaClientOptions = {
     log:
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-  } as const;
+  };
 
   // SQLite-specific configuration for development
   if (env.DATABASE_PROVIDER === "sqlite") {

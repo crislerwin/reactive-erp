@@ -53,13 +53,13 @@ export const branchRouter = createTRPCRouter({
       validateRole(ctx.session.staffMember.role);
 
       // Prepare data for database insertion (handles JSON serialization)
-      const preparedData = ModelHelpers.prepareBranch({
-        name: input.name,
-        attributes: input.attributes,
-      });
-
       const newBranch = await ctx.prisma.branch.create({
-        data: preparedData,
+        data: {
+          name: input.name,
+          attributes: input.attributes
+            ? JSON.stringify(input.attributes)
+            : null,
+        },
       });
 
       // Process the returned data for consistency
@@ -96,14 +96,14 @@ export const branchRouter = createTRPCRouter({
       validateRole(ctx.session.staffMember.role);
 
       // Prepare data for database update (handles JSON serialization)
-      const preparedData = ModelHelpers.prepareBranch({
-        name: input.name,
-        attributes: input.attributes,
-      });
-
       const updatedBranch = await ctx.prisma.branch.update({
         where: { branch_id: input.branch_id },
-        data: preparedData,
+        data: {
+          name: input.name,
+          attributes: input.attributes
+            ? JSON.stringify(input.attributes)
+            : null,
+        },
       });
 
       // Process the returned data for consistency

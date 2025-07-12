@@ -27,7 +27,7 @@ export const branchRouter = createTRPCRouter({
       return ctx.prisma.branch.create({
         data: {
           name: input.name,
-          attributes: prepareJsonField(input.attributes),
+          attributes: prepareJsonField(input.attributes) as string | null,
         },
       });
     }),
@@ -59,7 +59,7 @@ export const branchRouter = createTRPCRouter({
         data: {
           name: input.name,
           attributes: input.attributes
-            ? prepareJsonField(input.attributes)
+            ? (prepareJsonField(input.attributes) as string | null)
             : undefined,
         },
       });
