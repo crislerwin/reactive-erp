@@ -13,7 +13,7 @@ const ChartComponent = dynamic(() => import("@/components/Charts/Chart"), {
 
 type HomeProps = DefaultPageProps;
 
-export default function Home({}: HomeProps) {
+export default function Home(_props: HomeProps) {
   const { data: chartData = [], isLoading } = trpc.report.getReports.useQuery();
   return (
     <Box mb={4}>
