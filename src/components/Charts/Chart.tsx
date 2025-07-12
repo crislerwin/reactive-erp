@@ -34,11 +34,27 @@ const chartConfig = {
     },
   },
   customers: {
-    label: "Clientes",
-    color: "hsl(var(--chart-2))",
+    label: "Novos Clientes",
+    color: "hsl(var(--chart-3))",
     theme: {
-      light: "hsl(var(--chart-2))",
-      dark: "hsl(var(--chart-2))",
+      light: "hsl(var(--chart-3))",
+      dark: "hsl(var(--chart-3))",
+    },
+  },
+  salesRevenue: {
+    label: "Receita de Vendas",
+    color: "hsl(var(--chart-4))",
+    theme: {
+      light: "hsl(var(--chart-4))",
+      dark: "hsl(var(--chart-4))",
+    },
+  },
+  activeCustomers: {
+    label: "Clientes Ativos",
+    color: "hsl(var(--chart-5))",
+    theme: {
+      light: "hsl(var(--chart-5))",
+      dark: "hsl(var(--chart-5))",
     },
   },
 } satisfies ChartConfig;
@@ -51,6 +67,9 @@ export default function ChartComponent({
     purchase: number;
     sale: number;
     customers: number;
+    salesRevenue?: number;
+    purchaseAmount?: number;
+    activeCustomers?: number;
   }[];
 }) {
   const [activeChart, setActiveChart] =
@@ -61,6 +80,14 @@ export default function ChartComponent({
       purchase: chartData.reduce((acc, curr) => acc + curr.purchase, 0),
       sale: chartData.reduce((acc, curr) => acc + curr.sale, 0),
       customers: chartData.reduce((acc, curr) => acc + curr.customers, 0),
+      salesRevenue: chartData.reduce(
+        (acc, curr) => acc + (curr.salesRevenue || 0),
+        0
+      ),
+      activeCustomers: chartData.reduce(
+        (acc, curr) => acc + (curr.activeCustomers || 0),
+        0
+      ),
     }),
     [chartData]
   );
@@ -71,7 +98,7 @@ export default function ChartComponent({
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Total</CardTitle>
           <CardDescription>
-            Visualize o desempenho de compra, vendas e clientes
+            Visualize o desempenho de compras, vendas, receita e clientes
           </CardDescription>
         </div>
         <div className="flex">
@@ -79,6 +106,7 @@ export default function ChartComponent({
             const chart = key as keyof typeof chartConfig;
             return (
               <button
+                type="button"
                 key={chart}
                 data-active={activeChart === chart}
                 className="relative z-10 flex flex-1 flex-col justify-center gap-1 border-t px-6  py-4 text-left even:border-l data-[active=true]:bg-muted/50 dark:border-gray-600 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
@@ -88,7 +116,15 @@ export default function ChartComponent({
                   {chartConfig[chart].label}
                 </span>
                 <span className="text-lg font-bold leading-none sm:text-3xl">
-                  {total[key as keyof typeof total].toLocaleString()}
+                  {chart === "salesRevenue"
+                    ? `R$ ${total[key as keyof typeof total].toLocaleString(
+                        "pt-BR",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}`
+                    : total[key as keyof typeof total].toLocaleString()}
                 </span>
               </button>
             );
