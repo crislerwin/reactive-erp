@@ -7,6 +7,7 @@ import {
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { prepareJsonField } from "@/lib/db-helpers";
 
 const superUserRoles = ["OWNER", "ADMIN"];
 
@@ -50,7 +51,13 @@ export const productRouter = createTRPCRouter({
       return ctx.prisma.product.create({
         data: {
           branch_id: ctx.session.staffMember.branch_id,
-          ...input,
+          name: input.name,
+          price: input.price,
+          description: input.description,
+          available: input.available,
+          product_category_id: input.product_category_id,
+          stock: input.stock,
+          colors: prepareJsonField(input.colors) as string | null,
         },
       });
     }),
@@ -75,7 +82,7 @@ export const productRouter = createTRPCRouter({
           product_id: input.product_id,
           product_category_id: input.product_category_id,
           stock: input.stock,
-          colors: input.colors,
+          colors: prepareJsonField(input.colors) as string | null,
         },
       });
     }),

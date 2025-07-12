@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "sqlite"
+  provider     = {{DATABASE_PROVIDER}}
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -11,7 +11,7 @@ datasource db {
 model Branch {
   branch_id     Int        @id @default(autoincrement())
   name          String
-  attributes    String?
+  attributes    Json?
   created_at    DateTime   @default(now())
   updated_at    DateTime?  @updatedAt
   deleted_at    DateTime?
@@ -46,7 +46,7 @@ model Product {
   description         String?
   price               Float
   stock               Int             @default(0)
-  colors              String?
+  colors              Json?
   product_category_id Int
   available           Boolean         @default(true)
   created_at          DateTime        @default(now())
@@ -79,7 +79,7 @@ model Invoice {
   branch_id   Int
   staff_id    Int
   customer_id Int
-  items       String
+  items       Json
   total_items Float
   type        String?   @default("sale")
   status      String?   @default("draft")

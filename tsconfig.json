@@ -41,5 +41,5 @@
     "src/server/api/__tests__/invoices-router.test",
     "prisma/types.dts"
   ],
-  "exclude": ["node_modules", ".next", "out", "public"]
+  "exclude": ["node_modules", ".next", "out", "public", "scripts"]
 }

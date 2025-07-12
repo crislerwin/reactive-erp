@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createBranchSchema, updateBranchSchema } from "@/common/schemas";
 import { ServerError } from "@/common/errors/customErrors";
+import { prepareJsonField } from "@/lib/db-helpers";
 
 const allowedRoles = ["ADMIN", "MANAGER", "OWNER"];
 
@@ -26,7 +27,7 @@ export const branchRouter = createTRPCRouter({
       return ctx.prisma.branch.create({
         data: {
           name: input.name,
-          attributes: input.attributes,
+          attributes: prepareJsonField(input.attributes) as string | null,
         },
       });
     }),
@@ -57,7 +58,9 @@ export const branchRouter = createTRPCRouter({
         where: { branch_id: input.branch_id },
         data: {
           name: input.name,
-          attributes: input.attributes,
+          attributes: input.attributes
+            ? (prepareJsonField(input.attributes) as string | null)
+            : undefined,
         },
       });
     }),
