@@ -6,7 +6,7 @@ import {
 import { type Branch } from "@prisma/client";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
-import { SideMenu } from "@/components/SideMenu";
+
 import { CrudTable } from "@/design-system";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
@@ -23,7 +23,8 @@ function BranchPage({ role }: BranchPageProps) {
   const { data: branches = [], isLoading: isLoadingBranches } =
     trpc.branch.findAll.useQuery();
   const { mutate: createBranch } = trpc.branch.createBranch.useMutation();
-  const { mutate: deleteBranch } = trpc.branch.deleteBranch.useMutation();
+  const { mutate: deleteBranch, isLoading: isDeletingBranch } =
+    trpc.branch.deleteBranch.useMutation();
   const { mutate: updateBranch } = trpc.branch.updateBranch.useMutation();
 
   const columns: MRT_ColumnDef<Branch>[] = [
@@ -100,26 +101,25 @@ function BranchPage({ role }: BranchPageProps) {
   };
 
   return (
-    <SideMenu role={role}>
-      <CrudTable
-        addButtonLabel="Nova Filial"
-        createModalLabel="Nova Filial"
-        editModalLabel="Editar Filial"
-        isLoading={isLoadingBranches}
-        onCreatingRowSave={handleCreateBranch}
-        onEditingRowSave={handleSaveBranch}
-        creationSchema={createBranchSchema}
-        updateSchema={updateBranchSchema}
-        deleteModalProps={(row) => ({
-          title: "Deletar Filial",
-          children: `Vocé tem certeza que quer excluir a filial ${row.original.name}? Essa ação não pode ser desfeita.`,
-          labels: { confirm: "Deletar", cancel: "Cancelar" },
-        })}
-        onConfirmDelete={handleDeleteBranch}
-        columns={columns}
-        data={branches}
-      />
-    </SideMenu>
+    <CrudTable
+      addButtonLabel="Nova Filial"
+      createModalLabel="Nova Filial"
+      editModalLabel="Editar Filial"
+      isLoading={isLoadingBranches}
+      onCreatingRowSave={handleCreateBranch}
+      onEditingRowSave={handleSaveBranch}
+      creationSchema={createBranchSchema}
+      updateSchema={updateBranchSchema}
+      onConfirmDelete={handleDeleteBranch}
+      deleteModalProps={(row) => ({
+        loading: isDeletingBranch,
+        title: "Deletar Filial",
+        children: `Vocé tem certeza que quer excluir a filial ${row.original.name}?`,
+        labels: { confirm: "Deletar", cancel: "Cancelar" },
+      })}
+      columns={columns}
+      data={branches}
+    />
   );
 }
 export default BranchPage;

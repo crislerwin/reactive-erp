@@ -6,7 +6,7 @@ import {
 import { type ProductCategory } from "@prisma/client";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
-import { SideMenu } from "@/components/SideMenu";
+
 import { CrudTable } from "@/design-system/Table";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type DefaultPageProps } from "@/common/schemas";
@@ -131,27 +131,25 @@ export default function ProductCategoryPage({
     );
   };
   return (
-    <SideMenu role={role}>
-      <CrudTable
-        addButtonLabel="Nova Categoria"
-        createModalLabel="Nova Categoria"
-        editModalLabel="Editar Categoria"
-        isLoading={isLoadingProductCategory}
-        onConfirmDelete={handleDeleteProductCategory}
-        onCreatingRowSave={handleCreateProduct}
-        onEditingRowSave={handleSaveProduct}
-        deleteModalProps={(row) => ({
-          loading: isDeletingProductCategory,
-          title: "Deletar Filial",
-          children: `Vocé tem certeza que quer excluir o produto ${row.original.name}?`,
-          labels: { confirm: "Deletar", cancel: "Cancelar" },
-        })}
-        creationSchema={createProductCategorySchema}
-        updateSchema={updateProductCategorySchema}
-        columns={columns}
-        data={productCategories}
-      />
-    </SideMenu>
+    <CrudTable
+      addButtonLabel="Nova Categoria"
+      createModalLabel="Nova Categoria"
+      editModalLabel="Editar Categoria"
+      isLoading={isLoadingProductCategory}
+      onConfirmDelete={handleDeleteProductCategory}
+      onCreatingRowSave={handleCreateProduct}
+      onEditingRowSave={handleSaveProduct}
+      deleteModalProps={(row) => ({
+        loading: isDeletingProductCategory,
+        title: "Deletar Categoria",
+        children: `Vocé tem certeza que quer excluir a categoria ${row.original.name}?`,
+        labels: { confirm: "Deletar", cancel: "Cancelar" },
+      })}
+      columns={columns}
+      creationSchema={createProductCategorySchema}
+      updateSchema={updateProductCategorySchema}
+      data={productCategories}
+    />
   );
 }
 

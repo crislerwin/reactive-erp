@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import dynamic from "next/dynamic";
-import { SideMenu } from "@/components/SideMenu";
+
 import type { DefaultPageProps } from "@/common/schemas";
 import { createTRPCContext } from "@/server/api/trpc";
 import { trpc } from "@/utils/api";
@@ -13,19 +13,16 @@ const ChartComponent = dynamic(() => import("@/components/Charts/Chart"), {
 
 type HomeProps = DefaultPageProps;
 
-export default function Home({ role }: HomeProps) {
+export default function Home({}: HomeProps) {
   const { data: chartData = [], isLoading } = trpc.report.getReports.useQuery();
   return (
-    <SideMenu role={role}>
-      <Box mb={4}>
-        {isLoading ? (
-          <Skeleton height={300} />
-        ) : (
-          <ChartComponent data={chartData} />
-        )}
-      </Box>
-      {/* <AreaChartComponent /> */}
-    </SideMenu>
+    <Box mb={4}>
+      {isLoading ? (
+        <Skeleton height={300} />
+      ) : (
+        <ChartComponent data={chartData} />
+      )}
+    </Box>
   );
 }
 

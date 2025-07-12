@@ -5,7 +5,7 @@ import {
   updateInvoiceSchema,
 } from "@/common/schemas";
 import { Input } from "@/components/Input";
-import { SideMenu } from "@/components/SideMenu";
+
 import { SmartForm } from "@/components/SmartForm";
 import { Button, CrudTable, type CrudTableProps } from "@/design-system";
 import { updateQueryData } from "@/lib";
@@ -385,36 +385,34 @@ export default function InvoicesPage({ role }: { role: string }) {
   };
 
   return (
-    <SideMenu role={role}>
-      <CrudTable
-        addButtonLabel="Nova Fatura"
-        createModalLabel="Nova Fatura"
-        editModalLabel="Editar Fatura"
-        deleteModalProps={(row) => ({
-          loading: isDeletingProduct,
-          title: "Deletar Fatura",
-          children: `Vocé tem certeza que quer excluír a fatura ${row.original.id}?`,
-          labels: { confirm: "Deletar", cancel: "Cancelar" },
-        })}
-        isLoading={isLoadingInvoices}
-        onCreatingRowSave={handleCreateInvoice}
-        onEditingRowSave={handleSaveInvoice}
-        creationSchema={createInvoiceSchema}
-        updateSchema={updateInvoiceSchema}
-        onConfirmDelete={handleDeleteInvoice}
-        columns={columns}
-        CustomCreateRowModalContent={CreateInvoiceModalContent}
-        data={(invoices as unknown as ParsedInvoice[]).map((product) => ({
-          customer_id: product.customer_id,
-          staff_id: product.staff_id,
-          id: product.id,
-          expires_at: product.expires_at.toISOString().split("T")[0],
-          status: product.status || "",
-          total_items: product.total_items,
-          items: product.items as unknown as InvoiceItem[],
-        }))}
-      />
-    </SideMenu>
+    <CrudTable
+      addButtonLabel="Nova Fatura"
+      createModalLabel="Nova Fatura"
+      editModalLabel="Editar Fatura"
+      deleteModalProps={(row) => ({
+        loading: isDeletingProduct,
+        title: "Deletar Fatura",
+        children: `Vocé tem certeza que quer excluír a fatura ${row.original.id}?`,
+        labels: { confirm: "Deletar", cancel: "Cancelar" },
+      })}
+      isLoading={isLoadingInvoices}
+      onCreatingRowSave={handleCreateInvoice}
+      onEditingRowSave={handleSaveInvoice}
+      creationSchema={createInvoiceSchema}
+      updateSchema={updateInvoiceSchema}
+      onConfirmDelete={handleDeleteInvoice}
+      columns={columns}
+      CustomCreateRowModalContent={CreateInvoiceModalContent}
+      data={(invoices as unknown as ParsedInvoice[]).map((product) => ({
+        customer_id: product.customer_id,
+        staff_id: product.staff_id,
+        id: product.id,
+        expires_at: product.expires_at.toISOString().split("T")[0],
+        status: product.status || "",
+        total_items: product.total_items,
+        items: product.items as unknown as InvoiceItem[],
+      }))}
+    />
   );
 }
 

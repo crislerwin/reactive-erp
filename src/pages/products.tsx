@@ -6,7 +6,7 @@ import {
 import { type Product } from "@prisma/client";
 import { getQueryKey } from "@trpc/react-query";
 import { trpc } from "@/utils/api";
-import { SideMenu } from "@/components/SideMenu";
+
 import { CrudTable } from "@/design-system";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
@@ -176,27 +176,25 @@ export default function ProductsPage({ role }: ProductsPageProps) {
   };
 
   return (
-    <SideMenu role={role}>
-      <CrudTable
-        addButtonLabel="Novo Produto"
-        createModalLabel="Novo Produto"
-        editModalLabel="Editar Produto"
-        deleteModalProps={(row) => ({
-          loading: isDeletingProduct,
-          title: "Deletar Produto",
-          children: `Vocé tem certeza que quer excluir o produto ${row.original.name}?`,
-          labels: { confirm: "Deletar", cancel: "Cancelar" },
-        })}
-        isLoading={isLoadingProducts}
-        onCreatingRowSave={handleCreateProduct}
-        onEditingRowSave={handleSaveProduct}
-        creationSchema={createProductSchema}
-        updateSchema={updateProductSchema}
-        onConfirmDelete={handleDeleteProduct}
-        columns={columns}
-        data={products}
-      />
-    </SideMenu>
+    <CrudTable
+      addButtonLabel="Novo Produto"
+      createModalLabel="Novo Produto"
+      editModalLabel="Editar Produto"
+      deleteModalProps={(row) => ({
+        loading: isDeletingProduct,
+        title: "Deletar Produto",
+        children: `Vocé tem certeza que quer excluir o produto ${row.original.name}?`,
+        labels: { confirm: "Deletar", cancel: "Cancelar" },
+      })}
+      isLoading={isLoadingProducts}
+      onCreatingRowSave={handleCreateProduct}
+      onEditingRowSave={handleSaveProduct}
+      onConfirmDelete={handleDeleteProduct}
+      creationSchema={createProductSchema}
+      updateSchema={updateProductSchema}
+      columns={columns}
+      data={products}
+    />
   );
 }
 
