@@ -3,6 +3,7 @@ import { makeApp, makeSut } from "./__mocks__";
 import { faker } from "@faker-js/faker";
 import { prisma } from "@/server/db";
 import { ErrorType } from "../../../common/errors";
+import { prepareJsonForTest } from "./__mocks__/test-helpers";
 
 describe.concurrent("Product Router", () => {
   describe("GET all products", () => {
@@ -38,7 +39,7 @@ describe.concurrent("Product Router", () => {
         data: Array.from({ length: 10 }, () => ({
           available: true,
           branch_id: branch.branch_id,
-          colors: ["red", "blue"],
+          colors: prepareJsonForTest(["red", "blue"]),
           description: faker.lorem.sentence(),
           name: faker.commerce.productName(),
           price: Number(faker.commerce.price()),
@@ -90,7 +91,7 @@ describe.concurrent("Product Router", () => {
         data: Array.from({ length: 10 }, () => ({
           available: true,
           branch_id: branch.branch_id,
-          colors: ["red", "blue"],
+          colors: prepareJsonForTest(["red", "blue"]),
           description: faker.lorem.sentence(),
           name: faker.commerce.productName(),
           price: Number(faker.commerce.price()),
@@ -166,7 +167,7 @@ describe.concurrent("Product Router", () => {
         data: {
           available: true,
           branch_id: branch.branch_id,
-          colors: ["red", "blue"],
+          colors: prepareJsonForTest(["red", "blue"]),
           description: faker.lorem.sentence(),
           name: faker.commerce.productName(),
           price: Number(faker.commerce.price()),
@@ -195,7 +196,7 @@ describe.concurrent("Product Router", () => {
         data: {
           available: true,
           branch_id: branch.branch_id,
-          colors: ["red", "blue"],
+          colors: prepareJsonForTest(["red", "blue"]),
           description: faker.lorem.sentence(),
           name: faker.commerce.productName(),
           price: Number(faker.commerce.price()),

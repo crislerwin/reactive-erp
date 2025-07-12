@@ -2,22 +2,12 @@ on:
   - pull_request
 
 env:
-  DATABASE_URL: mysql://reactive_erp_user:1k2j3k4l5m@127.0.0.1:3306/reactive-erp?synchronize=true&logging=false&ssl=false
+  DATABASE_URL: file:./dev.db
+  DATABASE_PROVIDER: sqlite
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:latest
-        env:
-          MYSQL_ROOT_PASSWORD: k2j3k4l5m
-          MYSQL_DATABASE: reactive-erp
-          MYSQL_USER: reactive_erp_user
-          MYSQL_PASSWORD: 1k2j3k4l5m
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout

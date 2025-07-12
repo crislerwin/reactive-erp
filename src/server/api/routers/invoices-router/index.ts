@@ -7,6 +7,7 @@ import {
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { prepareJsonField } from "@/lib/db-helpers";
 
 const superUserRoles = ["OWNER", "ADMIN", "MANAGER"];
 
@@ -35,7 +36,7 @@ export const invoicesRouter = createTRPCRouter({
       return ctx.prisma.invoice.create({
         data: {
           branch_id: ctx.session.staffMember.branch_id,
-          items: input.items,
+          items: prepareJsonField(input.items),
           staff_id: input.staff_id,
           status: input.status,
           expires_at: input.expires_at,
@@ -81,7 +82,7 @@ export const invoicesRouter = createTRPCRouter({
         data: {
           status: input.status,
           expires_at: input.expires_at,
-          items: input.items,
+          items: prepareJsonField(input.items),
           type: input.type,
           branch_id: ctx.session.staffMember.branch_id,
           customer_id: input.customer_id,

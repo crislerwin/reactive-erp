@@ -20,7 +20,7 @@ export function serializeForDb(value: unknown): unknown {
     return typeof value === "string" ? value : JSON.stringify(value);
   }
 
-  // For MySQL, return as-is (native JSON support)
+  // For MySQL (default), return as-is (native JSON support)
   return value;
 }
 
@@ -44,7 +44,7 @@ export function deserializeFromDb<T = unknown>(value: unknown): T | null {
     }
   }
 
-  // For MySQL or non-string values, return as-is
+  // For MySQL (default) or non-string values, return as-is
   return value as T;
 }
 
@@ -146,7 +146,8 @@ export const ModelHelpers = {
  * Utility to check if the current database supports native JSON
  */
 export function supportsNativeJson(): boolean {
-  return env.DATABASE_PROVIDER === "mysql";
+  // MySQL (default) supports native JSON, SQLite doesn't
+  return env.DATABASE_PROVIDER !== "sqlite";
 }
 
 /**
