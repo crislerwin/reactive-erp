@@ -41,7 +41,7 @@ function generateSchema() {
   // Replace the placeholder with the actual provider
   schemaContent = schemaContent.replace(
     "{{DATABASE_PROVIDER}}",
-    databaseProvider
+    `"${databaseProvider}"`
   );
 
   // Apply provider-specific modifications if needed
