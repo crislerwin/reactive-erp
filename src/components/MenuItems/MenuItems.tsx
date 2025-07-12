@@ -56,17 +56,20 @@ export const MenuClosedItems = ({ open, items }: MenuItemProps) => {
       } h-[calc(100vh)] w-full flex-col space-y-2`}
     >
       {items.map((item) => {
+        const { icon, href: path, label, visible } = item;
         return (
           <Link
-            href={item.href}
-            key={item.label}
-            className={`flex w-full transform justify-end rounded-full p-3 pr-5 duration-300 ease-in-out ${
-              pathname === item.href
+            href={path}
+            key={label}
+            className={`flex w-full ${
+              visible === false ? "hidden" : "visible"
+            } transform justify-center rounded-full p-3 duration-300 ease-in-out ${
+              pathname === path
                 ? "ml-1  text-purple-500 dark:text-blue-500"
                 : "hover:ml-1 hover:text-purple-500"
             } bg-slate-100 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500`}
           >
-            {item.icon}
+            <CustomIcon className="h-4 w-4" iconName={icon} />
           </Link>
         );
       })}

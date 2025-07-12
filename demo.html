@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidebar Demo - Fixed Icons</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@tabler/icons@latest/icons-sprite.svg"></script>
+    <style>
+      .sidebar-transition {
+        transition: transform 1s ease-in-out;
+      }
+      .icon {
+        width: 16px;
+        height: 16px;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <!-- Header -->
+    <div
+      class="fixed z-30 flex h-16 w-full items-center justify-between bg-white p-2 pl-8 dark:bg-inherit dark:text-slate-300"
+    >
+      <div id="page-title" class="ml-12 md:ml-60">
+        <span class="font-bold sm:text-sm lg:text-2xl">Dashboard</span>
+      </div>
+      <div class="flex h-full">
+        <div class="flex items-center space-x-3 px-3">
+          <div class="h-8 w-8 rounded-full bg-purple-500"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside
+      id="sidebar"
+      class="sidebar-transition fixed z-50 flex h-screen w-60 translate-x-0 bg-slate-100 dark:bg-gray-800 dark:text-slate-300"
+    >
+      <!-- Toggle Button -->
+      <div
+        id="toggle-btn"
+        class="absolute -right-6 top-2 flex transform cursor-pointer rounded-full border-4 border-white bg-slate-200 p-3 text-slate-700 transition duration-500 ease-in-out hover:rotate-45 hover:bg-purple-500 dark:border-[#0F172A] dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-blue-500"
+      >
+        <svg
+          class="icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+          <path d="M2 17l10 5 10-5" />
+          <path d="M2 12l10 5 10-5" />
+        </svg>
+      </div>
+
+      <!-- Menu Items Container -->
+      <div id="menu-container" class="mt-20 h-[calc(100vh)] w-full">
+        <!-- Opened Menu Items -->
+        <div
+          id="menu-opened"
+          class="flex h-[calc(100vh)] w-full flex-col space-y-2 dark:text-white"
+        >
+          <a
+            href="#"
+            class="ml-2 flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-purple-600 text-slate-700 duration-300 ease-in-out dark:bg-gray-800 dark:text-blue-500 dark:text-slate-200"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            <div class="text-slate-700 dark:text-slate-200">Dashboard</div>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-slate-700 duration-300 ease-in-out hover:ml-2 hover:text-purple-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:text-blue-500"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <div class="text-slate-700 dark:text-slate-200">Clientes</div>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-slate-700 duration-300 ease-in-out hover:ml-2 hover:text-purple-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:text-blue-500"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+              />
+            </svg>
+            <div class="text-slate-700 dark:text-slate-200">Faturas</div>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-slate-700 duration-300 ease-in-out hover:ml-2 hover:text-purple-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:text-blue-500"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <div class="text-slate-700 dark:text-slate-200">Equipe</div>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full transform cursor-pointer flex-row items-center space-x-3 rounded-full bg-slate-100 p-2 pl-8 text-slate-700 duration-300 ease-in-out hover:ml-2 hover:text-purple-600 dark:bg-gray-800 dark:text-slate-200 dark:hover:text-blue-500"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              />
+              <polyline points="3.27,6.96 12,12.01 20.73,6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+            <div class="text-slate-700 dark:text-slate-200">Produtos</div>
+          </a>
+        </div>
+
+        <!-- Closed Menu Items (Fixed Version) -->
+        <div
+          id="menu-closed"
+          class="hidden h-[calc(100vh)] w-full flex-col space-y-2"
+        >
+          <a
+            href="#"
+            class="ml-1 flex w-full transform justify-center rounded-full bg-slate-100 p-3 text-purple-500 duration-300 ease-in-out dark:bg-gray-800 dark:text-blue-500 dark:text-white"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full transform justify-center rounded-full bg-slate-100 p-3 duration-300 ease-in-out hover:ml-1 hover:text-purple-500 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full transform justify-center rounded-full bg-slate-100 p-3 duration-300 ease-in-out hover:ml-1 hover:text-purple-500 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+              />
+            </svg>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full transform justify-center rounded-full bg-slate-100 p-3 duration-300 ease-in-out hover:ml-1 hover:text-purple-500 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </a>
+
+          <a
+            href="#"
+            class="flex w-full transform justify-center rounded-full bg-slate-100 p-3 duration-300 ease-in-out hover:ml-1 hover:text-purple-500 dark:bg-gray-800 dark:text-white dark:hover:text-blue-500"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+              />
+              <polyline points="3.27,6.96 12,12.01 20.73,6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div
+      id="main-content"
+      class="ml-12 h-screen px-2 pb-4 pt-20 duration-500 ease-in-out md:ml-60 md:px-5"
+    >
+      <div class="rounded-lg bg-white p-6 shadow">
+        <h1 class="mb-4 text-2xl font-bold">
+          Sidebar Demo - Fixed Icons Issue
+        </h1>
+        <p class="mb-4">This demo shows the fixed sidebar where:</p>
+        <ul class="mb-4 list-inside list-disc space-y-2">
+          <li>
+            <strong>Before fix:</strong> When sidebar was closed, only text
+            parts of menu items were visible instead of icons
+          </li>
+          <li>
+            <strong>After fix:</strong> When sidebar is closed, proper icons are
+            displayed centered in the collapsed sidebar
+          </li>
+        </ul>
+        <p class="mb-4">
+          Click the toggle button (top-left of sidebar) to see the difference!
+        </p>
+
+        <div class="rounded bg-gray-100 p-4">
+          <h3 class="mb-2 font-semibold">Technical Fix Applied:</h3>
+          <p class="text-sm">
+            In <code>MenuClosedItems</code> component, replaced
+            <code>{item.icon}</code> with
+            <code
+              >&lt;CustomIcon className="h-4 w-4" iconName={icon} /&gt;</code
+            >
+            to properly render Tabler icons instead of displaying icon names as
+            text.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const sidebar = document.getElementById("sidebar");
+      const toggleBtn = document.getElementById("toggle-btn");
+      const menuOpened = document.getElementById("menu-opened");
+      const menuClosed = document.getElementById("menu-closed");
+      const pageTitle = document.getElementById("page-title");
+      const mainContent = document.getElementById("main-content");
+
+      let isOpen = true;
+
+      toggleBtn.addEventListener("click", () => {
+        isOpen = !isOpen;
+
+        if (isOpen) {
+          // Open sidebar
+          sidebar.classList.remove("-translate-x-48");
+          sidebar.classList.add("translate-x-0");
+          menuOpened.classList.remove("hidden");
+          menuOpened.classList.add("flex");
+          menuClosed.classList.remove("flex");
+          menuClosed.classList.add("hidden");
+          pageTitle.classList.remove("ml-12");
+          pageTitle.classList.add("ml-12", "md:ml-60");
+          mainContent.classList.remove("ml-12");
+          mainContent.classList.add("ml-12", "md:ml-60");
+        } else {
+          // Close sidebar
+          sidebar.classList.remove("translate-x-0");
+          sidebar.classList.add("-translate-x-48");
+          menuOpened.classList.remove("flex");
+          menuOpened.classList.add("hidden");
+          menuClosed.classList.remove("hidden");
+          menuClosed.classList.add("flex");
+          pageTitle.classList.remove("md:ml-60");
+          pageTitle.classList.add("ml-12");
+          mainContent.classList.remove("md:ml-60");
+          mainContent.classList.add("ml-12");
+        }
+      });
+    </script>
+  </body>
+</html>
