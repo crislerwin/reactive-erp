@@ -2,11 +2,14 @@ import { env } from "@/env.mjs";
 
 /**
  * Helper function to prepare JSON data for tests based on the database provider
- * For SQLite, it converts objects/arrays to JSON strings
+ * For SQLite and PostgreSQL, it converts objects/arrays to JSON strings
  * For MySQL, it returns the data as-is
  */
 export function prepareJsonForTest<T>(data: T): string | T {
-  if (env.DATABASE_PROVIDER === "sqlite") {
+  if (
+    env.DATABASE_PROVIDER === "sqlite" ||
+    env.DATABASE_PROVIDER === "postgres"
+  ) {
     return typeof data === "string" ? data : JSON.stringify(data);
   }
   return data;

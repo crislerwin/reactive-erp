@@ -7,8 +7,8 @@ import { env } from "@/env.mjs";
 
 /**
  * Serializes a value to be stored in the database
- * For SQLite: converts objects to JSON strings
- * For MySQL: returns the value as-is (native JSON support)
+ * For SQLite and PostgreSQL with String fields: converts objects to JSON strings
+ * For MySQL with native JSON fields: returns the value as-is (native JSON support)
  */
 export function serializeForDb(value: unknown): unknown {
   if (value === null || value === undefined) {
@@ -20,13 +20,18 @@ export function serializeForDb(value: unknown): unknown {
     return typeof value === "string" ? value : JSON.stringify(value);
   }
 
+  // For PostgreSQL, also serialize to strings since our schema uses String fields
+  if (env.DATABASE_PROVIDER === "postgres") {
+    return typeof value === "string" ? value : JSON.stringify(value);
+  }
+
   // For MySQL (default), return as-is (native JSON support)
   return value;
 }
 
 /**
  * Deserializes a value retrieved from the database
- * For SQLite: parses JSON strings back to objects
+ * For SQLite and PostgreSQL: parses JSON strings back to objects
  * For MySQL: returns the value as-is (already parsed)
  */
 export function deserializeFromDb<T = unknown>(value: unknown): T | null {
@@ -34,8 +39,12 @@ export function deserializeFromDb<T = unknown>(value: unknown): T | null {
     return null;
   }
 
-  // For SQLite, parse JSON strings
-  if (env.DATABASE_PROVIDER === "sqlite" && typeof value === "string") {
+  // For SQLite and PostgreSQL, parse JSON strings
+  if (
+    (env.DATABASE_PROVIDER === "sqlite" ||
+      env.DATABASE_PROVIDER === "postgres") &&
+    typeof value === "string"
+  ) {
     try {
       return JSON.parse(value) as T;
     } catch {
@@ -146,8 +155,9 @@ export const ModelHelpers = {
  * Utility to check if the current database supports native JSON
  */
 export function supportsNativeJson(): boolean {
-  // MySQL (default) supports native JSON, SQLite doesn't
-  return env.DATABASE_PROVIDER !== "sqlite";
+  // Only MySQL supports native JSON in our schema setup
+  // SQLite and PostgreSQL use String fields for JSON data
+  return env.DATABASE_PROVIDER === "mysql";
 }
 
 /**
