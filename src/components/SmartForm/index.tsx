@@ -32,11 +32,11 @@ interface SmartFormProps<
   /**
    * The options to be passed to the useForm hook to configure the form.
    */
-  options?: Omit<UseFormProps<TInput>, "defaultValues">;
+  options?: Omit<UseFormProps<TInput, unknown, TOutput>, "defaultValues">;
   /**
    * The default values of the form.
    */
-  defaultValues?: UseFormProps<TInput>["defaultValues"];
+  defaultValues?: UseFormProps<TInput, unknown, TOutput>["defaultValues"];
   /**
    * Set display: grid; to use with input colspan.
    */

@@ -2,12 +2,30 @@ on:
   - pull_request
 
 env:
-  DATABASE_URL: file:./dev.db
-  DATABASE_PROVIDER: sqlite
+  POSTGRES_DB: reactive_app_ci
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  DATABASE_URL: postgres://postgres:postgres@localhost:5432/reactive_app_ci
+  DATABASE_PROVIDER: postgres
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: reactive_app_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout
@@ -16,13 +34,13 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18.15.0
+          node-version: 22.x
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         id: pnpm-install
         with:
-          version: 7.23.0
+          version: 9.x
           run_install: false
 
       - name: Run pnpm install

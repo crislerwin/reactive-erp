@@ -26,7 +26,7 @@ const getDatabaseConfig = () => {
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   };
 
-  // SQLite-specific configuration for development
+  // SQLite-specific configuration
   if (env.DATABASE_PROVIDER === "sqlite") {
     console.log("Using SQLite configuration");
     return {
@@ -39,7 +39,20 @@ const getDatabaseConfig = () => {
     };
   }
 
-  // MySQL configuration for production (default)
+  // PostgreSQL configuration
+  if (env.DATABASE_PROVIDER === "postgres") {
+    console.log("Using PostgreSQL configuration");
+    return {
+      ...baseConfig,
+      datasources: {
+        db: {
+          url: env.DATABASE_URL,
+        },
+      },
+    };
+  }
+
+  // MySQL configuration (fallback)
   console.log("Using MySQL configuration");
   return {
     ...baseConfig,

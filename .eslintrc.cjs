@@ -2,6 +2,7 @@ const path = require("path");
 
 /** @type {import("eslint").Linter.Config} */
 const config = {
+  ignorePatterns: ["**/*.yml", "**/*.yaml"],
   overrides: [
     {
       extends: [

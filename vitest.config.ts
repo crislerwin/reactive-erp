@@ -6,6 +6,12 @@ export default defineConfig({
   test: {
     exclude: ["node_modules", ".next", "e2e", ".git"],
     include: ["**/*.test.{ts,tsx}"],
+    env: {
+      // Load test environment variables
+      NODE_ENV: "test",
+    },
+    // Setup files run before each test file
+    setupFiles: ["./src/test-setup.ts"],
   },
   plugins: [
     alias({

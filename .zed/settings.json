@@ -1,0 +1,9 @@
+{
+  "base_keymap": "VSCode",
+  "vim_mode": true,
+  "languages": {
+    "TSX": { "formatter": "prettier" },
+    "JSX": { "formatter": "prettier" },
+    "TS": { "formatter": "prettier" }
+  }
+}
