@@ -23,9 +23,6 @@ if (fs.existsSync(envTestPath)) {
   }
 }
 
-// Ensure we're in test mode
-process.env.NODE_ENV = "test";
-
 // Force PostgreSQL for tests - use environment variables for credentials
 process.env.DATABASE_PROVIDER = "postgres";
 
